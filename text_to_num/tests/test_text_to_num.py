@@ -19,6 +19,9 @@ class TestTextToNum(TestCase):
         test4 = "quatre-vingt un"
         self.assertEqual(text2num(test4), 81)
 
+    def test_text2num_exc(self):
+        self.assertRaises(AssertionError, text2num, "mille mille deux cent")
+
     def test_alpha2digit_integers(self):
         source = "Vingt-cinq vaches, douze poulets et cent vingt-cinq kg de pommes de terre."
         expected = "25 vaches, 12 poulets et 125 kg de pommes de terre."
