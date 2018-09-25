@@ -76,10 +76,12 @@ if __name__ == '__main__':
         "Huit cent quarante-deux pommes, vingt-cinq chiens, mille trois chevaux, "
         "douze mille six cent quatre-vingt-dix-huit clous.\n"
         "Quatre-vingt-quinze vaut nonante-cinq. On tolère l'absence de tirets avant les unités : "
-        "soixante seize vaut septante six (on exploitera les timeframes pour séparer soixante et seize si pause de voix).\n"
-        "Nombres en série : douze quinze zéro zéro quatre vingt cinquante-deux cent trois cinquante deux trente et un.\n"
+        "soixante seize vaut septante six.\n"
+        "Nombres en série : douze quinze zéro zéro quatre vingt cinquante-deux cent trois cinquante deux "
+        "trente et un.\n"
         "Ordinaux: cinquième troisième vingt et unième centième mille deux cent trentième.\n"
-        "Décimaux: douze virgule quatre-vingt dix-neuf, cent vingt virgule zéro cinq ; mais soixante zéro deux."
+        "Décimaux: douze virgule quatre-vingt dix-neuf, cent vingt virgule zéro cinq ; "
+        "mais soixante zéro deux."
     )
 
     print(sentence)

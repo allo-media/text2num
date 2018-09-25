@@ -79,7 +79,8 @@ class TestTextToNum(TestCase):
         self.assertEqual(alpha2digit(source), expected)
 
     def test_alpha2digit_decimals(self):
-        source = "Douze virgule quatre-vingt dix-neuf, cent vingt virgule zéro cinq, un virgule deux cent trente six."
+        source = ("Douze virgule quatre-vingt dix-neuf, cent vingt virgule zéro cinq,"
+                  " un virgule deux cent trente six.")
         expected = "12,99, 120,05, 1,236."
         self.assertEqual(alpha2digit(source), expected)
 
