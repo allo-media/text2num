@@ -1,5 +1,15 @@
-Quickstart
-==========
+text2num
+========
+
+``text2num`` is a python package that provides functions and parser classes for:
+
+- parsing numbers expressed as words in french and convert them to integer values;
+- detect ordinal, cardinal and decimal numbers in a stream of french words and get their decimal digit representations.
+
+Compatibility
+-------------
+
+Tested on python 3.6, 3.7.
 
 Installation
 ------------
@@ -12,13 +22,11 @@ To install text2num in your (virtual) environment::
 
 That's all folks!
 
-Usage
------
+Usage examples
+--------------
 
 Parse and convert
 ~~~~~~~~~~~~~~~~~
-
-Integers only.
 
 .. code-block:: python
 
@@ -62,6 +70,8 @@ Any number, even ordinals.
     Ordinaux: 5ème 3ème 21ème 100ème 1230ème.
     Décimaux: 12,99, 120,05 ; mais 60 02.
 
-    >>> print(alpha2digit("on distingue aussi l'article (un chat) du nombre: un deux trois."))
-    on distingue aussi l'article (un chat) du nombre: 1 2 3.
 
+Contribute
+----------
+
+Join us on https://github.com/allo-media/text2num

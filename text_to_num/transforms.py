@@ -58,32 +58,3 @@ def alpha2digit(text, relaxed=False):
         out_segments.append(' '.join(out_tokens))
         out_segments.append(sep)
     return ''.join(out_segments)
-
-
-if __name__ == '__main__':
-
-    test1 = "cinquante trois mille millions deux cent quarante trois mille sept cent vingt quatre"
-    assert text2num(test1) == 53_000_243_724
-
-    test2 = "cinquante et un million cinq cent soixante dix-huit mille trois cent deux"
-    assert text2num(test2) == 51_578_302
-
-    test3 = "quatre-vingt un"
-    assert text2num(test3) == 81
-
-    #
-    sentence = (
-        "Huit cent quarante-deux pommes, vingt-cinq chiens, mille trois chevaux, "
-        "douze mille six cent quatre-vingt-dix-huit clous.\n"
-        "Quatre-vingt-quinze vaut nonante-cinq. On tolère l'absence de tirets avant les unités : "
-        "soixante seize vaut septante six.\n"
-        "Nombres en série : douze quinze zéro zéro quatre vingt cinquante-deux cent trois cinquante deux "
-        "trente et un.\n"
-        "Ordinaux: cinquième troisième vingt et unième centième mille deux cent trentième.\n"
-        "Décimaux: douze virgule quatre-vingt dix-neuf, cent vingt virgule zéro cinq ; "
-        "mais soixante zéro deux."
-    )
-
-    print(sentence)
-    print()
-    print(alpha2digit(sentence))

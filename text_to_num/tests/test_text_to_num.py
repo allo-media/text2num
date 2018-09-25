@@ -31,6 +31,9 @@ class TestTextToNum(TestCase):
         expected = "1266 clous."
         self.assertEqual(alpha2digit(source), expected)
 
+        source = "Mille deux cents soixante-six clous."
+        self.assertEqual(alpha2digit(source), expected)
+
         source = "Nonante-cinq = quatre-vingt-quinze"
         expected = "95 = 95"
         self.assertEqual(alpha2digit(source), expected)
