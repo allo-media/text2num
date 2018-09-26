@@ -47,7 +47,7 @@ Parse and convert
 Find and transcribe
 ~~~~~~~~~~~~~~~~~~~
 
-Any number, even ordinals.
+Any numbers, even ordinals.
 
 .. code-block:: python
 
