@@ -11,6 +11,11 @@ Compatibility
 
 Tested on python 3.6, 3.7.
 
+License
+-------
+
+This sofware is distributed under the MIT license of which you should have received a copy (see LICENSE file in this repository).
+
 Installation
 ------------
 
