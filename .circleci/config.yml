@@ -1,0 +1,50 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.6.1
+
+    working_directory: ~/text2num
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "setup.py" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run:
+          # Don't do `python setup.py install` here!
+          name: install inplace with dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install sphinx
+            python setup.py develop
+
+      - save_cache:
+          paths:
+            - ./venv
+
+          key: v1-dependencies-{{ checksum "setup.py" }}
+
+      # run tests!
+      - run:
+          name: run tests
+          command: |
+            . venv/bin/activate
+            python setup.py test
+
+      # Build the documentation
+      - run:
+          name: build doc
+          command: |
+            . venv/bin/activate
+            cd doc && make html
+
+      - store_artifacts:
+          path: doc/_build/html/
+          destination: html-doc
