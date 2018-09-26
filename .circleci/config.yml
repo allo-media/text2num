@@ -48,3 +48,49 @@ jobs:
       - store_artifacts:
           path: doc/_build/html/
           destination: html-doc
+
+  deploy:
+    docker:
+      - image: circleci/python:3.6.1
+
+    working_directory: ~/text2num
+
+    steps:
+      - checkout
+
+      - run:
+          name: verify git tag vs. version
+          command: |
+            python setup.py verify
+
+      - run:
+          name: init .pypirc
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = allomedia" >> ~/.pypirc
+            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+
+      - run:
+          name: create packages
+          command: |
+            python setup.py sdist
+
+      - run:
+          name: upload to pypi
+          command: |
+            twine upload dist/*
+
+
+workflows:
+  version: 2
+  build_test_deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
