@@ -59,11 +59,6 @@ jobs:
       - checkout
 
       - run:
-          name: verify git tag vs. version
-          command: |
-            python setup.py verify
-
-      - run:
           name: init .pypirc
           command: |
             echo -e "[pypi]" >> ~/.pypirc

@@ -12,20 +12,6 @@ def readme():
         return f.read()
 
 
-class VerifyVersionCommand(install):
-    """Custom command to verify that the git tag matches our version"""
-    description = 'verify that the git tag matches our version'
-
-    def run(self):
-        tag = os.getenv('CIRCLE_TAG')
-
-        if tag != VERSION:
-            info = "Git tag: {0} does not match the version of this app: {1}".format(
-                tag, VERSION
-            )
-            sys.exit(info)
-
-
 setup(name='text2num',
       version=VERSION,
       description='Parse and convert numbers written in french into their digit representation.',
@@ -50,5 +36,4 @@ setup(name='text2num',
       python_requires='>=3',
       test_suite='text_to_num.tests',
       include_package_data=True,
-      zip_safe=False,
-      cmdclass={'verify': VerifyVersionCommand})
+      zip_safe=False)
