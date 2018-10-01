@@ -78,6 +78,7 @@ jobs:
       - run:
           name: upload to pypi
           command: |
+            pip install twine
             twine upload dist/*
 
 
