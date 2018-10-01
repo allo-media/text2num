@@ -1,6 +1,9 @@
 text2num
 ========
 
+|docs|
+
+
 ``text2num`` is a python package that provides functions and parser classes for:
 
 - parsing numbers expressed as words in french and convert them to integer values;
@@ -76,7 +79,14 @@ Any numbers, even ordinals.
     Décimaux: 12,99, 120,05 ; mais 60 02.
 
 
+Read the complete documentation on `ReadTheDocs <http://text2num.readthedocs.io/>`_.
+
 Contribute
 ----------
 
 Join us on https://github.com/allo-media/text2num
+
+
+.. |docs| image:: https://readthedocs.org/projects/text2num/badge/?version=latest
+    :target: https://text2num.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
