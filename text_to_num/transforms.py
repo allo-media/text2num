@@ -55,7 +55,7 @@ def text2num(text, relaxed=False):
 
     num_parser = WordStreamValueParser(relaxed=relaxed)
     tokens = text.split()
-    assert all(num_parser.push(word, ahead) for word, ahead in look_ahead(tokens))
+    assert all(num_parser.push(word, ahead) for word, ahead in look_ahead(tokens)), 'not an integer'
     return num_parser.value
 
 

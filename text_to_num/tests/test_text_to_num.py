@@ -42,6 +42,16 @@ class TestTextToNum(TestCase):
         test4 = "quatre-vingt un"
         self.assertEqual(text2num(test4), 81)
 
+    def test_text2num_variants(self):
+        self.assertEqual(text2num('quatre-vingt dix-huit'), 98)
+        self.assertEqual(text2num('nonante-huit'), 98)
+        self.assertEqual(text2num('soixante-dix-huit'), 78)
+        self.assertEqual(text2num('septante-huit'), 78)
+        self.assertEqual(text2num('quatre-vingt-huit'), 88)
+        self.assertEqual(text2num('octante-huit'), 88)
+        self.assertEqual(text2num('huitante-huit'), 88)
+        self.assertEqual(text2num('huitante-et-un'), 81)
+
     def test_text2num_exc(self):
         self.assertRaises(AssertionError, text2num, "mille mille deux cent")
 

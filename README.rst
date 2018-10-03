@@ -49,7 +49,7 @@ Parse and convert
     51578302
 
     >>> text2num('mille mille deux cents')
-    AssertionError
+    AssertionError: not an integer
 
 
 Find and transcribe
