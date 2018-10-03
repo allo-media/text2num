@@ -26,7 +26,17 @@ from .parsers import WordStreamValueParser, WordToDigitParser
 
 
 def look_ahead(sequence):
-    """Look-ahead iterator"""
+    """Look-ahead iterator.
+
+    Iterate over a sequence returning couples (current element, next element).
+    The last couple returned before StopIteration is raised, is (last element, None).
+
+    Example:
+
+    >>> for elt, nxt_elt in look_ahead(sequence):
+    ... # do something
+
+    """
     maxi = len(sequence) - 1
     for i, val in enumerate(sequence):
         ahead = sequence[i + 1] if i < maxi else None
