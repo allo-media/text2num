@@ -174,7 +174,8 @@ class WordStreamValueParser:
         expected = False
         if self.last_word is None:
             expected = True
-        elif self.last_word in UNITS and self.grp_val < 10:
+        elif (self.last_word in UNITS and self.grp_val < 10 or
+              self.last_word in STENS and self.grp_val < 20):
             expected = word in CENT
         elif self.last_word in MTENS:
             expected = word in UNITS or word in STENS and self.last_word in ("soixante", "quatre-vingt")
