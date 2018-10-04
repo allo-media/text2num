@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 """
-Convert french spelled numbers into numeric values or digit strings.
+Convert French spelled numbers into numeric values or digit strings.
 """
 
 #

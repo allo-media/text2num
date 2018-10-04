@@ -6,8 +6,8 @@ text2num
 
 ``text2num`` is a python package that provides functions and parser classes for:
 
-- parsing numbers expressed as words in french and convert them to integer values;
-- detect ordinal, cardinal and decimal numbers in a stream of french words and get their decimal digit representations.
+- parsing numbers expressed as words in French and convert them to integer values;
+- detect ordinal, cardinal and decimal numbers in a stream of French words and get their decimal digit representations.
 
 Compatibility
 -------------

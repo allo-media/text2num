@@ -44,7 +44,7 @@ def look_ahead(sequence):
 
 
 def text2num(text, relaxed=False):
-    """Convert the ``text`` string containing an integer number written in french
+    """Convert the ``text`` string containing an integer number written in French
     into an integer value.
 
     Set ``relaxed`` to True if you want to accept "quatre vingt(s)" as "quatre-vingt".
@@ -60,7 +60,7 @@ def text2num(text, relaxed=False):
 
 
 def alpha2digit(text, relaxed=False):
-    """Return the text of ``text`` with all the french spelled numbers converted to digits.
+    """Return the text of ``text`` with all the French spelled numbers converted to digits.
     Takes care of punctuation.
     Set ``relaxed`` to True if you want to accept "quatre vingt(s)" as "quatre-vingt".
     """
