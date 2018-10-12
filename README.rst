@@ -55,7 +55,7 @@ Parse and convert
     51578302
 
     >>> text2num('mille mille deux cents')
-    AssertionError: not an integer
+    ValueError: invalid literal for text2num: 'mille mille deux cent'
 
 
 Find and transcribe
