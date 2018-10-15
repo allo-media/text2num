@@ -26,7 +26,17 @@ from .parsers import WordStreamValueParser, WordToDigitParser
 
 
 def look_ahead(sequence):
-    """Look-ahead iterator"""
+    """Look-ahead iterator.
+
+    Iterate over a sequence by returning couples (current element, next element).
+    The last couple returned before StopIteration is raised, is (last element, None).
+
+    Example:
+
+    >>> for elt, nxt_elt in look_ahead(sequence):
+    ... # do something
+
+    """
     maxi = len(sequence) - 1
     for i, val in enumerate(sequence):
         ahead = sequence[i + 1] if i < maxi else None
@@ -34,7 +44,7 @@ def look_ahead(sequence):
 
 
 def text2num(text, relaxed=False):
-    """Convert the ``text`` string containing an integer number written in french
+    """Convert the ``text`` string containing an integer number written in French
     into an integer value.
 
     Set ``relaxed`` to True if you want to accept "quatre vingt(s)" as "quatre-vingt".
@@ -45,12 +55,13 @@ def text2num(text, relaxed=False):
 
     num_parser = WordStreamValueParser(relaxed=relaxed)
     tokens = text.split()
-    assert all(num_parser.push(word, ahead) for word, ahead in look_ahead(tokens))
+    if not all(num_parser.push(word, ahead) for word, ahead in look_ahead(tokens)):
+        raise ValueError('invalid literal for text2num: {}'.format(repr(text)))
     return num_parser.value
 
 
 def alpha2digit(text, relaxed=False):
-    """Return the text of ``text`` with all the french spelled numbers converted to digits.
+    """Return the text of ``text`` with all the French spelled numbers converted to digits.
     Takes care of punctuation.
     Set ``relaxed`` to True if you want to accept "quatre vingt(s)" as "quatre-vingt".
     """

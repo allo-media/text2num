@@ -23,6 +23,7 @@ jobs:
             python3 -m venv venv
             . venv/bin/activate
             pip install sphinx
+            pip install flake8
             python setup.py develop
 
       - save_cache:
@@ -37,6 +38,7 @@ jobs:
           command: |
             . venv/bin/activate
             python setup.py test
+            flake8 --max-line-length=110 text_to_num
 
       # Build the documentation
       - run:

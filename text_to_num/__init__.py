@@ -20,4 +20,4 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .transforms import text2num, alpha2digit
+from .transforms import text2num, alpha2digit  # noqa: F401

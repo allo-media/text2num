@@ -6,8 +6,8 @@ text2num
 
 ``text2num`` is a python package that provides functions and parser classes for:
 
-- parsing numbers expressed as words in french and convert them to integer values;
-- detect ordinal, cardinal and decimal numbers in a stream of french words and get their decimal digit representations.
+- parsing numbers expressed as words in French and convert them to integer values;
+- detect ordinal, cardinal and decimal numbers in a stream of French words and get their decimal digit representations.
 
 Compatibility
 -------------
@@ -39,17 +39,23 @@ Parse and convert
 .. code-block:: python
 
     >>> from text_to_num import text2num
+    >>> text2num('quatre-vingt-quinze')
+    95
+
     >>> text2num('nonante-cinq')
     95
 
     >>> text2num('mille neuf cent quatre-vingt dix-neuf')
     1999
 
+    >>> text2num('dix-neuf cent quatre-vingt dix-neuf')
+    1999
+
     >>> text2num("cinquante et un million cinq cent soixante dix-huit mille trois cent deux")
     51578302
 
     >>> text2num('mille mille deux cents')
-    AssertionError
+    ValueError: invalid literal for text2num: 'mille mille deux cent'
 
 
 Find and transcribe
