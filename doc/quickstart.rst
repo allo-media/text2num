@@ -23,17 +23,23 @@ Integers only.
 .. code-block:: python
 
     >>> from text_to_num import text2num
+    >>> text2num('quatre-vingt-quinze')
+    95
+
     >>> text2num('nonante-cinq')
     95
 
     >>> text2num('mille neuf cent quatre-vingt dix-neuf')
     1999
 
+    >>> text2num('dix-neuf cent quatre-vingt dix-neuf')
+    1999
+
     >>> text2num("cinquante et un million cinq cent soixante dix-huit mille trois cent deux")
     51578302
 
     >>> text2num('mille mille deux cents')
-    AssertionError
+    ValueError: invalid literal for text2num: 'mille mille deux cent'
 
 
 Find and transcribe
