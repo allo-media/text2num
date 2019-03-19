@@ -24,6 +24,7 @@ jobs:
             . venv/bin/activate
             pip install sphinx
             pip install flake8
+            pip install mypy
             python setup.py develop
 
       - save_cache:
@@ -37,6 +38,7 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
+            mypy text_to_num
             python setup.py test
             flake8 --max-line-length=110 text_to_num
 
