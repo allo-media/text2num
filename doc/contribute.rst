@@ -47,6 +47,11 @@ To run the tests, simply do::
 
 The tests are automatically discovered and run from the ``text_to_num/tests`` directory.
 
+We also use mypy::
+
+    pip install mypy
+    mypy text_to_num
+
 Submit changes
 --------------
 

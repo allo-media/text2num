@@ -21,11 +21,12 @@
 # SOFTWARE.
 
 import re
+from typing import Any, Iterator, List, Sequence, Tuple
 
 from .parsers import WordStreamValueParser, WordToDigitParser
 
 
-def look_ahead(sequence):
+def look_ahead(sequence: Sequence[Any]) -> Iterator[Tuple[Any, Any]]:
     """Look-ahead iterator.
 
     Iterate over a sequence by returning couples (current element, next element).
@@ -43,7 +44,7 @@ def look_ahead(sequence):
         yield val, ahead
 
 
-def text2num(text, relaxed=False):
+def text2num(text: str, relaxed: bool = False) -> int:
     """Convert the ``text`` string containing an integer number written in French
     into an integer value.
 
@@ -60,7 +61,7 @@ def text2num(text, relaxed=False):
     return num_parser.value
 
 
-def alpha2digit(text, relaxed=False):
+def alpha2digit(text: str, relaxed: bool = False) -> str:
     """Return the text of ``text`` with all the French spelled numbers converted to digits.
     Takes care of punctuation.
     Set ``relaxed`` to True if you want to accept "quatre vingt(s)" as "quatre-vingt".
@@ -69,12 +70,12 @@ def alpha2digit(text, relaxed=False):
     punct = re.findall(r'\s*[\.,;\(\)…\[\]:!\?]+\s*', text)
     if len(punct) < len(segments):
         punct.append('')
-    out_segments = []
+    out_segments: List[str] = []
     for segment, sep in zip(segments, punct):
         tokens = segment.split()
         num_builder = WordToDigitParser(relaxed=relaxed)
         in_number = False
-        out_tokens = []
+        out_tokens: List[str] = []
         for word, ahead in look_ahead(tokens):
             if num_builder.push(word.lower(), ahead):
                 in_number = True
