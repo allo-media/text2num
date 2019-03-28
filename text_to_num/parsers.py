@@ -19,10 +19,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
 """
 Convert French spelled numbers into numeric values or digit strings.
 """
+
+from typing import Dict, List, Optional
 
 #
 # CONSTANTS
@@ -47,14 +48,17 @@ NUMBERS = MULTIPLIERS.copy()
 
 # Units are terminals (see Rules)
 # Special case: "zéro" is processed apart.
-UNITS = {word: value for value, word in enumerate("un deux trois quatre cinq six sept huit neuf".split(), 1)}
+UNITS: Dict[str, int] = {
+    word: value
+    for value, word in enumerate("un deux trois quatre cinq six sept huit neuf".split(), 1)
+}
 # Unit variants
 UNITS['une'] = 1
 
 NUMBERS.update(UNITS)
 
 # Single tens are terminals (see Rules)
-STENS = {
+STENS: Dict[str, int] = {
     word: value
     for value, word in enumerate(
         "dix onze douze treize quatorze quinze seize dix-sept dix-huit dix-neuf".split(), 10)
@@ -65,7 +69,7 @@ NUMBERS.update(STENS)
 # Ten multiples
 # Ten multiples may be followed by a unit only;
 # Exceptions: "soixante" & "quatre-ving" (see Rules)
-MTENS = {
+MTENS: Dict[str, int] = {
     word: value * 10
     for value, word in enumerate("vingt trente quarante cinquante soixante septante huitante nonante".split(),
                                  2)
@@ -84,16 +88,14 @@ NUMBERS.update(CENT)
 # Composites are tens already composed with terminals in one word.
 # Composites are terminals.
 
-COMPOSITES = {
+COMPOSITES: Dict[str, int] = {
     "-".join((ten_word, unit_word)): ten_val + unit_val
-    for ten_word, ten_val in MTENS.items()
-    for unit_word, unit_val in UNITS.items() if unit_val != 1
+    for ten_word, ten_val in MTENS.items() for unit_word, unit_val in UNITS.items() if unit_val != 1
 }
 
 COMPOSITES.update({
     "-".join((ten_word, et_word)): ten_val + et_val
-    for ten_word, ten_val in MTENS.items()
-    for et_word, et_val in (('et-un', 1), ('et-une', 1))
+    for ten_word, ten_val in MTENS.items() for et_word, et_val in (('et-un', 1), ('et-une', 1))
     if 10 < ten_val <= 90
 })
 
@@ -101,7 +103,8 @@ COMPOSITES['quatre-vingt-un'] = 81
 
 COMPOSITES.update({
     "-".join((ten_word, sten_word)): ten_val + sten_val
-    for ten_word, ten_val in (('soixante', 60), ('quatre-vingt', 80)) for sten_word, sten_val in STENS.items()
+    for ten_word, ten_val in (('soixante', 60), ('quatre-vingt', 80))
+    for sten_word, sten_val in STENS.items()
 })
 
 COMPOSITES['soixante-et-onze'] = 71
@@ -113,7 +116,7 @@ SIGN = {'plus': '+', 'moins': '-'}
 ET_NUMS = {'un', 'une', 'unième', 'onze', 'onzième'}
 
 
-def ord2card(word):
+def ord2card(word: str) -> Optional[str]:
     """Convert ordinal number to cardinal.
 
     Return None if word is not an ordinal.
@@ -130,7 +133,7 @@ def ord2card(word):
     return source
 
 
-def not_numeric_word(word):
+def not_numeric_word(word: Optional[str]) -> bool:
     return word is not None and word != 'virgule' and word not in NUMBERS
 
 
@@ -150,7 +153,7 @@ class WordStreamValueParser:
         - ``self.value: int``
     """
 
-    def __init__(self, relaxed=False):
+    def __init__(self, relaxed: bool = False) -> None:
         """Initialize the parser.
 
         If ``relaxed`` is True, we treat the sequence "quatre vingt" as
@@ -158,24 +161,23 @@ class WordStreamValueParser:
         """
         self.relaxed = relaxed
         self.on_hold = False
-        self.n000_val = 0  # the number value part > 1000
-        self.grp_val = 0  # the current three digit group value
-        self.last_word = None  # the last valid word for the current group
+        self.n000_val: int = 0  # the number value part > 1000
+        self.grp_val: int = 0  # the current three digit group value
+        self.last_word: Optional[str] = None  # the last valid word for the current group
 
     @property
-    def value(self):
+    def value(self) -> int:
         """At any moment, get the value of the currently recognized number."""
         return self.n000_val + self.grp_val
 
-    def group_expects(self, word, update=True):
+    def group_expects(self, word: str, update: bool = True) -> bool:
         """Does the current group expect ``word`` to complete it as a valid number?
         ``word`` should not be a multiplier; multiplier should be handled first.
         """
         expected = False
         if self.last_word is None:
             expected = True
-        elif (self.last_word in UNITS and self.grp_val < 10 or
-              self.last_word in STENS and self.grp_val < 20):
+        elif (self.last_word in UNITS and self.grp_val < 10 or self.last_word in STENS and self.grp_val < 20):
             expected = word in CENT
         elif self.last_word in MTENS:
             expected = word in UNITS or word in STENS and self.last_word in ("soixante", "quatre-vingt")
@@ -186,7 +188,7 @@ class WordStreamValueParser:
             self.last_word = word
         return expected
 
-    def is_coef_appliable(self, coef):
+    def is_coef_appliable(self, coef: int) -> bool:
         """Is this multiplier expected?"""
         if coef > self.value and (self.value > 0 or coef == 1000):
             # a multiplier can be applied to anything lesser than itself,
@@ -204,7 +206,7 @@ class WordStreamValueParser:
         # ex. : "mille milliards de milliards"
         return False
 
-    def push(self, word, look_ahead=None):
+    def push(self, word: str, look_ahead: Optional[str] = None) -> bool:
         """Push next word from the stream.
 
         Don't push punctuation marks or symbols, only words. It is the responsability
@@ -245,8 +247,8 @@ class WordStreamValueParser:
 
             self.grp_val = 0
             self.last_word = None
-        elif (self.relaxed and word == 'quatre' and look_ahead and
-              look_ahead.startswith('vingt') and self.group_expects('quatre-vingt', update=False)):
+        elif (self.relaxed and word == 'quatre' and look_ahead and look_ahead.startswith('vingt')
+              and self.group_expects('quatre-vingt', update=False)):
             self.on_hold = True
             self.grp_val += NUMBERS['quatre-vingt']
         elif self.on_hold and word.startswith('vingt'):
@@ -281,13 +283,13 @@ class WordToDigitParser:
      - ``self.value``: str
     """
 
-    def __init__(self, relaxed=False):
+    def __init__(self, relaxed: bool = False) -> None:
         """Initialize the parser.
 
         If ``relaxed`` is True, we treat the sequence "quatre vingt" as
         a single "quatre-vingt".
         """
-        self._value = []
+        self._value: List[str] = []
         self.int_builder = WordStreamValueParser(relaxed=relaxed)
         self.frac_builder = WordStreamValueParser(relaxed=relaxed)
         self.in_frac = False
@@ -295,10 +297,10 @@ class WordToDigitParser:
         self.open = False  # For efficiency
 
     @property
-    def value(self):
+    def value(self) -> str:
         return ''.join(self._value)
 
-    def close(self):
+    def close(self) -> None:
         """Signal end of input if input stream ends while still in a number.
 
         It's safe to call it multiple times.
@@ -310,25 +312,24 @@ class WordToDigitParser:
                 self._value.append(str(self.int_builder.value))
             self.closed = True
 
-    def at_start_of_seq(self):
+    def at_start_of_seq(self) -> bool:
         """Return true if we are waiting for the start of the integer
         part or the start of the fraction part."""
         return (self.in_frac and self.frac_builder.value == 0
                 or not self.in_frac and self.int_builder.value == 0)
 
-    def at_start(self):
+    def at_start(self) -> bool:
         """Return True if nothing valid parsed yet."""
         return not self.open
 
-    def is_article(self, word, following):
-        return (not self.open and (word == 'un' or word == 'une') and
-                not_numeric_word(following))
+    def is_article(self, word: str, following: Optional[str]) -> bool:
+        return (not self.open and (word == 'un' or word == 'une') and not_numeric_word(following))
 
-    def _push(self, word, look_ahead):
+    def _push(self, word: str, look_ahead: Optional[str]) -> bool:
         builder = self.frac_builder if self.in_frac else self.int_builder
         return builder.push(word, look_ahead)
 
-    def push(self, word, look_ahead=None):
+    def push(self, word: str, look_ahead: Optional[str] = None) -> bool:
         """Push next word from the stream.
 
         Return ``True`` if  ``word`` contributes to the current value else ``False``.
@@ -350,7 +351,7 @@ class WordToDigitParser:
             self._value.append(SIGN[word])
         elif word.startswith('zéro') and self.at_start_of_seq():
             self._value.append('0')
-        elif word.endswith('ième') and self._push(ord2card(word), look_ahead):
+        elif word.endswith('ième') and self._push(ord2card(word) or '', look_ahead):
             self._value.append(str(self.frac_builder.value if self.in_frac else self.int_builder.value))
             self._value.append('ème')
             self.closed = True
