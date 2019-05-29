@@ -54,6 +54,7 @@ class TestTextToNum(TestCase):
         self.assertEqual(text2num('octante-huit'), 88)
         self.assertEqual(text2num('huitante-huit'), 88)
         self.assertEqual(text2num('huitante-et-un'), 81)
+        self.assertEqual(text2num('quatre-vingts'), 80)
 
     def test_text2num_centuries(self):
         self.assertEqual(text2num('dix-neuf cent soixante-treize'), 1973)
@@ -94,8 +95,8 @@ class TestTextToNum(TestCase):
         expected = "1 2 3 95."
         self.assertEqual(alpha2digit(source, relaxed=True), expected)
 
-        source = "Quatre, vingt, quinze."
-        expected = "4, 20, 15."
+        source = "Quatre, vingt, quinze, quatre-vingts."
+        expected = "4, 20, 15, 80."
         self.assertEqual(alpha2digit(source, relaxed=True), expected)
 
         source = "trente-quatre = trente quatre"
@@ -111,9 +112,17 @@ class TestTextToNum(TestCase):
         expected = "09 60 06 12 21"
         self.assertEqual(alpha2digit(source), expected)
 
+    def test_trente_et_onze(self):
+        source = "cinquante soixante trente et onze"
+        expected = "50 60 30 11"
+        self.assertEqual(alpha2digit(source), expected)
+
     def test_alpha2digit_zero(self):
         source = "treize mille zéro quatre-vingt-dix"
         expected = "13000 090"
+        self.assertEqual(alpha2digit(source), expected)
+        source = "treize mille zéro quatre-vingts"
+        expected = "13000 080"
         self.assertEqual(alpha2digit(source), expected)
 
     def test_alpha2digit_ordinals(self):
