@@ -34,6 +34,7 @@ from typing import Dict, List, Optional
 # Exception: "(de) milliards" that can multiply bigger numbers ("milliards de milliards")
 # Special case: "cent" is processed apart.
 MULTIPLIERS = {
+    "mil": 1000,
     "mille": 1000,
     "milles": 1000,
     "million": 1000000,

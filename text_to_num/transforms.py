@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import re
+from itertools import dropwhile
 from typing import Any, Iterator, List, Sequence, Tuple
 
 from .parsers import WordStreamValueParser, WordToDigitParser
@@ -55,7 +56,7 @@ def text2num(text: str, relaxed: bool = False) -> int:
     """
 
     num_parser = WordStreamValueParser(relaxed=relaxed)
-    tokens = text.split()
+    tokens = list(dropwhile(lambda x: x == "zéro", text.split()))
     if not all(num_parser.push(word, ahead) for word, ahead in look_ahead(tokens)):
         raise ValueError('invalid literal for text2num: {}'.format(repr(text)))
     return num_parser.value
