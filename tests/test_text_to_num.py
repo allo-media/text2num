@@ -55,6 +55,7 @@ class TestTextToNum(TestCase):
         self.assertEqual(text2num('huitante-huit'), 88)
         self.assertEqual(text2num('huitante-et-un'), 81)
         self.assertEqual(text2num('quatre-vingts'), 80)
+        self.assertEqual(text2num('mil neuf cent vingt'), 1920)
 
     def test_text2num_centuries(self):
         self.assertEqual(text2num('dix-neuf cent soixante-treize'), 1973)
@@ -62,6 +63,14 @@ class TestTextToNum(TestCase):
     def test_text2num_exc(self):
         self.assertRaises(ValueError, text2num, "mille mille deux cent")
         self.assertRaises(ValueError, text2num, "soixante quinze cent")
+
+    def test_text2num_zeroes(self):
+        self.assertEqual(text2num("zéro"), 0)
+        self.assertEqual(text2num("zéro huit"), 8)
+        self.assertEqual(text2num("zéro zéro cent vingt-cinq"), 125)
+        self.assertRaises(ValueError, text2num, "cinq zéro")
+        self.assertRaises(ValueError, text2num, "cinquante zéro trois")
+        self.assertRaises(ValueError, text2num, "cinquante trois zéro")
 
     def test_alpha2digit_integers(self):
         source = "Vingt-cinq vaches, douze poulets et cent vingt-cinq kg de pommes de terre."
