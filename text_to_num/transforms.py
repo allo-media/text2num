@@ -66,7 +66,7 @@ def alpha2digit(text: str, relaxed: bool = False, signed: bool = True) -> str:
     """Return the text of ``text`` with all the French spelled numbers converted to digits.
     Takes care of punctuation.
     Set ``relaxed`` to True if you want to accept "quatre vingt(s)" as "quatre-vingt".
-    Set ``signed`` to False if you don't want to produce signed number, that is, for example,
+    Set ``signed`` to False if you don't want to produce signed numbers, that is, for example,
     if you prefer to get « moins 2 » instead of « -2 ».
     """
     segments = re.split(r'\s*[\.,;\(\)…\[\]:!\?]+\s*', text)
