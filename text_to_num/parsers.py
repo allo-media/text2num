@@ -284,15 +284,19 @@ class WordToDigitParser:
      - ``self.value``: str
     """
 
-    def __init__(self, relaxed: bool = False) -> None:
+    def __init__(self, relaxed: bool = False, signed: bool = True) -> None:
         """Initialize the parser.
 
         If ``relaxed`` is True, we treat the sequence "quatre vingt" as
         a single "quatre-vingt".
+
+        If ``signed`` is True, we parse signed numbers like
+        « plus deux » (+2), or « moins vingt » (-20).
         """
         self._value: List[str] = []
         self.int_builder = WordStreamValueParser(relaxed=relaxed)
         self.frac_builder = WordStreamValueParser(relaxed=relaxed)
+        self.signed = signed
         self.in_frac = False
         self.closed = False  # For deferred stop
         self.open = False  # For efficiency
@@ -348,7 +352,7 @@ class WordToDigitParser:
         if self.closed or self.is_article(word, look_ahead):
             return False
 
-        if word in SIGN and look_ahead in NUMBERS and self.at_start():
+        if self.signed and word in SIGN and look_ahead in NUMBERS and self.at_start():
             self._value.append(SIGN[word])
         elif word.startswith('zéro') and self.at_start_of_seq():
             self._value.append('0')
