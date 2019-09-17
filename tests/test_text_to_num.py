@@ -145,6 +145,17 @@ class TestTextToNum(TestCase):
         expected = "12,99, 120,05, 1,236."
         self.assertEqual(alpha2digit(source), expected)
 
+    def test_alpha2digit_signed(self):
+        source = "Il fait plus vingt degrés à l'intérieur et moins quinze à l'extérieur."
+        expected = "Il fait +20 degrés à l'intérieur et -15 à l'extérieur."
+        self.assertEqual(alpha2digit(source), expected)
+
+        source = "J'en ai vu au moins trois dans le jardin, et non plus deux."
+        expected = "J'en ai vu au moins 3 dans le jardin, et non plus 2."
+
+        self.assertEqual(alpha2digit(source, signed=False), expected)
+        self.assertNotEqual(alpha2digit(source, signed=True), expected)
+
     def test_article(self):
         source = ("Ne pas confondre un article ou un nom avec un chiffre et inversement : "
                   "les uns et les autres ; une suite de chiffres : un, deux, trois !")
