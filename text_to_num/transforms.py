@@ -60,11 +60,13 @@ def text2num(text: str, lang: str, relaxed: bool = False) -> int:
     num_parser = WordStreamValueParser(language, relaxed=relaxed)
     tokens = list(dropwhile(lambda x: x == "zéro", text.split()))
     if not all(num_parser.push(word, ahead) for word, ahead in look_ahead(tokens)):
-        raise ValueError('invalid literal for text2num: {}'.format(repr(text)))
+        raise ValueError("invalid literal for text2num: {}".format(repr(text)))
     return num_parser.value
 
 
-def alpha2digit(text: str, lang: str, relaxed: bool = False, signed: bool = True) -> str:
+def alpha2digit(
+    text: str, lang: str, relaxed: bool = False, signed: bool = True
+) -> str:
     """Return the text of ``text`` with all the French spelled numbers converted to digits.
     Takes care of punctuation.
     Set ``relaxed`` to True if you want to accept "quatre vingt(s)" as "quatre-vingt".
@@ -72,10 +74,10 @@ def alpha2digit(text: str, lang: str, relaxed: bool = False, signed: bool = True
     if you prefer to get « moins 2 » instead of « -2 ».
     """
     language = LANG[lang]
-    segments = re.split(r'\s*[\.,;\(\)…\[\]:!\?]+\s*', text)
-    punct = re.findall(r'\s*[\.,;\(\)…\[\]:!\?]+\s*', text)
+    segments = re.split(r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text)
+    punct = re.findall(r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text)
     if len(punct) < len(segments):
-        punct.append('')
+        punct.append("")
     out_segments: List[str] = []
     for segment, sep in zip(segments, punct):
         tokens = segment.split()
@@ -95,6 +97,6 @@ def alpha2digit(text: str, lang: str, relaxed: bool = False, signed: bool = True
         num_builder.close()
         if num_builder.value:
             out_tokens.append(num_builder.value)
-        out_segments.append(' '.join(out_tokens))
+        out_segments.append(" ".join(out_tokens))
         out_segments.append(sep)
-    return ''.join(out_segments)
+    return "".join(out_segments)

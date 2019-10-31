@@ -25,17 +25,21 @@ MULTIPLIERS = {
 # Special case: "zéro" is processed apart.
 UNITS: Dict[str, int] = {
     word: value
-    for value, word in enumerate("un deux trois quatre cinq six sept huit neuf".split(), 1)
+    for value, word in enumerate(
+        "un deux trois quatre cinq six sept huit neuf".split(), 1
+    )
 }
 # Unit variants
-UNITS['une'] = 1
+UNITS["une"] = 1
 
 
 # Single tens are terminals (see Rules)
 STENS: Dict[str, int] = {
     word: value
     for value, word in enumerate(
-        "dix onze douze treize quatorze quinze seize dix-sept dix-huit dix-neuf".split(), 10)
+        "dix onze douze treize quatorze quinze seize dix-sept dix-huit dix-neuf".split(),
+        10,
+    )
 }
 
 
@@ -44,12 +48,13 @@ STENS: Dict[str, int] = {
 # Exceptions: "soixante" & "quatre-ving" (see Rules)
 MTENS: Dict[str, int] = {
     word: value * 10
-    for value, word in enumerate("vingt trente quarante cinquante soixante septante huitante nonante".split(),
-                                 2)
+    for value, word in enumerate(
+        "vingt trente quarante cinquante soixante septante huitante nonante".split(), 2
+    )
 }
 # Variants
-MTENS['quatre-vingt'] = 80
-MTENS['octante'] = 80
+MTENS["quatre-vingt"] = 80
+MTENS["octante"] = 80
 
 # Ten multiples that can be combined with STENS
 MTENS_WSTENS = {"soixante", "quatre-vingt"}
@@ -64,24 +69,31 @@ CENT = {"cent": 100, "cents": 100}
 
 COMPOSITES: Dict[str, int] = {
     "-".join((ten_word, unit_word)): ten_val + unit_val
-    for ten_word, ten_val in MTENS.items() for unit_word, unit_val in UNITS.items() if unit_val != 1
+    for ten_word, ten_val in MTENS.items()
+    for unit_word, unit_val in UNITS.items()
+    if unit_val != 1
 }
 
-COMPOSITES.update({
-    "-".join((ten_word, et_word)): ten_val + et_val
-    for ten_word, ten_val in MTENS.items() for et_word, et_val in (('et-un', 1), ('et-une', 1))
-    if 10 < ten_val <= 90
-})
+COMPOSITES.update(
+    {
+        "-".join((ten_word, et_word)): ten_val + et_val
+        for ten_word, ten_val in MTENS.items()
+        for et_word, et_val in (("et-un", 1), ("et-une", 1))
+        if 10 < ten_val <= 90
+    }
+)
 
-COMPOSITES['quatre-vingt-un'] = 81
+COMPOSITES["quatre-vingt-un"] = 81
 
-COMPOSITES.update({
-    "-".join((ten_word, sten_word)): ten_val + sten_val
-    for ten_word, ten_val in (('soixante', 60), ('quatre-vingt', 80))
-    for sten_word, sten_val in STENS.items()
-})
+COMPOSITES.update(
+    {
+        "-".join((ten_word, sten_word)): ten_val + sten_val
+        for ten_word, ten_val in (("soixante", 60), ("quatre-vingt", 80))
+        for sten_word, sten_val in STENS.items()
+    }
+)
 
-COMPOSITES['soixante-et-onze'] = 71
+COMPOSITES["soixante-et-onze"] = 71
 
 # All number words
 
@@ -103,20 +115,18 @@ class French(Language):
     CENT = CENT
     NUMBERS = NUMBERS
 
-    SIGN = {'plus': '+', 'moins': '-'}
+    SIGN = {"plus": "+", "moins": "-"}
     ZERO = "zéro"
     DECIMAL_SEP = "virgule"
     DECIMAL_SYM = ","
 
-    AND_NUMS = {'un', 'une', 'unième', 'onze', 'onzième'}
+    AND_NUMS = {"un", "une", "unième", "onze", "onzième"}
     AND = "et"
     UNIT_ARTICLES = {"un", "une"}
 
     # Relaxed composed numbers (two-words only)
     # start => (next, target)
-    RELAXED = {
-        "quatre": ("vingt", "quatre-vingt")
-    }
+    RELAXED = {"quatre": ("vingt", "quatre-vingt")}
 
     def ord2card(self, word: str) -> Optional[str]:
         """Convert ordinal number to cardinal.
@@ -129,12 +139,12 @@ class French(Language):
         if not (plur_suff or sing_suff):
             return None
         source = word[:-5] if plur_suff else word[:-4]
-        if source == 'cinqu':
-            source = 'cinq'
-        elif source == 'neuv':
-            source = 'neuf'
+        if source == "cinqu":
+            source = "cinq"
+        elif source == "neuv":
+            source = "neuf"
         elif source not in self.NUMBERS:
-            source = source + 'e'
+            source = source + "e"
             if source not in self.NUMBERS:
                 return None
         return source

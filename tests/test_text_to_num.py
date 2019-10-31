@@ -33,7 +33,9 @@ class TestTextToNumFR(TestCase):
         test1 = "cinquante trois mille millions deux cent quarante trois mille sept cent vingt quatre"
         self.assertEqual(text2num(test1, "fr"), 53_000_243_724)
 
-        test2 = "cinquante et un million cinq cent soixante dix-huit mille trois cent deux"
+        test2 = (
+            "cinquante et un million cinq cent soixante dix-huit mille trois cent deux"
+        )
         self.assertEqual(text2num(test2, "fr"), 51_578_302)
 
         test3 = "quatre-vingt cinq"
@@ -42,23 +44,23 @@ class TestTextToNumFR(TestCase):
         test4 = "quatre-vingt un"
         self.assertEqual(text2num(test4, "fr"), 81)
 
-        self.assertEqual(text2num('quinze', "fr"), 15)
-        self.assertEqual(text2num('soixante quinze mille', "fr"), 75000)
+        self.assertEqual(text2num("quinze", "fr"), 15)
+        self.assertEqual(text2num("soixante quinze mille", "fr"), 75000)
 
     def test_text2num_variants(self):
-        self.assertEqual(text2num('quatre-vingt dix-huit', "fr"), 98)
-        self.assertEqual(text2num('nonante-huit', "fr"), 98)
-        self.assertEqual(text2num('soixante-dix-huit', "fr"), 78)
-        self.assertEqual(text2num('septante-huit', "fr"), 78)
-        self.assertEqual(text2num('quatre-vingt-huit', "fr"), 88)
-        self.assertEqual(text2num('octante-huit', "fr"), 88)
-        self.assertEqual(text2num('huitante-huit', "fr"), 88)
-        self.assertEqual(text2num('huitante-et-un', "fr"), 81)
-        self.assertEqual(text2num('quatre-vingts', "fr"), 80)
-        self.assertEqual(text2num('mil neuf cent vingt', "fr"), 1920)
+        self.assertEqual(text2num("quatre-vingt dix-huit", "fr"), 98)
+        self.assertEqual(text2num("nonante-huit", "fr"), 98)
+        self.assertEqual(text2num("soixante-dix-huit", "fr"), 78)
+        self.assertEqual(text2num("septante-huit", "fr"), 78)
+        self.assertEqual(text2num("quatre-vingt-huit", "fr"), 88)
+        self.assertEqual(text2num("octante-huit", "fr"), 88)
+        self.assertEqual(text2num("huitante-huit", "fr"), 88)
+        self.assertEqual(text2num("huitante-et-un", "fr"), 81)
+        self.assertEqual(text2num("quatre-vingts", "fr"), 80)
+        self.assertEqual(text2num("mil neuf cent vingt", "fr"), 1920)
 
     def test_text2num_centuries(self):
-        self.assertEqual(text2num('dix-neuf cent soixante-treize', "fr"), 1973)
+        self.assertEqual(text2num("dix-neuf cent soixante-treize", "fr"), 1973)
 
     def test_text2num_exc(self):
         self.assertRaises(ValueError, text2num, "mille mille deux cent", "fr")
@@ -73,7 +75,9 @@ class TestTextToNumFR(TestCase):
         self.assertRaises(ValueError, text2num, "cinquante trois zéro", "fr")
 
     def test_alpha2digit_integers(self):
-        source = "Vingt-cinq vaches, douze poulets et cent vingt-cinq kg de pommes de terre."
+        source = (
+            "Vingt-cinq vaches, douze poulets et cent vingt-cinq kg de pommes de terre."
+        )
         expected = "25 vaches, 12 poulets et 125 kg de pommes de terre."
         self.assertEqual(alpha2digit(source, "fr"), expected)
 
@@ -135,18 +139,24 @@ class TestTextToNumFR(TestCase):
         self.assertEqual(alpha2digit(source, "fr"), expected)
 
     def test_alpha2digit_ordinals(self):
-        source = "Cinquième troisième vingt et unième centième mille deux cent trentième."
+        source = (
+            "Cinquième troisième vingt et unième centième mille deux cent trentième."
+        )
         expected = "5ème 3ème 21ème 100ème 1230ème."
         self.assertEqual(alpha2digit(source, "fr"), expected)
 
     def test_alpha2digit_decimals(self):
-        source = ("Douze virgule quatre-vingt dix-neuf, cent vingt virgule zéro cinq,"
-                  " un virgule deux cent trente six.")
+        source = (
+            "Douze virgule quatre-vingt dix-neuf, cent vingt virgule zéro cinq,"
+            " un virgule deux cent trente six."
+        )
         expected = "12,99, 120,05, 1,236."
         self.assertEqual(alpha2digit(source, "fr"), expected)
 
     def test_alpha2digit_signed(self):
-        source = "Il fait plus vingt degrés à l'intérieur et moins quinze à l'extérieur."
+        source = (
+            "Il fait plus vingt degrés à l'intérieur et moins quinze à l'extérieur."
+        )
         expected = "Il fait +20 degrés à l'intérieur et -15 à l'extérieur."
         self.assertEqual(alpha2digit(source, "fr"), expected)
 
@@ -157,8 +167,12 @@ class TestTextToNumFR(TestCase):
         self.assertNotEqual(alpha2digit(source, "fr", signed=True), expected)
 
     def test_article(self):
-        source = ("Ne pas confondre un article ou un nom avec un chiffre et inversement : "
-                  "les uns et les autres ; une suite de chiffres : un, deux, trois !")
-        expected = ("Ne pas confondre un article ou un nom avec un chiffre et inversement : "
-                    "les uns et les autres ; une suite de chiffres : 1, 2, 3 !")
+        source = (
+            "Ne pas confondre un article ou un nom avec un chiffre et inversement : "
+            "les uns et les autres ; une suite de chiffres : un, deux, trois !"
+        )
+        expected = (
+            "Ne pas confondre un article ou un nom avec un chiffre et inversement : "
+            "les uns et les autres ; une suite de chiffres : 1, 2, 3 !"
+        )
         self.assertEqual(alpha2digit(source, "fr"), expected)

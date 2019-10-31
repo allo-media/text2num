@@ -45,4 +45,6 @@ class Language:
         return NotImplemented
 
     def not_numeric_word(self, word: Optional[str]) -> bool:
-        return word is not None and word != self.DECIMAL_SEP and word not in self.NUMBERS
+        return (
+            word is not None and word != self.DECIMAL_SEP and word not in self.NUMBERS
+        )
