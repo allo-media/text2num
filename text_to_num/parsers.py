@@ -116,9 +116,13 @@ COMPOSITES['soixante-et-onze'] = 71
 NUMBERS.update(COMPOSITES)
 
 SIGN = {'plus': '+', 'moins': '-'}
+ZERO = "zéro"
+DECIMAL_SEP = "virgule"
+DECIMAL_SYM = ","
 
 AND_NUMS = {'un', 'une', 'unième', 'onze', 'onzième'}
 AND = "et"
+UNIT_ARTICLES = {"un", "une"}
 
 # Relaxed composed numbers (two-words only)
 # start => (next, target)
@@ -130,9 +134,14 @@ RELAXED = {
 def ord2card(word: str) -> Optional[str]:
     """Convert ordinal number to cardinal.
 
-    Return None if word is not an ordinal.
+    Return None if word is not an ordinal or is better left in letters
+    as is the case for fist and second.
     """
-    source = word[:-4]
+    plur_suff = word.endswith("ièmes")
+    sing_suff = word.endswith("ième")
+    if not (plur_suff or sing_suff):
+        return None
+    source = word[:-5] if plur_suff else word[:-4]
     if source == 'cinqu':
         source = 'cinq'
     elif source == 'neuv':
@@ -144,12 +153,17 @@ def ord2card(word: str) -> Optional[str]:
     return source
 
 
+def num_ord(digits: str, original_word: str) -> str:
+    """Add suffix to number in digits to make an ordinal"""
+    return f"{digits}ème" if original_word.endswith("e") else f"{digits}èmes"
+
+
 def normalize(word: str) -> str:
     return word.replace("vingts", "vingt")
 
 
 def not_numeric_word(word: Optional[str]) -> bool:
-    return word is not None and word != 'virgule' and word not in NUMBERS
+    return word is not None and word != DECIMAL_SEP and word not in NUMBERS
 
 
 ##
@@ -344,7 +358,7 @@ class WordToDigitParser:
         return not self.open
 
     def is_article(self, word: str, following: Optional[str]) -> bool:
-        return (not self.open and (word == 'un' or word == 'une') and not_numeric_word(following))
+        return (not self.open and word in UNIT_ARTICLES and not_numeric_word(following))
 
     def _push(self, word: str, look_ahead: Optional[str]) -> bool:
         builder = self.frac_builder if self.in_frac else self.int_builder
@@ -370,15 +384,14 @@ class WordToDigitParser:
 
         if self.signed and word in SIGN and look_ahead in NUMBERS and self.at_start():
             self._value.append(SIGN[word])
-        elif word.startswith('zéro') and self.at_start_of_seq():
+        elif word.startswith(ZERO) and self.at_start_of_seq():
             self._value.append('0')
-        elif word.endswith('ième') and self._push(ord2card(word) or '', look_ahead):
-            self._value.append(str(self.frac_builder.value if self.in_frac else self.int_builder.value))
-            self._value.append('ème')
+        elif self._push(ord2card(word) or '', look_ahead):
+            self._value.append(num_ord(str(self.frac_builder.value if self.in_frac else self.int_builder.value), word))
             self.closed = True
-        elif word == 'virgule' and (look_ahead in NUMBERS or look_ahead == 'zéro') and not self.in_frac:
+        elif word == DECIMAL_SEP and (look_ahead in NUMBERS or look_ahead == ZERO) and not self.in_frac:
             self._value.append(str(self.int_builder.value))
-            self._value.append(',')
+            self._value.append(DECIMAL_SYM)
             self.in_frac = True
         elif not self._push(word, look_ahead):
             if self.open:
