@@ -79,6 +79,9 @@ MTENS: Dict[str, int] = {
 MTENS['quatre-vingt'] = 80
 MTENS['octante'] = 80
 
+# Ten multiples that can be combined with STENS
+MTENS_WSTENS = {"soixante", "quatre-vingt"}
+
 NUMBERS.update(MTENS)
 
 # "cent" has a special status (see Rules)
@@ -116,6 +119,12 @@ SIGN = {'plus': '+', 'moins': '-'}
 
 ET_NUMS = {'un', 'une', 'unième', 'onze', 'onzième'}
 
+# Relaxed composed numbers (two-words only)
+# start => (next, target)
+RELAXED = {
+    "quatre": ("vingt", "quatre-vingt")
+}
+
 
 def ord2card(word: str) -> Optional[str]:
     """Convert ordinal number to cardinal.
@@ -137,6 +146,7 @@ def ord2card(word: str) -> Optional[str]:
 def not_numeric_word(word: Optional[str]) -> bool:
     return word is not None and word != 'virgule' and word not in NUMBERS
 
+##
 
 class WordStreamValueParser:
     """The actual value builder engine.
@@ -161,7 +171,7 @@ class WordStreamValueParser:
         a single "quatre-vingt".
         """
         self.relaxed = relaxed
-        self.on_hold = False
+        self.skip: Optional[str] = None
         self.n000_val: int = 0  # the number value part > 1000
         self.grp_val: int = 0  # the current three digit group value
         self.last_word: Optional[str] = None  # the last valid word for the current group
@@ -181,7 +191,7 @@ class WordStreamValueParser:
         elif (self.last_word in UNITS and self.grp_val < 10 or self.last_word in STENS and self.grp_val < 20):
             expected = word in CENT
         elif self.last_word in MTENS:
-            expected = word in UNITS or word in STENS and self.last_word in ("soixante", "quatre-vingt")
+            expected = word in UNITS or word in STENS and self.last_word in MTENS_WSTENS
         elif self.last_word in CENT:
             expected = word not in CENT
 
@@ -248,19 +258,19 @@ class WordStreamValueParser:
 
             self.grp_val = 0
             self.last_word = None
-        elif (self.relaxed and word == 'quatre' and look_ahead and look_ahead.startswith('vingt')
-              and self.group_expects('quatre-vingt', update=False)):
-            self.on_hold = True
-            self.grp_val += NUMBERS['quatre-vingt']
-        elif self.on_hold and word.startswith('vingt'):
-            self.on_hold = False
+        elif (self.relaxed and word in RELAXED and look_ahead and look_ahead.startswith(RELAXED[word][0])
+              and self.group_expects(RELAXED[word][1], update=False)):
+            self.skip = RELAXED[word][0]
+            self.grp_val += NUMBERS[RELAXED[word][1]]
+        elif self.skip and word.startswith(self.skip):
+            self.skip = None
         elif self.group_expects(word):
             if word in CENT:
                 self.grp_val = 100 * self.grp_val if self.grp_val else 100
             else:
                 self.grp_val += NUMBERS[word]
         else:
-            self.on_hold = False
+            self.skip = None
             return False
         return True
 
