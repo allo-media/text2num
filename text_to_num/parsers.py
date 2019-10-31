@@ -1,6 +1,6 @@
 # MIT License
 
-# Copyright (c) 2018 Groupe Allo-Media
+# Copyright (c) 2018-2019 Groupe Allo-Media
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -180,9 +180,6 @@ class WordStreamValueParser:
         return True
 
 
-# TODO: Look ahead:  "de milliard"
-
-
 class WordToDigitParser:
     """Words to digit transcriber.
 
@@ -285,7 +282,12 @@ class WordToDigitParser:
             and self.at_start()
         ):
             self._value.append(self.lang.SIGN[word])
-        elif word.startswith(self.lang.ZERO) and self.at_start_of_seq():
+        elif (
+            word in self.lang.ZERO
+            and self.at_start_of_seq()
+            and look_ahead is not None
+            and look_ahead in self.lang.NUMBERS
+        ):
             self._value.append("0")
         elif self._push(self.lang.ord2card(word) or "", look_ahead):
             self._value.append(
@@ -301,7 +303,7 @@ class WordToDigitParser:
             self.closed = True
         elif (
             word == self.lang.DECIMAL_SEP
-            and (look_ahead in self.lang.NUMBERS or look_ahead == self.lang.ZERO)
+            and (look_ahead in self.lang.NUMBERS or look_ahead in self.lang.ZERO)
             and not self.in_frac
         ):
             self._value.append(str(self.int_builder.value))

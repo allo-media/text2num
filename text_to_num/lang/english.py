@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Dict, Optional
+from typing import Dict, Optional, Set, Tuple
 
 from .base import Language
 
@@ -33,13 +33,14 @@ from .base import Language
 # Exception: "(de) milliards" that can multiply bigger numbers ("milliards de milliards")
 # Special case: "cent" is processed apart.
 MULTIPLIERS = {
-    "mil": 1000,
-    "mille": 1000,
-    "milles": 1000,
-    "million": 1000000,
-    "millions": 1000000,
-    "milliard": 1000000000,
-    "milliards": 1000000000,
+    "thousand": 1_000,
+    "thousands": 1_000,
+    "million": 1_000_000,
+    "millions": 1_000_000,
+    "billion": 1_000_000_000,
+    "billions": 1_000_000_000,
+    "trillion": 1_000_000_000_000,
+    "trillions": 1_000_000_000_000,
 }
 
 
@@ -48,18 +49,15 @@ MULTIPLIERS = {
 UNITS: Dict[str, int] = {
     word: value
     for value, word in enumerate(
-        "un deux trois quatre cinq six sept huit neuf".split(), 1
+        "one two three four five six seven eight nine".split(), 1
     )
 }
-# Unit variants
-UNITS["une"] = 1
-
 
 # Single tens are terminals (see Rules)
 STENS: Dict[str, int] = {
     word: value
     for value, word in enumerate(
-        "dix onze douze treize quatorze quinze seize dix-sept dix-huit dix-neuf".split(),
+        "ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split(),
         10,
     )
 }
@@ -67,23 +65,19 @@ STENS: Dict[str, int] = {
 
 # Ten multiples
 # Ten multiples may be followed by a unit only;
-# Exceptions: "soixante" & "quatre-ving" (see Rules)
 MTENS: Dict[str, int] = {
     word: value * 10
     for value, word in enumerate(
-        "vingt trente quarante cinquante soixante septante huitante nonante".split(), 2
+        "twenty thirty forty fifty sixty seventy eighty ninety".split(), 2
     )
 }
-# Variants
-MTENS["quatre-vingt"] = 80
-MTENS["octante"] = 80
 
 # Ten multiples that can be combined with STENS
-MTENS_WSTENS = {"soixante", "quatre-vingt"}
+MTENS_WSTENS: Set[str] = set()
 
 
 # "cent" has a special status (see Rules)
-CENT = {"cent": 100, "cents": 100}
+CENT = {"hundred": 100, "hundreds": 100}
 
 
 # Composites are tens already composed with terminals in one word.
@@ -93,29 +87,7 @@ COMPOSITES: Dict[str, int] = {
     "-".join((ten_word, unit_word)): ten_val + unit_val
     for ten_word, ten_val in MTENS.items()
     for unit_word, unit_val in UNITS.items()
-    if unit_val != 1
 }
-
-COMPOSITES.update(
-    {
-        "-".join((ten_word, et_word)): ten_val + et_val
-        for ten_word, ten_val in MTENS.items()
-        for et_word, et_val in (("et-un", 1), ("et-une", 1))
-        if 10 < ten_val <= 90
-    }
-)
-
-COMPOSITES["quatre-vingt-un"] = 81
-
-COMPOSITES.update(
-    {
-        "-".join((ten_word, sten_word)): ten_val + sten_val
-        for ten_word, ten_val in (("soixante", 60), ("quatre-vingt", 80))
-        for sten_word, sten_val in STENS.items()
-    }
-)
-
-COMPOSITES["soixante-et-onze"] = 71
 
 # All number words
 
@@ -125,10 +97,11 @@ NUMBERS.update(STENS)
 NUMBERS.update(MTENS)
 NUMBERS.update(CENT)
 NUMBERS.update(COMPOSITES)
-NUMBERS["quatre-vingts"] = 80
+
+RAD_MAP = {"fif": "five", "eigh": "eight", "nin": "nine", "twelf": "twelve"}
 
 
-class French(Language):
+class English(Language):
 
     MULTIPLIERS = MULTIPLIERS
     UNITS = UNITS
@@ -138,18 +111,18 @@ class French(Language):
     CENT = CENT
     NUMBERS = NUMBERS
 
-    SIGN = {"plus": "+", "moins": "-"}
-    ZERO = {"zéro"}
-    DECIMAL_SEP = "virgule"
-    DECIMAL_SYM = ","
+    SIGN = {"plus": "+", "minus": "-"}
+    ZERO = {"zero", "o"}
+    DECIMAL_SEP = "point"
+    DECIMAL_SYM = "."
 
-    AND_NUMS = {"un", "une", "unième", "onze", "onzième"}
-    AND = "et"
-    UNIT_ARTICLES = {"un", "une"}
+    AND_NUMS: Set[str] = set()
+    AND = "and"
+    UNIT_ARTICLES = {"a", "an"}
 
     # Relaxed composed numbers (two-words only)
     # start => (next, target)
-    RELAXED = {"quatre": ("vingt", "quatre-vingt")}
+    RELAXED: Dict[str, Tuple[str, str]] = {}
 
     def ord2card(self, word: str) -> Optional[str]:
         """Convert ordinal number to cardinal.
@@ -157,24 +130,31 @@ class French(Language):
         Return None if word is not an ordinal or is better left in letters
         as is the case for fist and second.
         """
-        plur_suff = word.endswith("ièmes")
-        sing_suff = word.endswith("ième")
+        plur_suff = word.endswith("ths")
+        sing_suff = word.endswith("th")
         if not (plur_suff or sing_suff):
-            return None
-        source = word[:-5] if plur_suff else word[:-4]
-        if source == "cinqu":
-            source = "cinq"
-        elif source == "neuv":
-            source = "neuf"
-        elif source not in self.NUMBERS:
-            source = source + "e"
-            if source not in self.NUMBERS:
+            if word.endswith("first"):
+                source = word.replace("first", "one")
+            elif word.endswith("second"):
+                source = word.replace("second", "two")
+            elif word.endswith("third"):
+                source = word.replace("third", "three")
+            else:
                 return None
+        else:
+            source = word[:-3] if plur_suff else word[:-2]
+        if source in RAD_MAP:
+            source = RAD_MAP[source]
+        elif source.endswith("ie"):
+            source = source[:-2] + "y"
+        if source not in self.NUMBERS:
+            return None
         return source
 
     def num_ord(self, digits: str, original_word: str) -> str:
         """Add suffix to number in digits to make an ordinal"""
-        return f"{digits}ème" if original_word.endswith("e") else f"{digits}èmes"
+        sf = original_word[-3:] if original_word.endswith("s") else original_word[-2:]
+        return f"{digits}{sf}"
 
     def normalize(self, word: str) -> str:
-        return word.replace("vingts", "vingt")
+        return word

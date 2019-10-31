@@ -1,6 +1,6 @@
 # MIT License
 
-# Copyright (c) 2018 Groupe Allo-Media
+# Copyright (c) 2018-2019 Groupe Allo-Media
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -137,6 +137,9 @@ class TestTextToNumFR(TestCase):
         source = "treize mille zéro quatre-vingts"
         expected = "13000 080"
         self.assertEqual(alpha2digit(source, "fr"), expected)
+
+        source = "Votre service est zéro !"
+        self.assertEqual(alpha2digit(source, "fr"), source)
 
     def test_alpha2digit_ordinals(self):
         source = (

@@ -1,6 +1,6 @@
 # MIT License
 
-# Copyright (c) 2018 Groupe Allo-Media
+# Copyright (c) 2018-2019 Groupe Allo-Media
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -58,7 +58,7 @@ def text2num(text: str, lang: str, relaxed: bool = False) -> int:
 
     language = LANG[lang]
     num_parser = WordStreamValueParser(language, relaxed=relaxed)
-    tokens = list(dropwhile(lambda x: x == "zéro", text.split()))
+    tokens = list(dropwhile(lambda x: x in language.ZERO, text.split()))
     if not all(num_parser.push(word, ahead) for word, ahead in look_ahead(tokens)):
         raise ValueError("invalid literal for text2num: {}".format(repr(text)))
     return num_parser.value
