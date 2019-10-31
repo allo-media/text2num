@@ -30,7 +30,7 @@ from text_to_num import alpha2digit, text2num
 
 class TestTextToNumEN(TestCase):
     def test_text2num(self):
-        test1 = "fifty-three billion two hundred forty-three thousand seven hundred twenty four"
+        test1 = "fifty-three billion two hundred forty-three thousand seven hundred twenty-four"
         self.assertEqual(text2num(test1, "en"), 53_000_243_724)
 
         test2 = (
