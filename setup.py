@@ -27,7 +27,7 @@ setup(name='text2num',
       author_email='contact@allo-media.fr',
       license='MIT',
       packages=['text_to_num'],
-      python_requires='>=3',
+      python_requires='>=3.7',
       test_suite='tests',
       include_package_data=True,
       zip_safe=False)
