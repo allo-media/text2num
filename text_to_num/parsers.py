@@ -117,7 +117,8 @@ NUMBERS.update(COMPOSITES)
 
 SIGN = {'plus': '+', 'moins': '-'}
 
-ET_NUMS = {'un', 'une', 'unième', 'onze', 'onzième'}
+AND_NUMS = {'un', 'une', 'unième', 'onze', 'onzième'}
+AND = "et"
 
 # Relaxed composed numbers (two-words only)
 # start => (next, target)
@@ -143,8 +144,13 @@ def ord2card(word: str) -> Optional[str]:
     return source
 
 
+def normalize(word: str) -> str:
+    return word.replace("vingts", "vingt")
+
+
 def not_numeric_word(word: Optional[str]) -> bool:
     return word is not None and word != 'virgule' and word not in NUMBERS
+
 
 ##
 
@@ -238,10 +244,10 @@ class WordStreamValueParser:
         if not word:
             return False
 
-        if word == 'et' and look_ahead in ET_NUMS:
+        if word == AND and look_ahead in AND_NUMS:
             return True
 
-        word = word.replace('vingts', 'vingt')
+        word = normalize(word)
         if word not in NUMBERS:
             return False
 
