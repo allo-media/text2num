@@ -1,7 +1,7 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
-VERSION = "2.0.0-beta"
+VERSION = "2.0.0.b2"
 
 
 def readme():
@@ -27,7 +27,7 @@ setup(
     author="Allo-Media",
     author_email="contact@allo-media.fr",
     license="MIT",
-    packages=["text_to_num"],
+    packages=find_packages(),
     python_requires=">=3.7",
     test_suite="tests",
     include_package_data=True,

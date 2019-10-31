@@ -285,8 +285,7 @@ class WordToDigitParser:
         elif (
             word in self.lang.ZERO
             and self.at_start_of_seq()
-            and look_ahead is not None
-            and look_ahead in self.lang.NUMBERS
+            and (look_ahead is None or look_ahead in self.lang.NUMBERS)
         ):
             self._value.append("0")
         elif self._push(self.lang.ord2card(word) or "", look_ahead):

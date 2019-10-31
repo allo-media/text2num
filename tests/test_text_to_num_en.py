@@ -125,6 +125,8 @@ class TestTextToNumEN(TestCase):
         source = "thirteen thousand o ninety"
         self.assertEqual(alpha2digit(source, "en"), expected)
 
+        self.assertEqual(alpha2digit("zero", "en"), "0")
+
     def test_alpha2digit_ordinals(self):
         source = (
             "Fifth third twenty-first hundredth one thousand two hundred thirtieth."

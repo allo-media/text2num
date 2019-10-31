@@ -138,8 +138,10 @@ class TestTextToNumFR(TestCase):
         expected = "13000 080"
         self.assertEqual(alpha2digit(source, "fr"), expected)
 
-        source = "Votre service est zéro !"
-        self.assertEqual(alpha2digit(source, "fr"), source)
+        # source = "Votre service est zéro !"
+        # self.assertEqual(alpha2digit(source, "fr"), source)
+
+        self.assertEqual(alpha2digit("zéro", "fr"), "0")
 
     def test_alpha2digit_ordinals(self):
         source = (
