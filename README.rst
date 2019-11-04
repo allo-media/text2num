@@ -6,13 +6,13 @@ text2num
 
 ``text2num`` is a python package that provides functions and parser classes for:
 
-- parsing numbers expressed as words in French and convert them to integer values;
-- detect ordinal, cardinal and decimal numbers in a stream of French words and get their decimal digit representations.
+- parsing numbers expressed as words in French or English and convert them to integer values;
+- detect ordinal, cardinal and decimal numbers in a stream of French or English words and get their decimal digit representations.
 
 Compatibility
 -------------
 
-Tested on python 3.6, 3.7.
+Tested on python 3.7. Requires Python >= 3.7.
 
 License
 -------
@@ -36,32 +36,50 @@ Usage examples
 Parse and convert
 ~~~~~~~~~~~~~~~~~
 
+
+French examples:
+
 .. code-block:: python
 
     >>> from text_to_num import text2num
-    >>> text2num('quatre-vingt-quinze')
+    >>> text2num('quatre-vingt-quinze', "fr")
     95
 
-    >>> text2num('nonante-cinq')
+    >>> text2num('nonante-cinq', "fr")
     95
 
-    >>> text2num('mille neuf cent quatre-vingt dix-neuf')
+    >>> text2num('mille neuf cent quatre-vingt dix-neuf', "fr")
     1999
 
-    >>> text2num('dix-neuf cent quatre-vingt dix-neuf')
+    >>> text2num('dix-neuf cent quatre-vingt dix-neuf', "fr")
     1999
 
-    >>> text2num("cinquante et un million cinq cent soixante dix-huit mille trois cent deux")
+    >>> text2num("cinquante et un million cinq cent soixante dix-huit mille trois cent deux", "fr")
     51578302
 
-    >>> text2num('mille mille deux cents')
+    >>> text2num('mille mille deux cents', "fr")
     ValueError: invalid literal for text2num: 'mille mille deux cent'
+
+
+English examples:
+
+.. code-block:: python
+
+    >>> from text_to_num import text2num
+
+    >>> text2num("fifty-one million five hundred seventy-eight thousand three hundred two", "en")
+    51578302
+
+    >>> text2num("eighty-one", "en")
+    81
 
 
 Find and transcribe
 ~~~~~~~~~~~~~~~~~~~
 
 Any numbers, even ordinals.
+
+French:
 
 .. code-block:: python
 
@@ -83,6 +101,16 @@ Any numbers, even ordinals.
     Nombres en série : 12 15 004 20 52 103 52 31.
     Ordinaux: 5ème 3ème 21ème 100ème 1230ème.
     Décimaux: 12,99, 120,05 ; mais 60 02.
+
+
+English:
+
+.. code-block:: python
+
+    >>> from text_to_num import alpha2digit
+    >>> text = "On May twenty-third, I bought twenty-five cows, twelve chickens and one hundred twenty five point forty kg of potatoes."
+    >>> alpha2digit(text, "en")
+    'On May 23rd, I bought 25 cows, 12 chickens and 125.40 kg of potatoes.'
 
 
 Read the complete documentation on `ReadTheDocs <http://text2num.readthedocs.io/>`_.

@@ -23,6 +23,13 @@ Integers only.
 .. code-block:: python
 
     >>> from text_to_num import text2num
+
+    >>> text2num("fifty-one million five hundred seventy-eight thousand three hundred two", "en")
+    51578302
+
+    >>> text2num("eighty-one", "en")
+    81
+
     >>> text2num('quatre-vingt-quinze')
     95
 
@@ -50,6 +57,12 @@ Any number, even ordinals.
 .. code-block:: python
 
     >>> from text_to_num import alpha2digit
+
+    >>> text = "On May twenty-third, I bought twenty-five cows, twelve chickens and one hundred twenty five point forty kg of potatoes."
+    >>> alpha2digit(text, "en")
+    'On May 23rd, I bought 25 cows, 12 chickens and 125.40 kg of potatoes.'
+
+
     >>> sentence = (
     ...         "Huit cent quarante-deux pommes, vingt-cinq chiens, mille trois chevaux, "
     ...         "douze mille six cent quatre-vingt-dix-huit clous.\n"
