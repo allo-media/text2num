@@ -30,8 +30,7 @@ from .base import Language
 #
 
 # Those words multiplies lesser numbers (see Rules)
-# Exception: "(de) milliards" that can multiply bigger numbers ("milliards de milliards")
-# Special case: "cent" is processed apart.
+# Special case: "hundred" is processed apart.
 MULTIPLIERS = {
     "thousand": 1_000,
     "thousands": 1_000,
@@ -45,7 +44,7 @@ MULTIPLIERS = {
 
 
 # Units are terminals (see Rules)
-# Special case: "zéro" is processed apart.
+# Special case: "zero/O" is processed apart.
 UNITS: Dict[str, int] = {
     word: value
     for value, word in enumerate(
@@ -76,8 +75,8 @@ MTENS: Dict[str, int] = {
 MTENS_WSTENS: Set[str] = set()
 
 
-# "cent" has a special status (see Rules)
-CENT = {"hundred": 100, "hundreds": 100}
+# "hundred" has a special status (see Rules)
+HUNDRED = {"hundred": 100, "hundreds": 100}
 
 
 # Composites are tens already composed with terminals in one word.
@@ -95,7 +94,7 @@ NUMBERS = MULTIPLIERS.copy()
 NUMBERS.update(UNITS)
 NUMBERS.update(STENS)
 NUMBERS.update(MTENS)
-NUMBERS.update(CENT)
+NUMBERS.update(HUNDRED)
 NUMBERS.update(COMPOSITES)
 
 RAD_MAP = {"fif": "five", "eigh": "eight", "nin": "nine", "twelf": "twelve"}
@@ -108,7 +107,7 @@ class English(Language):
     STENS = STENS
     MTENS = MTENS
     MTENS_WSTENS = MTENS_WSTENS
-    CENT = CENT
+    HUNDRED = HUNDRED
     NUMBERS = NUMBERS
 
     SIGN = {"plus": "+", "minus": "-"}

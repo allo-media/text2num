@@ -79,15 +79,15 @@ class WordStreamValueParser:
             or self.last_word in self.lang.STENS
             and self.grp_val < 20
         ):
-            expected = word in self.lang.CENT
+            expected = word in self.lang.HUNDRED
         elif self.last_word in self.lang.MTENS:
             expected = (
                 word in self.lang.UNITS
                 or word in self.lang.STENS
                 and self.last_word in self.lang.MTENS_WSTENS
             )
-        elif self.last_word in self.lang.CENT:
-            expected = word not in self.lang.CENT
+        elif self.last_word in self.lang.HUNDRED:
+            expected = word not in self.lang.HUNDRED
 
         if update:
             self.last_word = word
@@ -170,7 +170,7 @@ class WordStreamValueParser:
         elif self.skip and word.startswith(self.skip):
             self.skip = None
         elif self.group_expects(word):
-            if word in self.lang.CENT:
+            if word in self.lang.HUNDRED:
                 self.grp_val = 100 * self.grp_val if self.grp_val else 100
             else:
                 self.grp_val += self.lang.NUMBERS[word]

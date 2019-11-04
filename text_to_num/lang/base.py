@@ -35,7 +35,7 @@ class Language:
     STENS: Dict[str, int]
     MTENS: Dict[str, int]
     MTENS_WSTENS: Set[str]
-    CENT: Dict[str, int]
+    HUNDRED: Dict[str, int]
     NUMBERS: Dict[str, int]
 
     SIGN: Dict[str, str]

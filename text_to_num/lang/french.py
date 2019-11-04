@@ -67,7 +67,7 @@ STENS: Dict[str, int] = {
 
 # Ten multiples
 # Ten multiples may be followed by a unit only;
-# Exceptions: "soixante" & "quatre-ving" (see Rules)
+# Exceptions: "soixante" & "quatre-vingt" (see Rules)
 MTENS: Dict[str, int] = {
     word: value * 10
     for value, word in enumerate(
@@ -83,7 +83,7 @@ MTENS_WSTENS = {"soixante", "quatre-vingt"}
 
 
 # "cent" has a special status (see Rules)
-CENT = {"cent": 100, "cents": 100}
+HUNDRED = {"cent": 100, "cents": 100}
 
 
 # Composites are tens already composed with terminals in one word.
@@ -123,7 +123,7 @@ NUMBERS = MULTIPLIERS.copy()
 NUMBERS.update(UNITS)
 NUMBERS.update(STENS)
 NUMBERS.update(MTENS)
-NUMBERS.update(CENT)
+NUMBERS.update(HUNDRED)
 NUMBERS.update(COMPOSITES)
 NUMBERS["quatre-vingts"] = 80
 
@@ -135,7 +135,7 @@ class French(Language):
     STENS = STENS
     MTENS = MTENS
     MTENS_WSTENS = MTENS_WSTENS
-    CENT = CENT
+    HUNDRED = HUNDRED
     NUMBERS = NUMBERS
 
     SIGN = {"plus": "+", "moins": "-"}
