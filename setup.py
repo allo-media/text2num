@@ -12,7 +12,7 @@ def readme():
 setup(
     name="text2num",
     version=VERSION,
-    description="Parse and convert numbers written in French into their digit representation.",
+    description="Parse and convert numbers written in French or English into their digit representation.",
     long_description=readme(),
     classifiers=[
         "Development Status :: 5 - Production/Stable",
@@ -22,7 +22,7 @@ setup(
         "Topic :: Text Processing :: Filters",
         "Natural Language :: French",
     ],
-    keywords="French NLP words-to-numbers",
+    keywords="French and English NLP words-to-numbers",
     url="https://github.com/allo-media/text2num",
     author="Allo-Media",
     author_email="contact@allo-media.fr",
