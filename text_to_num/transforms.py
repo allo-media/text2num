@@ -1,6 +1,6 @@
 # MIT License
 
-# Copyright (c) 2018 Groupe Allo-Media
+# Copyright (c) 2018-2019 Groupe Allo-Media
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@ import re
 from itertools import dropwhile
 from typing import Any, Iterator, List, Sequence, Tuple
 
+from .lang import LANG
 from .parsers import WordStreamValueParser, WordToDigitParser
 
 
@@ -45,7 +46,7 @@ def look_ahead(sequence: Sequence[Any]) -> Iterator[Tuple[Any, Any]]:
         yield val, ahead
 
 
-def text2num(text: str, relaxed: bool = False) -> int:
+def text2num(text: str, lang: str, relaxed: bool = False) -> int:
     """Convert the ``text`` string containing an integer number written in French
     into an integer value.
 
@@ -55,28 +56,32 @@ def text2num(text: str, relaxed: bool = False) -> int:
     Return an int.
     """
 
-    num_parser = WordStreamValueParser(relaxed=relaxed)
-    tokens = list(dropwhile(lambda x: x == "zéro", text.split()))
+    language = LANG[lang]
+    num_parser = WordStreamValueParser(language, relaxed=relaxed)
+    tokens = list(dropwhile(lambda x: x in language.ZERO, text.split()))
     if not all(num_parser.push(word, ahead) for word, ahead in look_ahead(tokens)):
-        raise ValueError('invalid literal for text2num: {}'.format(repr(text)))
+        raise ValueError("invalid literal for text2num: {}".format(repr(text)))
     return num_parser.value
 
 
-def alpha2digit(text: str, relaxed: bool = False, signed: bool = True) -> str:
+def alpha2digit(
+    text: str, lang: str, relaxed: bool = False, signed: bool = True
+) -> str:
     """Return the text of ``text`` with all the French spelled numbers converted to digits.
     Takes care of punctuation.
     Set ``relaxed`` to True if you want to accept "quatre vingt(s)" as "quatre-vingt".
     Set ``signed`` to False if you don't want to produce signed numbers, that is, for example,
     if you prefer to get « moins 2 » instead of « -2 ».
     """
-    segments = re.split(r'\s*[\.,;\(\)…\[\]:!\?]+\s*', text)
-    punct = re.findall(r'\s*[\.,;\(\)…\[\]:!\?]+\s*', text)
+    language = LANG[lang]
+    segments = re.split(r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text)
+    punct = re.findall(r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text)
     if len(punct) < len(segments):
-        punct.append('')
+        punct.append("")
     out_segments: List[str] = []
     for segment, sep in zip(segments, punct):
         tokens = segment.split()
-        num_builder = WordToDigitParser(relaxed=relaxed, signed=signed)
+        num_builder = WordToDigitParser(language, relaxed=relaxed, signed=signed)
         in_number = False
         out_tokens: List[str] = []
         for word, ahead in look_ahead(tokens):
@@ -84,7 +89,7 @@ def alpha2digit(text: str, relaxed: bool = False, signed: bool = True) -> str:
                 in_number = True
             elif in_number:
                 out_tokens.append(num_builder.value)
-                num_builder = WordToDigitParser(relaxed=relaxed)
+                num_builder = WordToDigitParser(language, relaxed=relaxed)
                 in_number = num_builder.push(word.lower(), ahead)
             if not in_number:
                 out_tokens.append(word)
@@ -92,6 +97,6 @@ def alpha2digit(text: str, relaxed: bool = False, signed: bool = True) -> str:
         num_builder.close()
         if num_builder.value:
             out_tokens.append(num_builder.value)
-        out_segments.append(' '.join(out_tokens))
+        out_segments.append(" ".join(out_tokens))
         out_segments.append(sep)
-    return ''.join(out_segments)
+    return "".join(out_segments)

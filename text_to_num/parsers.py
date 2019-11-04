@@ -1,6 +1,6 @@
 # MIT License
 
-# Copyright (c) 2018 Groupe Allo-Media
+# Copyright (c) 2018-2019 Groupe Allo-Media
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,122 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """
-Convert French spelled numbers into numeric values or digit strings.
+Convert spelled numbers into numeric values or digit strings.
 """
 
-from typing import Dict, List, Optional
+from typing import List, Optional
 
-#
-# CONSTANTS
-# Built once on import.
-#
+from text_to_num.lang import Language
 
-# Those words multiplies lesser numbers (see Rules)
-# Exception: "(de) milliards" that can multiply bigger numbers ("milliards de milliards")
-# Special case: "cent" is processed apart.
-MULTIPLIERS = {
-    "mil": 1000,
-    "mille": 1000,
-    "milles": 1000,
-    "million": 1000000,
-    "millions": 1000000,
-    "milliard": 1000000000,
-    "milliards": 1000000000,
-}
-
-# All number words
-
-NUMBERS = MULTIPLIERS.copy()
-
-# Units are terminals (see Rules)
-# Special case: "zéro" is processed apart.
-UNITS: Dict[str, int] = {
-    word: value
-    for value, word in enumerate("un deux trois quatre cinq six sept huit neuf".split(), 1)
-}
-# Unit variants
-UNITS['une'] = 1
-
-NUMBERS.update(UNITS)
-
-# Single tens are terminals (see Rules)
-STENS: Dict[str, int] = {
-    word: value
-    for value, word in enumerate(
-        "dix onze douze treize quatorze quinze seize dix-sept dix-huit dix-neuf".split(), 10)
-}
-
-NUMBERS.update(STENS)
-
-# Ten multiples
-# Ten multiples may be followed by a unit only;
-# Exceptions: "soixante" & "quatre-ving" (see Rules)
-MTENS: Dict[str, int] = {
-    word: value * 10
-    for value, word in enumerate("vingt trente quarante cinquante soixante septante huitante nonante".split(),
-                                 2)
-}
-# Variants
-MTENS['quatre-vingt'] = 80
-MTENS['octante'] = 80
-
-NUMBERS.update(MTENS)
-
-# "cent" has a special status (see Rules)
-CENT = {"cent": 100, "cents": 100}
-
-NUMBERS.update(CENT)
-
-# Composites are tens already composed with terminals in one word.
-# Composites are terminals.
-
-COMPOSITES: Dict[str, int] = {
-    "-".join((ten_word, unit_word)): ten_val + unit_val
-    for ten_word, ten_val in MTENS.items() for unit_word, unit_val in UNITS.items() if unit_val != 1
-}
-
-COMPOSITES.update({
-    "-".join((ten_word, et_word)): ten_val + et_val
-    for ten_word, ten_val in MTENS.items() for et_word, et_val in (('et-un', 1), ('et-une', 1))
-    if 10 < ten_val <= 90
-})
-
-COMPOSITES['quatre-vingt-un'] = 81
-
-COMPOSITES.update({
-    "-".join((ten_word, sten_word)): ten_val + sten_val
-    for ten_word, ten_val in (('soixante', 60), ('quatre-vingt', 80))
-    for sten_word, sten_val in STENS.items()
-})
-
-COMPOSITES['soixante-et-onze'] = 71
-
-NUMBERS.update(COMPOSITES)
-
-SIGN = {'plus': '+', 'moins': '-'}
-
-ET_NUMS = {'un', 'une', 'unième', 'onze', 'onzième'}
-
-
-def ord2card(word: str) -> Optional[str]:
-    """Convert ordinal number to cardinal.
-
-    Return None if word is not an ordinal.
-    """
-    source = word[:-4]
-    if source == 'cinqu':
-        source = 'cinq'
-    elif source == 'neuv':
-        source = 'neuf'
-    elif source not in NUMBERS:
-        source = source + 'e'
-        if source not in NUMBERS:
-            return None
-    return source
-
-
-def not_numeric_word(word: Optional[str]) -> bool:
-    return word is not None and word != 'virgule' and word not in NUMBERS
+##
 
 
 class WordStreamValueParser:
@@ -154,17 +46,20 @@ class WordStreamValueParser:
         - ``self.value: int``
     """
 
-    def __init__(self, relaxed: bool = False) -> None:
+    def __init__(self, lang: Language, relaxed: bool = False) -> None:
         """Initialize the parser.
 
         If ``relaxed`` is True, we treat the sequence "quatre vingt" as
         a single "quatre-vingt".
         """
+        self.lang = lang
         self.relaxed = relaxed
-        self.on_hold = False
+        self.skip: Optional[str] = None
         self.n000_val: int = 0  # the number value part > 1000
         self.grp_val: int = 0  # the current three digit group value
-        self.last_word: Optional[str] = None  # the last valid word for the current group
+        self.last_word: Optional[
+            str
+        ] = None  # the last valid word for the current group
 
     @property
     def value(self) -> int:
@@ -178,12 +73,21 @@ class WordStreamValueParser:
         expected = False
         if self.last_word is None:
             expected = True
-        elif (self.last_word in UNITS and self.grp_val < 10 or self.last_word in STENS and self.grp_val < 20):
-            expected = word in CENT
-        elif self.last_word in MTENS:
-            expected = word in UNITS or word in STENS and self.last_word in ("soixante", "quatre-vingt")
-        elif self.last_word in CENT:
-            expected = word not in CENT
+        elif (
+            self.last_word in self.lang.UNITS
+            and self.grp_val < 10
+            or self.last_word in self.lang.STENS
+            and self.grp_val < 20
+        ):
+            expected = word in self.lang.HUNDRED
+        elif self.last_word in self.lang.MTENS:
+            expected = (
+                word in self.lang.UNITS
+                or word in self.lang.STENS
+                and self.last_word in self.lang.MTENS_WSTENS
+            )
+        elif self.last_word in self.lang.HUNDRED:
+            expected = word not in self.lang.HUNDRED
 
         if update:
             self.last_word = word
@@ -202,7 +106,9 @@ class WordStreamValueParser:
             # ex. for "millions": "trois milliard deux cent millions"
             # But not twice: "dix mille cinq mille" is invalid for example. Therefore,
             # we test the square of ``coef``.
-            return self.grp_val > 0 or coef == 1000  # "mille" without unit before is additive
+            return (
+                self.grp_val > 0 or coef == 1000
+            )  # "mille" without unit before is additive
         # TODO: There is one exception to the above rule: "de milliard"
         # ex. : "mille milliards de milliards"
         return False
@@ -228,44 +134,50 @@ class WordStreamValueParser:
         if not word:
             return False
 
-        if word == 'et' and look_ahead in ET_NUMS:
+        if word == self.lang.AND and look_ahead in self.lang.AND_NUMS:
             return True
 
-        word = word.replace('vingts', 'vingt')
-        if word not in NUMBERS:
+        word = self.lang.normalize(word)
+        if word not in self.lang.NUMBERS:
             return False
 
-        if word in MULTIPLIERS:
-            coef = MULTIPLIERS[word]
+        RELAXED = self.lang.RELAXED
+
+        if word in self.lang.MULTIPLIERS:
+            coef = self.lang.MULTIPLIERS[word]
             if not self.is_coef_appliable(coef):
                 return False
             # a multiplier can not be applied to a value bigger than itself,
             # so it must be applied to the current group
             if coef < self.n000_val:
-                self.n000_val = self.n000_val + coef * (self.grp_val or 1)  # or 1 for "mille"
+                self.n000_val = self.n000_val + coef * (
+                    self.grp_val or 1
+                )  # or 1 for "mille"
             else:
                 self.n000_val = (self.value or 1) * coef
 
             self.grp_val = 0
             self.last_word = None
-        elif (self.relaxed and word == 'quatre' and look_ahead and look_ahead.startswith('vingt')
-              and self.group_expects('quatre-vingt', update=False)):
-            self.on_hold = True
-            self.grp_val += NUMBERS['quatre-vingt']
-        elif self.on_hold and word.startswith('vingt'):
-            self.on_hold = False
+        elif (
+            self.relaxed
+            and word in RELAXED
+            and look_ahead
+            and look_ahead.startswith(RELAXED[word][0])
+            and self.group_expects(RELAXED[word][1], update=False)
+        ):
+            self.skip = RELAXED[word][0]
+            self.grp_val += self.lang.NUMBERS[RELAXED[word][1]]
+        elif self.skip and word.startswith(self.skip):
+            self.skip = None
         elif self.group_expects(word):
-            if word in CENT:
+            if word in self.lang.HUNDRED:
                 self.grp_val = 100 * self.grp_val if self.grp_val else 100
             else:
-                self.grp_val += NUMBERS[word]
+                self.grp_val += self.lang.NUMBERS[word]
         else:
-            self.on_hold = False
+            self.skip = None
             return False
         return True
-
-
-# TODO: Look ahead:  "de milliard"
 
 
 class WordToDigitParser:
@@ -284,7 +196,9 @@ class WordToDigitParser:
      - ``self.value``: str
     """
 
-    def __init__(self, relaxed: bool = False, signed: bool = True) -> None:
+    def __init__(
+        self, lang: Language, relaxed: bool = False, signed: bool = True
+    ) -> None:
         """Initialize the parser.
 
         If ``relaxed`` is True, we treat the sequence "quatre vingt" as
@@ -293,9 +207,10 @@ class WordToDigitParser:
         If ``signed`` is True, we parse signed numbers like
         « plus deux » (+2), or « moins vingt » (-20).
         """
+        self.lang = lang
         self._value: List[str] = []
-        self.int_builder = WordStreamValueParser(relaxed=relaxed)
-        self.frac_builder = WordStreamValueParser(relaxed=relaxed)
+        self.int_builder = WordStreamValueParser(lang, relaxed=relaxed)
+        self.frac_builder = WordStreamValueParser(lang, relaxed=relaxed)
         self.signed = signed
         self.in_frac = False
         self.closed = False  # For deferred stop
@@ -303,7 +218,7 @@ class WordToDigitParser:
 
     @property
     def value(self) -> str:
-        return ''.join(self._value)
+        return "".join(self._value)
 
     def close(self) -> None:
         """Signal end of input if input stream ends while still in a number.
@@ -320,15 +235,23 @@ class WordToDigitParser:
     def at_start_of_seq(self) -> bool:
         """Return true if we are waiting for the start of the integer
         part or the start of the fraction part."""
-        return (self.in_frac and self.frac_builder.value == 0
-                or not self.in_frac and self.int_builder.value == 0)
+        return (
+            self.in_frac
+            and self.frac_builder.value == 0
+            or not self.in_frac
+            and self.int_builder.value == 0
+        )
 
     def at_start(self) -> bool:
         """Return True if nothing valid parsed yet."""
         return not self.open
 
     def is_article(self, word: str, following: Optional[str]) -> bool:
-        return (not self.open and (word == 'un' or word == 'une') and not_numeric_word(following))
+        return (
+            not self.open
+            and word in self.lang.UNIT_ARTICLES
+            and self.lang.not_numeric_word(following)
+        )
 
     def _push(self, word: str, look_ahead: Optional[str]) -> bool:
         builder = self.frac_builder if self.in_frac else self.int_builder
@@ -352,17 +275,42 @@ class WordToDigitParser:
         if self.closed or self.is_article(word, look_ahead):
             return False
 
-        if self.signed and word in SIGN and look_ahead in NUMBERS and self.at_start():
-            self._value.append(SIGN[word])
-        elif word.startswith('zéro') and self.at_start_of_seq():
-            self._value.append('0')
-        elif word.endswith('ième') and self._push(ord2card(word) or '', look_ahead):
-            self._value.append(str(self.frac_builder.value if self.in_frac else self.int_builder.value))
-            self._value.append('ème')
+        if (
+            self.signed
+            and word in self.lang.SIGN
+            and look_ahead in self.lang.NUMBERS
+            and self.at_start()
+        ):
+            self._value.append(self.lang.SIGN[word])
+        elif (
+            word in self.lang.ZERO
+            and self.at_start_of_seq()
+            and (
+                look_ahead is None
+                or look_ahead in self.lang.NUMBERS
+                or look_ahead in self.lang.ZERO
+            )
+        ):
+            self._value.append("0")
+        elif self._push(self.lang.ord2card(word) or "", look_ahead):
+            self._value.append(
+                self.lang.num_ord(
+                    str(
+                        self.frac_builder.value
+                        if self.in_frac
+                        else self.int_builder.value
+                    ),
+                    word,
+                )
+            )
             self.closed = True
-        elif word == 'virgule' and (look_ahead in NUMBERS or look_ahead == 'zéro') and not self.in_frac:
+        elif (
+            word == self.lang.DECIMAL_SEP
+            and (look_ahead in self.lang.NUMBERS or look_ahead in self.lang.ZERO)
+            and not self.in_frac
+        ):
             self._value.append(str(self.int_builder.value))
-            self._value.append(',')
+            self._value.append(self.lang.DECIMAL_SYM)
             self.in_frac = True
         elif not self._push(word, look_ahead):
             if self.open:
