@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 
-VERSION = "2.0.0"
+VERSION = "2.0.1"
 
 
 def readme():
@@ -28,7 +28,7 @@ setup(
     author_email="contact@allo-media.fr",
     license="MIT",
     packages=find_packages(),
-    python_requires=">=3.7",
+    python_requires=">=3.6",
     test_suite="tests",
     include_package_data=True,
     zip_safe=False,
