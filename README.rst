@@ -12,7 +12,7 @@ text2num
 Compatibility
 -------------
 
-Tested on python 3.7. Requires Python >= 3.7.
+Tested on python 3.7. Requires Python >= 3.6.
 
 License
 -------
