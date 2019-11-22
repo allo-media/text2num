@@ -145,9 +145,9 @@ class TestTextToNumFR(TestCase):
 
     def test_alpha2digit_ordinals(self):
         source = (
-            "Cinquième troisième vingt et unième centième mille deux cent trentième."
+            "Cinquième second troisième vingt et unième centième mille deux cent trentième."
         )
-        expected = "5ème 3ème 21ème 100ème 1230ème."
+        expected = "5ème second troisième 21ème 100ème 1230ème."
         self.assertEqual(alpha2digit(source, "fr"), expected)
 
     def test_alpha2digit_decimals(self):

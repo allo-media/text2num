@@ -117,7 +117,7 @@ class English(Language):
 
     AND_NUMS: Set[str] = set()
     AND = "and"
-    UNIT_ARTICLES = {"a", "an"}
+    UNIT_ARTICLES = {"one"}
 
     # Relaxed composed numbers (two-words only)
     # start => (next, target)
