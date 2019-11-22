@@ -301,7 +301,7 @@ class WordToDigitParser:
                         else self.int_builder.value
                     ),
                     word,
-                )
+                ) if self.int_builder.value > 3 else word
             )
             self.closed = True
         elif (
