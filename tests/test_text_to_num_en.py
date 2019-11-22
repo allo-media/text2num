@@ -129,9 +129,9 @@ class TestTextToNumEN(TestCase):
 
     def test_alpha2digit_ordinals(self):
         source = (
-            "Fifth third twenty-first hundredth one thousand two hundred thirtieth."
+            "Fifth third second twenty-first hundredth one thousand two hundred thirtieth."
         )
-        expected = "5th 3rd 21st 100th 1230th."
+        expected = "5th third second 21st 100th 1230th."
         self.assertEqual(alpha2digit(source, "en"), expected)
 
     def test_alpha2digit_decimals(self):
@@ -148,3 +148,17 @@ class TestTextToNumEN(TestCase):
         source = "We have plus twenty degrees inside and minus fifteen outside."
         expected = "We have +20 degrees inside and -15 outside."
         self.assertEqual(alpha2digit(source, "en"), expected)
+
+    def test_one_as_noun_or_article(self):
+        source = "This is the one I'm looking for. One moment please! Twenty one."
+        expected = "This is the one I'm looking for. One moment please! 21."
+        self.assertEqual(alpha2digit(source, "en"), expected)
+        source = "No one is innocent. Another one bites the dust."
+        self.assertEqual(alpha2digit(source, "en"), source)
+
+    def test_second_as_time_unit_vs_ordinal(self):
+        source = "One second please! twenty second is parsed as twenty-second and is different from twenty seconds."
+        expected = "One second please! 22nd is parsed as 22nd and is different from 20 seconds."
+        self.assertEqual(alpha2digit(source, "en"), expected)
+
+
