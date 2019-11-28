@@ -186,6 +186,22 @@ class WordToDigitParser:
     The engine incrementaly recognize a stream of words as a valid cardinal, ordinal,
     decimal or formal number (including leading zeros) and build the corresponding digit string.
 
+    The submitted stream must be logically bounded: it is a phrase, it has a beginning and an end and does not
+    contain sub-phrases. Formally, it does not contain punctuation nor voice pauses.
+
+    For example, this text:
+
+        « You don't understand. I want two cups of coffee, three cups of tea and an apple pie. »
+
+    contains three phrases:
+
+        - « you don't understand »
+        - « I want two cups of coffee »
+        - « three cups of tea and an apple pie »
+
+    In other words, a stream must not cross (nor include) punctuation marks or voice pauses. Otherwise
+    you may get unexpected, illogical, results.
+
     Zeros are not treated as isolates but are considered as starting a new formal number
     and are concatenated to the following digit.
 
