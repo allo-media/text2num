@@ -181,3 +181,7 @@ class TestTextToNumFR(TestCase):
             "les uns et les autres ; une suite de chiffres : 1, 2, 3 !"
         )
         self.assertEqual(alpha2digit(source, "fr"), expected)
+
+    def test_un_pronoun(self):
+        source = "Je n'en veux qu'un. J'annonce: le un"
+        self.assertEqual(alpha2digit(source, "fr"), source)
