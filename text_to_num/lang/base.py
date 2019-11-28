@@ -45,7 +45,7 @@ class Language:
 
     AND_NUMS: Set[str]
     AND: str
-    UNIT_ARTICLES: Set[str]
+    NEVER_IF_ALONE: Set[str]
 
     # Relaxed composed numbers (two-words only)
     # start => (next, target)
@@ -68,5 +68,5 @@ class Language:
 
     def not_numeric_word(self, word: Optional[str]) -> bool:
         return (
-            word is not None and word != self.DECIMAL_SEP and word not in self.NUMBERS
+            word is None or word != self.DECIMAL_SEP and word not in self.NUMBERS
         )

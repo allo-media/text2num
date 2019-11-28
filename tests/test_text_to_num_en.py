@@ -150,11 +150,15 @@ class TestTextToNumEN(TestCase):
         self.assertEqual(alpha2digit(source, "en"), expected)
 
     def test_one_as_noun_or_article(self):
-        source = "This is the one I'm looking for. One moment please! Twenty one."
-        expected = "This is the one I'm looking for. One moment please! 21."
+        source = "This is the one I'm looking for. One moment please! Twenty one cats. One two three four!"
+        expected = "This is the one I'm looking for. One moment please! 21 cats. 1 2 3 4!"
         self.assertEqual(alpha2digit(source, "en"), expected)
         source = "No one is innocent. Another one bites the dust."
         self.assertEqual(alpha2digit(source, "en"), source)
+        # End of segment
+        source = "No one. Another one. One one. Twenty one"
+        expected = "No one. Another one. 1 1. 21"
+        self.assertEqual(alpha2digit(source, "en"), expected)
 
     def test_second_as_time_unit_vs_ordinal(self):
         source = "One second please! twenty second is parsed as twenty-second and is different from twenty seconds."
