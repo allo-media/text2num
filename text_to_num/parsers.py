@@ -231,6 +231,7 @@ class WordToDigitParser:
         self.in_frac = False
         self.closed = False  # For deferred stop
         self.open = False  # For efficiency
+        self.last_word: Optional[str] = None  # For context
 
     @property
     def value(self) -> str:
@@ -262,16 +263,18 @@ class WordToDigitParser:
         """Return True if nothing valid parsed yet."""
         return not self.open
 
-    def is_article(self, word: str, following: Optional[str]) -> bool:
-        return (
-            not self.open
-            and word in self.lang.UNIT_ARTICLES
-            and self.lang.not_numeric_word(following)
-        )
-
     def _push(self, word: str, look_ahead: Optional[str]) -> bool:
         builder = self.frac_builder if self.in_frac else self.int_builder
         return builder.push(word, look_ahead)
+
+    def is_alone(self, word: str, next_word: Optional[str]) -> bool:
+        return (
+            not self.open
+            and word in self.lang.NEVER_IF_ALONE
+            and self.lang.not_numeric_word(next_word)
+            and self.lang.not_numeric_word(self.last_word)
+            and not (next_word is None and self.last_word is None)
+        )
 
     def push(self, word: str, look_ahead: Optional[str] = None) -> bool:
         """Push next word from the stream.
@@ -288,7 +291,8 @@ class WordToDigitParser:
         again from the last word you tried (the one that has just been rejected).
         """
 
-        if self.closed or self.is_article(word, look_ahead):
+        if self.closed or self.is_alone(word, look_ahead):
+            self.last_word = word
             return False
 
         if (
@@ -331,7 +335,9 @@ class WordToDigitParser:
         elif not self._push(word, look_ahead):
             if self.open:
                 self.close()
+            self.last_word = word
             return False
 
         self.open = True
+        self.last_word = word
         return True

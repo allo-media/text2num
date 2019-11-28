@@ -145,7 +145,7 @@ class French(Language):
 
     AND_NUMS = {"un", "une", "unième", "onze", "onzième"}
     AND = "et"
-    UNIT_ARTICLES = {"un", "une"}
+    NEVER_IF_ALONE = {"un", "une"}
 
     # Relaxed composed numbers (two-words only)
     # start => (next, target)
