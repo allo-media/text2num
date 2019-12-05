@@ -21,6 +21,7 @@ setup(
         "Topic :: Text Processing :: Linguistic",
         "Topic :: Text Processing :: Filters",
         "Natural Language :: French",
+        "Natural Language :: English"
     ],
     keywords="French and English NLP words-to-numbers",
     url="https://github.com/allo-media/text2num",
