@@ -52,7 +52,6 @@ class TestTextToNumEN(TestCase):
 
     def test_text2num_centuries(self):
         self.assertEqual(text2num("nineteen hundred seventy-three", "en"), 1973)
-        # self.assertEqual(text2num("nineteen seventy-three", "en"), 1973)
 
     def test_text2num_exc(self):
         self.assertRaises(ValueError, text2num, "thousand thousand two hundreds", "en")
