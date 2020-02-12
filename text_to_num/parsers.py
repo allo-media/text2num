@@ -49,8 +49,7 @@ class WordStreamValueParser:
     def __init__(self, lang: Language, relaxed: bool = False) -> None:
         """Initialize the parser.
 
-        If ``relaxed`` is True, we treat the sequence "quatre vingt" as
-        a single "quatre-vingt".
+        If ``relaxed`` is True, we treat the sequences described in ``lang.RELAXED`` as single numbers.
         """
         self.lang = lang
         self.relaxed = relaxed
@@ -200,7 +199,8 @@ class WordToDigitParser:
         - « three cups of tea and an apple pie »
 
     In other words, a stream must not cross (nor include) punctuation marks or voice pauses. Otherwise
-    you may get unexpected, illogical, results.
+    you may get unexpected, illogical, results. If you need to parse complete texts with punctuation, consider
+    using `alpha2digit` transformer.
 
     Zeros are not treated as isolates but are considered as starting a new formal number
     and are concatenated to the following digit.
