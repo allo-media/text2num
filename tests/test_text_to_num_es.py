@@ -56,11 +56,12 @@ class TestTextToNumES(TestCase):
 
         self.assertEqual(alpha2digit("uno coma uno", "es"), '1.1')
         self.assertEqual(alpha2digit("uno coma cuatrocientos uno", "es"), '1.401')
-        #self.assertEqual(alpha2digit("cero coma cinco", "es"), '0.5')
 
+        # TODO:
+        # self.assertEqual(alpha2digit("cero coma cinco", "es"), '0.5')
 
-        test1 = "cincuenta y tres mil millones doscientos cuarenta y tres mil setecientos veinticuatro"
-        self.assertEqual(text2num(test1, "es"), 53_000_243_724)
+        test1 = "cincuenta y tres mil millones veinte millones doscientos cuarenta y tres mil setecientos veinticuatro"
+        self.assertEqual(text2num(test1, "es"), 53_020_243_724)
 
         test2 = (
             "cincuenta y un millones quinientos setenta y ocho mil trescientos dos"

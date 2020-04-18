@@ -31,14 +31,13 @@ from .base import Language
 
 # Those words multiplies lesser numbers (see Rules)
 # Exception: "(de) milliards" that can multiply bigger numbers ("milliards de milliards")
-# Special case: "cent" is processed apart.
 MULTIPLIERS = {
     "mil": 1000,
     "miles": 1000,
     "millon": 1000000,
     "millón": 1000000,
     "millones": 1000000,
-    "mil millones": 1000000000,
+    "milmillones": 1000000000,
 }
 
 
