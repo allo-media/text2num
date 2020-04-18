@@ -35,6 +35,8 @@ from .base import Language
 MULTIPLIERS = {
     "mil": 1000,
     "miles": 1000,
+    "millon": 1000000,
+    "millón": 1000000,
     "millones": 1000000,
     "mil millones": 1000000000,
 }
@@ -109,12 +111,13 @@ class Spanish(Language):
 
     AND_NUMS = {"un", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"}
     AND = "y"
-    NEVER_IF_ALONE = {"Un"}
+    NEVER_IF_ALONE = {"un", "uno"}
 
     # Relaxed composed numbers (two-words only)
     # start => (next, target)
     RELAXED = {}
 
+    # TODO
     def ord2card(self, word: str) -> Optional[str]:
         """Convert ordinal number to cardinal.
 
