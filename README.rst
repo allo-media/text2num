@@ -6,8 +6,8 @@ text2num
 
 ``text2num`` is a python package that provides functions and parser classes for:
 
-- parsing numbers expressed as words in French or English and convert them to integer values;
-- detect ordinal, cardinal and decimal numbers in a stream of French or English words and get their decimal digit representations.
+- parsing numbers expressed as words in French, English and Spanish and convert them to integer values;
+- detect ordinal, cardinal and decimal numbers in a stream of French, English or Spanish words and get their decimal digit representations. Spanish does not support ordinal numbers yet.
 
 Compatibility
 -------------
@@ -72,6 +72,20 @@ English examples:
 
     >>> text2num("eighty-one", "en")
     81
+    
+Spanish examples:
+
+.. code-block:: python
+
+    >>> from text_to_num import text2num
+    >>> text2num("ochenta y uno", "en")
+    81
+    
+    >>> text2num("nueve mil novecientos noventa y nueve", "en")
+    9999
+    
+    >>> text2num("cincuenta y tres millones doscientos cuarenta y tres mil setecientos veinticuatro", "es")
+    53243724
 
 
 Find and transcribe
@@ -108,10 +122,25 @@ English:
 .. code-block:: python
 
     >>> from text_to_num import alpha2digit
+    
     >>> text = "On May twenty-third, I bought twenty-five cows, twelve chickens and one hundred twenty five point forty kg of potatoes."
     >>> alpha2digit(text, "en")
     'On May 23rd, I bought 25 cows, 12 chickens and 125.40 kg of potatoes.'
 
+
+Spanish (ordinals not supported):
+
+.. code-block:: python
+
+    >>> from text_to_num import alpha2digit
+    
+    >>> text = "Compramos veinticinco vacas, doce gallinas y ciento veinticinco coma cuarenta kg de patatas."
+    >>> alpha2digit(text, "es")
+    'Compramos 25 vacas, 12 gallinas y 125.40 kg of potatoes.'
+    
+    >>> text = "Tenemos mas veinte grados dentro y menos quince fuera."
+    >>> alpha2digit(text, "es")
+    'Tenemos +20 grados dentro y -15 fuera.'
 
 Read the complete documentation on `ReadTheDocs <http://text2num.readthedocs.io/>`_.
 
