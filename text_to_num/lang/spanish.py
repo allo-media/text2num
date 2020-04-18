@@ -37,7 +37,6 @@ MULTIPLIERS = {
     "millon": 1000000,
     "millón": 1000000,
     "millones": 1000000,
-    "milmillones": 1000000000,
 }
 
 
@@ -60,7 +59,6 @@ STENS: Dict[str, int] = {
     )
 }
 
-
 # Ten multiples
 # Ten multiples may be followed by a unit only;
 MTENS: Dict[str, int] = {
@@ -76,12 +74,7 @@ MTENS_WSTENS: Set[str] = set()
 # "cent" has a special status (see Rules)
 HUNDRED = {"cien": 100, "ciento": 100, "doscientos": 200, "trescientos": 300, "cuatrocientos": 400, "quinientos": 500, "seiscientos": 600, "setecientos": 700, "ochocientos": 800, "novecientos": 900}
 
-
-COMPOSITES: Dict[str, int] = {
-    "-".join((ten_word, unit_word)): ten_val + unit_val
-    for ten_word, ten_val in MTENS.items()
-    for unit_word, unit_val in UNITS.items()
-}
+COMPOSITES: Dict[str, int] = {}
 
 # All number words
 
@@ -124,22 +117,6 @@ class Spanish(Language):
         as is the case for fist and second.
         """
         return None
-        
-        """
-        plur_suff = word.endswith("ièmes")
-        sing_suff = word.endswith("ième")
-        if not (plur_suff or sing_suff):
-            return None
-        source = word[:-5] if plur_suff else word[:-4]
-        if source == "cinqu":
-            source = "cinq"
-        elif source == "neuv":
-            source = "neuf"
-        elif source not in self.NUMBERS:
-            source = source + "e"
-            if source not in self.NUMBERS:
-                return None
-        return source"""
 
     def num_ord(self, digits: str, original_word: str) -> str:
         """Add suffix to number in digits to make an ordinal"""
