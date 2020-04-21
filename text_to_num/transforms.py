@@ -74,8 +74,6 @@ def alpha2digit(
     if you prefer to get « moins 2 » instead of « -2 ».
     """
     language = LANG[lang]
-    if lang is "es":
-        text = re.sub("mil millones", "milmillones", text)
     segments = re.split(r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text)
     punct = re.findall(r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text)
     if len(punct) < len(segments):

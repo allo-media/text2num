@@ -136,7 +136,7 @@ Spanish (ordinals not supported):
     
     >>> text = "Compramos veinticinco vacas, doce gallinas y ciento veinticinco coma cuarenta kg de patatas."
     >>> alpha2digit(text, "es")
-    'Compramos 25 vacas, 12 gallinas y 125.40 kg of potatoes.'
+    'Compramos 25 vacas, 12 gallinas y 125.40 kg de patatas.'
     
     >>> text = "Tenemos mas veinte grados dentro y menos quince fuera."
     >>> alpha2digit(text, "es")
