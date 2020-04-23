@@ -107,7 +107,7 @@ class Spanish(Language):
 
     # Relaxed composed numbers (two-words only)
     # start => (next, target)
-    RELAXED = {}
+    RELAXED:  Dict[str, Tuple[str, str]] = {}
 
     # TODO
     def ord2card(self, word: str) -> Optional[str]:
