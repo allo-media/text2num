@@ -34,7 +34,7 @@ class WordStreamValueParser:
     """The actual value builder engine.
 
     The engine incrementaly recognize a stream of words as a valid number and build the
-    corresponding numeric (interger) value.
+    corresponding numeric (integer) value.
 
     The algorithm is based on the observation that humans gather the
     digits by group of three to more easily speak them out.
@@ -49,8 +49,7 @@ class WordStreamValueParser:
     def __init__(self, lang: Language, relaxed: bool = False) -> None:
         """Initialize the parser.
 
-        If ``relaxed`` is True, we treat the sequence "quatre vingt" as
-        a single "quatre-vingt".
+        If ``relaxed`` is True, we treat the sequences described in ``lang.RELAXED`` as single numbers.
         """
         self.lang = lang
         self.relaxed = relaxed
@@ -171,7 +170,9 @@ class WordStreamValueParser:
             self.skip = None
         elif self.group_expects(word):
             if word in self.lang.HUNDRED:
-                self.grp_val = 100 * self.grp_val if self.grp_val else 100
+                self.grp_val = (
+                    100 * self.grp_val if self.grp_val else self.lang.HUNDRED[word]
+                )
             else:
                 self.grp_val += self.lang.NUMBERS[word]
         else:
@@ -200,7 +201,8 @@ class WordToDigitParser:
         - « three cups of tea and an apple pie »
 
     In other words, a stream must not cross (nor include) punctuation marks or voice pauses. Otherwise
-    you may get unexpected, illogical, results.
+    you may get unexpected, illogical, results. If you need to parse complete texts with punctuation, consider
+    using `alpha2digit` transformer.
 
     Zeros are not treated as isolates but are considered as starting a new formal number
     and are concatenated to the following digit.
@@ -321,7 +323,9 @@ class WordToDigitParser:
                         else self.int_builder.value
                     ),
                     word,
-                ) if self.int_builder.value > 3 else word
+                )
+                if self.int_builder.value > 3
+                else word
             )
             self.closed = True
         elif (

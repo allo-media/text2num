@@ -114,7 +114,7 @@ class TestTextToNumFR(TestCase):
 
         source = "trente-quatre = trente quatre"
         expected = "34 = 34"
-        self.assertEqual(alpha2digit(source, "fr", relaxed=True), expected)
+        self.assertEqual(alpha2digit(source, "fr"), expected)
 
     def test_alpha2digit_formal(self):
         source = "plus trente-trois neuf soixante zéro six douze vingt et un"

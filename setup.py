@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 
-VERSION = "2.1.1"
+VERSION = "2.2.0"
 
 
 def readme():
@@ -21,6 +21,7 @@ setup(
         "Topic :: Text Processing :: Linguistic",
         "Topic :: Text Processing :: Filters",
         "Natural Language :: French",
+        "Natural Language :: English"
     ],
     keywords="French and English NLP words-to-numbers",
     url="https://github.com/allo-media/text2num",
