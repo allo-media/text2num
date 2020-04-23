@@ -72,7 +72,18 @@ MTENS: Dict[str, int] = {
 MTENS_WSTENS: Set[str] = set()
 
 # "cent" has a special status (see Rules)
-HUNDRED = {"cien": 100, "ciento": 100, "doscientos": 200, "trescientos": 300, "cuatrocientos": 400, "quinientos": 500, "seiscientos": 600, "setecientos": 700, "ochocientos": 800, "novecientos": 900}
+HUNDRED = {
+    "cien": 100,
+    "ciento": 100,
+    "doscientos": 200,
+    "trescientos": 300,
+    "cuatrocientos": 400,
+    "quinientos": 500,
+    "seiscientos": 600,
+    "setecientos": 700,
+    "ochocientos": 800,
+    "novecientos": 900,
+}
 
 COMPOSITES: Dict[str, int] = {}
 
@@ -101,13 +112,24 @@ class Spanish(Language):
     DECIMAL_SEP = "coma"
     DECIMAL_SYM = "."
 
-    AND_NUMS = {"un", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"}
+    AND_NUMS = {
+        "un",
+        "uno",
+        "dos",
+        "tres",
+        "cuatro",
+        "cinco",
+        "seis",
+        "siete",
+        "ocho",
+        "nueve",
+    }
     AND = "y"
     NEVER_IF_ALONE = {"un", "uno"}
 
     # Relaxed composed numbers (two-words only)
     # start => (next, target)
-    RELAXED:  Dict[str, Tuple[str, str]] = {}
+    RELAXED: Dict[str, Tuple[str, str]] = {}
 
     # TODO
     def ord2card(self, word: str) -> Optional[str]:

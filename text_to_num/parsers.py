@@ -170,7 +170,9 @@ class WordStreamValueParser:
             self.skip = None
         elif self.group_expects(word):
             if word in self.lang.HUNDRED:
-                self.grp_val = 100 * self.grp_val if self.grp_val else self.lang.HUNDRED[word]
+                self.grp_val = (
+                    100 * self.grp_val if self.grp_val else self.lang.HUNDRED[word]
+                )
             else:
                 self.grp_val += self.lang.NUMBERS[word]
         else:
@@ -321,7 +323,9 @@ class WordToDigitParser:
                         else self.int_builder.value
                     ),
                     word,
-                ) if self.int_builder.value > 3 else word
+                )
+                if self.int_builder.value > 3
+                else word
             )
             self.closed = True
         elif (
