@@ -34,7 +34,7 @@ class WordStreamValueParser:
     """The actual value builder engine.
 
     The engine incrementaly recognize a stream of words as a valid number and build the
-    corresponding numeric (interger) value.
+    corresponding numeric (integer) value.
 
     The algorithm is based on the observation that humans gather the
     digits by group of three to more easily speak them out.
@@ -170,7 +170,7 @@ class WordStreamValueParser:
             self.skip = None
         elif self.group_expects(word):
             if word in self.lang.HUNDRED:
-                self.grp_val = 100 * self.grp_val if self.grp_val else 100
+                self.grp_val = 100 * self.grp_val if self.grp_val else self.lang.HUNDRED[word]
             else:
                 self.grp_val += self.lang.NUMBERS[word]
         else:
