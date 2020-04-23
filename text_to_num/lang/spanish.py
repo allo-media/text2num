@@ -54,7 +54,9 @@ UNITS["un"] = 1
 STENS: Dict[str, int] = {
     word: value
     for value, word in enumerate(
-        "diez once doce trece catorce quince dieciseis diecisiete dieciocho diecinueve veinte veintiuno veintidos veintitres veinticuatro veinticinco veintiseis veintisiete veintiocho veintinueve".split(),
+        "diez once doce trece catorce quince dieciseis diecisiete dieciocho diecinueve"
+        " veinte veintiuno veintidos veintitres veinticuatro veinticinco veintiseis"
+        " veintisiete veintiocho veintinueve".split(),
         10,
     )
 }
