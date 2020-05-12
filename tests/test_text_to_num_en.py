@@ -133,6 +133,12 @@ class TestTextToNumEN(TestCase):
         expected = "5th third second 21st 100th 1230th."
         self.assertEqual(alpha2digit(source, "en"), expected)
 
+        source = (
+            "first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth."
+        )
+        expected = "first, second, third, 4th, 5th, 6th, 7th, 8th, 9th, 10th."
+        self.assertEqual(alpha2digit(source, "en"), expected)
+
     def test_alpha2digit_decimals(self):
         source = (
             "twelve point ninety-nine, one hundred twenty point zero five,"
