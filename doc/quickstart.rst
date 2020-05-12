@@ -30,6 +30,13 @@ Integers only.
     >>> text2num("eighty-one", "en")
     81
 
+    >>> from text_to_num import text2num
+    >>> text2num("ochenta y uno", "es")
+    81
+
+    >>> text2num("nueve mil novecientos noventa y nueve", "es")
+    9999
+
     >>> text2num('quatre-vingt-quinze')
     95
 
@@ -62,6 +69,9 @@ Any number, even ordinals.
     >>> alpha2digit(text, "en")
     'On May 23rd, I bought 25 cows, 12 chickens and 125.40 kg of potatoes.'
 
+    >>> text = "Compramos veinticinco vacas, doce gallinas y ciento veinticinco coma cuarenta kg de patatas."
+    >>> alpha2digit(text, "es")
+    'Compramos 25 vacas, 12 gallinas y 125.40 kg de patatas.'
 
     >>> sentence = (
     ...         "Huit cent quarante-deux pommes, vingt-cinq chiens, mille trois chevaux, "
