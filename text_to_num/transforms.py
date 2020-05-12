@@ -85,12 +85,12 @@ def alpha2digit(
         in_number = False
         out_tokens: List[str] = []
         for word, ahead in look_ahead(tokens):
-            if num_builder.push(word.lower(), ahead):
+            if num_builder.push(word.lower(), ahead and ahead.lower()):
                 in_number = True
             elif in_number:
                 out_tokens.append(num_builder.value)
                 num_builder = WordToDigitParser(language, relaxed=relaxed)
-                in_number = num_builder.push(word.lower(), ahead)
+                in_number = num_builder.push(word.lower(), ahead and ahead.lower())
             if not in_number:
                 out_tokens.append(word)
         # End of segment

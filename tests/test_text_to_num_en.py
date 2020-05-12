@@ -170,4 +170,7 @@ class TestTextToNumEN(TestCase):
         expected = "One second please! 22nd is parsed as 22nd and is different from 20 seconds."
         self.assertEqual(alpha2digit(source, "en"), expected)
 
-
+    def test_uppercase(self):
+        source = "FIFTEEN ONE TEN ONE"
+        expected = "15 1 10 1"
+        self.assertEqual(alpha2digit(source, "en"), expected)
