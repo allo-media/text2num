@@ -30,7 +30,6 @@ Integers only.
     >>> text2num("eighty-one", "en")
     81
 
-    >>> from text_to_num import text2num
     >>> text2num("ochenta y uno", "es")
     81
 
