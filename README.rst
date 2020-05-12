@@ -72,18 +72,18 @@ English examples:
 
     >>> text2num("eighty-one", "en")
     81
-    
+
 Spanish examples:
 
 .. code-block:: python
 
     >>> from text_to_num import text2num
-    >>> text2num("ochenta y uno", "en")
+    >>> text2num("ochenta y uno", "es")
     81
-    
-    >>> text2num("nueve mil novecientos noventa y nueve", "en")
+
+    >>> text2num("nueve mil novecientos noventa y nueve", "es")
     9999
-    
+
     >>> text2num("cincuenta y tres millones doscientos cuarenta y tres mil setecientos veinticuatro", "es")
     53243724
 
@@ -122,7 +122,7 @@ English:
 .. code-block:: python
 
     >>> from text_to_num import alpha2digit
-    
+
     >>> text = "On May twenty-third, I bought twenty-five cows, twelve chickens and one hundred twenty five point forty kg of potatoes."
     >>> alpha2digit(text, "en")
     'On May 23rd, I bought 25 cows, 12 chickens and 125.40 kg of potatoes.'
@@ -133,11 +133,11 @@ Spanish (ordinals not supported):
 .. code-block:: python
 
     >>> from text_to_num import alpha2digit
-    
+
     >>> text = "Compramos veinticinco vacas, doce gallinas y ciento veinticinco coma cuarenta kg de patatas."
     >>> alpha2digit(text, "es")
     'Compramos 25 vacas, 12 gallinas y 125.40 kg de patatas.'
-    
+
     >>> text = "Tenemos mas veinte grados dentro y menos quince fuera."
     >>> alpha2digit(text, "es")
     'Tenemos +20 grados dentro y -15 fuera.'
