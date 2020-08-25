@@ -146,6 +146,12 @@ class English(Language):
             source = RAD_MAP[source]
         elif source.endswith("ie"):
             source = source[:-2] + "y"
+        elif source.endswith('fif'):  # fifth -> five
+            source = source[:-1] + 've'
+        elif source.endswith('eigh'):  # eighth -> eight
+            source = source + 't'
+        elif source.endswith('nin'):  # ninth -> nine
+            source = source + 'e'
         if source not in self.NUMBERS:
             return None
         return source

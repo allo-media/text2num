@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 
-VERSION = "2.2.0"
+VERSION = "2.2.1"
 
 
 def readme():
@@ -12,7 +12,7 @@ def readme():
 setup(
     name="text2num",
     version=VERSION,
-    description="Parse and convert numbers written in French or English into their digit representation.",
+    description="Parse and convert numbers written in French, Spanish or English into their digit representation.",
     long_description=readme(),
     classifiers=[
         "Development Status :: 5 - Production/Stable",
@@ -22,8 +22,9 @@ setup(
         "Topic :: Text Processing :: Filters",
         "Natural Language :: French",
         "Natural Language :: English"
+        "Natural Language :: Spanish"
     ],
-    keywords="French and English NLP words-to-numbers",
+    keywords="French, Spanish and English NLP words-to-numbers",
     url="https://github.com/allo-media/text2num",
     author="Allo-Media",
     author_email="contact@allo-media.fr",
