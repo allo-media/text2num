@@ -21,7 +21,7 @@ setup(
         "Topic :: Text Processing :: Linguistic",
         "Topic :: Text Processing :: Filters",
         "Natural Language :: French",
-        "Natural Language :: English"
+        "Natural Language :: English",
         "Natural Language :: Spanish"
     ],
     keywords="French, Spanish and English NLP words-to-numbers",
