@@ -7,7 +7,7 @@ text2num
 ``text2num`` is a python package that provides functions and parser classes for:
 
 - parsing numbers expressed as words in French, English, Spanish and Portuguese and convert them to integer values;
-- detect ordinal, cardinal and decimal numbers in a stream of French, English, Spanish and Portuguese words and get their decimal digit representations. Spanish and Portuguese do not support ordinal numbers yet.
+- detect ordinal, cardinal and decimal numbers in a stream of French, English, Spanish and Portuguese words and get their decimal digit representations. Spanish does not support ordinal numbers yet.
 
 Compatibility
 -------------
@@ -157,7 +157,7 @@ Spanish (ordinals not supported):
     'Tenemos +20 grados dentro y -15 fuera.'
 
 
-Portuguese (ordinals not supported):
+Portuguese:
 
 .. code-block:: python
 
@@ -168,8 +168,14 @@ Portuguese (ordinals not supported):
     'Comprámos 25 vacas, 12 galinhas e 125,40 kg de batatas.'
 
     >>> text = "Temos mais vinte graus dentro e menos quinze fora."
-    >>> alpha2digit(text, "es")
+    >>> alpha2digit(text, "pt")
    'Temos +20 graus dentro e -15 fora.'
+
+    >>> text = "Ordinais: quinto, terceiro, vigésimo, vigésimo primeiro, centésimo quarto"
+   >>> alpha2digit(text, "pt")
+   'Ordinais: 5º, terceiro, 20ª, 21º, 104º'
+
+
 
 Read the complete documentation on `ReadTheDocs <http://text2num.readthedocs.io/>`_.
 
