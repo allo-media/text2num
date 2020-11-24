@@ -20,7 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Dict, Optional, Set, Tuple
+import re
+import sys
+from typing import Dict, Optional, Set, Tuple, List, Union
 
 from .base import Language
 
@@ -36,6 +38,7 @@ MULTIPLIERS = {
     "milhar":   1000,
     "milhares": 1000,
     "milhão":   1000000,
+    "milhao":   1000000,
     "milhões":  1000000,
 }
 
@@ -98,10 +101,12 @@ HUNDRED = {
     "novecentas": 900,
 }
 
+# Composites are tens already composed with terminals in one word.
+# Composites are terminals.
+
 COMPOSITES: Dict[str, int] = {}
 
 # All number words
-
 NUMBERS = MULTIPLIERS.copy()
 NUMBERS.update(UNITS)
 NUMBERS.update(STENS)
@@ -109,8 +114,9 @@ NUMBERS.update(MTENS)
 NUMBERS.update(HUNDRED)
 NUMBERS.update(COMPOSITES)
 
-
 class Portuguese(Language):
+
+    ISO_CODE = 'pt'
 
     MULTIPLIERS = MULTIPLIERS
     UNITS = UNITS
@@ -125,19 +131,51 @@ class Portuguese(Language):
     DECIMAL_SEP = "vírgula"
     DECIMAL_SYM = ","
 
+    DIRECT_CONVERSION = UNITS.copy()
+    DIRECT_CONVERSION.update(STENS)
+    DIRECT_CONVERSION = { k : str(v) for k, v in DIRECT_CONVERSION.items()}
+
+    ADD = {'milhão' : '1000000',
+            'mil' : '1000',
+            'milhar': '1000',
+            'trezentos': '300',
+            'trezentas': '300',
+            'duzentos': '200',
+            'duzentas': '200',
+            'centena': '100',
+            'noventa': '90',
+            'oitenta': '80',
+            'setenta': '70',
+            'sessenta': '60',
+            'cinquenta': '50',
+            'quarenta': '40',
+            'trinta': '30',
+            'dúzia': '24',
+            'dúzias': '24',
+            'vinte': '20',
+            'dezanove': '19',
+            'dezooito': '18',
+            'dezassete': '17',
+            'dezasseis': '16',
+            'quinze': '15',
+            'quatorze': '14',
+            'treze': '13',
+            'doze': '12',
+            'onze': '11',
+            'dezena': '10'
+            }
+
+    DIRECT_CONVERSION.update(ADD)
+
+    # pt conjunction rules are complex
+    # https://duvidas.dicio.com.br/como-escrever-numeros-por-extenso/
     AND_NUMS = {
-        "um",
-       "uma",
-       "duas",
-        "dois",
-        "três",
-        "quatro",
-        "cinco",
-        "seis",
-        "sete",
-        "oito",
-        "nove",
+        "um", "uma", "duas", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove",
+        "dez", "onze", "doze", "treze", "quatorze", "quinze", "dezasseis", "dezassete", "dezoito", "dezanove",
+        "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa",
+        "cem", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos",
     }
+
     AND = "e"
     NEVER_IF_ALONE = {"um", "uma"}
 
@@ -145,18 +183,167 @@ class Portuguese(Language):
     # start => (next, target)
     RELAXED: Dict[str, Tuple[str, str]] = {}
 
-    # TODO
+    pt_ordinals = {'primeir': 'um',
+                    'segund': 'dois',
+                    'terceir': 'três',
+                    'quart': 'quatro',
+                    'quint': 'cinco',
+                    'sext': 'seis',
+                    'sétim': 'sete',
+                    'oitav': 'oito',
+                    'non': 'nove',
+                    'décim': 'dez',
+                    'vigésim': 'vinte',
+                    'trigésim': 'trinta',
+                    'quadragésim': 'quarenta',
+                    'quinquagésim': 'cinquenta',
+                    'sexagésim': 'sessenta',
+                    'septagésim': 'setenta',
+                    'octagésim':'oitenta',
+                    'nonagésim':'noventa',
+                    'centésim': 'cem',
+                    'ducentésim': 'cem',
+                    'trecentésim': 'cem',
+                    'quadrigentésim': 'cem',
+                    'quingentésim': 'cem',
+                    'sexgentésim': 'cem',
+                    'setingentésim': 'cem',
+                    'octigentésim': 'cem',
+                    'nonigentésim': 'mil',
+                    'milionésim': 'milhão'}
+
     def ord2card(self, word: str) -> Optional[str]:
         """Convert ordinal number to cardinal.
 
         Return None if word is not an ordinal or is better left in letters
-        as is the case for fist and second.
+        as is the case for first and second.
         """
-        return None
+        
+        ord_ = self.pt_ordinals.get(word[:-1], None)
+
+        return ord_
 
     def num_ord(self, digits: str, original_word: str) -> str:
-        """Add suffix to number in digits to make an ordinal"""
+        """Add suffix to number in digits to make an ordinal
+        
+            Portuguese language: 22° : vigésimo segundo: 20 + 2 °
+            so if there is a couple of ordinals found, only add suffix to the last one
+        """
+
         return f"{digits}º" if original_word.endswith("o") else f"{digits}ª"
 
     def normalize(self, word: str) -> str:
         return word
+
+SEGMENT_BREAK = re.compile(r"\s*[\.,;\(\)…\[\]:!\?]+\s*")
+
+SUB_REGEXES = [(re.compile(r'1\s'), 'um '),
+            (re.compile(r'2\s'), 'dois'),
+            (re.compile(r'\b1[\º\°]\b'), 'primeiro'),
+            (re.compile(r'\b2[\º\°]\b'), 'segundo'),
+            (re.compile(r'\b3[\º\°]\b'), 'terceiro'),
+            (re.compile(r'\b1\ª\b'), 'primeira'),
+            (re.compile(r'\b2\ª\b'), 'segunda'),
+            (re.compile(r'\b3\ª\b'), 'terceira')
+    ]
+
+class OrdinalsMerger:
+    
+    def merge_compound_ordinals_pt(self, text:str) -> str:
+        """ join compound ordinal cases created by a text2num 1st pass
+            
+            Example:
+                    20° 7° -> 27°
+
+            Greedy pusher: push along the token stream,
+                           create a new ordinal sequence if an ordinal is found
+                           stop sequence when no more ordinals are found
+                           sum ordinal sequence
+                    
+        """
+
+        segments = re.split(SEGMENT_BREAK, text)
+        punct = re.findall(SEGMENT_BREAK, text)
+        if len(punct) < len(segments):
+            punct.append('')
+        out_segments = []
+        for segment, sep in zip(segments, punct):     # loop over segments
+            tokens = [t for t in segment.split(' ') if len(t) > 0]
+            
+            pointer = 0
+            tokens_ = []
+            current_is_ordinal = False
+            seq = []
+
+            while pointer < len(tokens):
+                token = tokens[pointer]
+                if self.is_ordinal(token): # found an ordinal, push into new seq
+                    current_is_ordinal = True
+                    seq.append(self.get_cardinal(token))
+                    gender = self.get_gender(token)
+                else:
+                    if current_is_ordinal is False: # add standard token
+                        tokens_.append(token)
+                    else:                           # close seq
+                        ordinal = sum(seq)
+                        tokens_.append(str(ordinal) + gender)
+                        tokens_.append(token)
+                        seq = []
+                        current_is_ordinal = False
+                pointer += 1
+
+            if current_is_ordinal is True: # close seq for single token expressions
+                ordinal = sum(seq)
+                tokens_.append(str(ordinal) + gender)
+            
+
+            tokens_ = self.text2num_style(tokens_)
+            segment = ' '.join(tokens_) + sep
+            out_segments.append(segment)
+
+        text = ''.join(out_segments)
+        
+        return text
+    
+    @staticmethod
+    def is_ordinal(token:str) -> bool:
+        out = False
+        if 'º' in token or '°' in token or 'ª' in token:
+            out = True
+        
+        if token in ['primeiro', 'primeira', 'segundo', 'segunda', 'terceiro', 'terceira']:
+            out = True
+        return out
+
+    @staticmethod
+    def get_cardinal(token:str) -> int:
+        out = None
+        try:
+            out = int(token[:-1])
+        except ValueError:
+            if token[:-1] == 'primeir':
+                out = 1
+            elif token[:-1] == 'segund':
+                out = 2
+            elif token[:-1] == 'terceir':
+                out = 3
+        return out
+
+    @staticmethod
+    def get_gender(token:str) -> str:
+        gender = token[-1]
+        if gender == 'a':
+            gender = 'ª'
+        if gender == 'o':
+            gender = 'º'
+        return gender
+
+    @staticmethod
+    def text2num_style(tokens:List[str]) -> List[str]:
+        """ convert a list of tokens to text2num_style, i.e. : 1 -> un/one/uno/um
+        """
+
+        for regex in SUB_REGEXES:
+            tokens = [re.sub(regex[0], regex[1], token) for token in tokens]
+
+        return tokens

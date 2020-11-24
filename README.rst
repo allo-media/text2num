@@ -157,7 +157,7 @@ Spanish (ordinals not supported):
     'Tenemos +20 grados dentro y -15 fuera.'
 
 
-Portuguese (ordinals not supported):
+Portuguese:
 
 .. code-block:: python
 
@@ -168,8 +168,13 @@ Portuguese (ordinals not supported):
     'Comprámos 25 vacas, 12 galinhas e 125,40 kg de batatas.'
 
     >>> text = "Temos mais vinte graus dentro e menos quinze fora."
-    >>> alpha2digit(text, "es")
+    >>> alpha2digit(text, "pt")
    'Temos +20 graus dentro e -15 fora.'
+
+    >>> text = "Ordinais: quinto, terceiro, vigésimo, vigésimo primeiro, centésimo, centésimo quarto"
+   >>> alpha2digit(text, "pt")
+   'Ordinais: 5º, terceiro, 20ª, 21º, 100º, 104º'
+
 
 Read the complete documentation on `ReadTheDocs <http://text2num.readthedocs.io/>`_.
 
