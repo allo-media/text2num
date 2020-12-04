@@ -28,6 +28,7 @@ from .base import Language  # noqa: F401
 from .french import French
 from .english import English
 from .spanish import Spanish
+from .german import German
 
 
-LANG = {"fr": French(), "en": English(), "es": Spanish()}
+LANG = {"fr": French(), "en": English(), "es": Spanish(), "de": German()}
