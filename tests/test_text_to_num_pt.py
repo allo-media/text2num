@@ -51,11 +51,14 @@ class TestTextToNumPT(TestCase):
         self.assertEqual(text2num("mil e um", "pt"), 1001)
         self.assertEqual(text2num("dois mil", "pt"), 2000)
         self.assertEqual(text2num("dois mil noventa e nove", "pt"), 2099)
-        self.assertEqual(text2num("nove mil novecentos noventa e nove", "pt"), 9999)
-        self.assertEqual(text2num("novecentos noventa e nove mil novecentos noventa e nove", "pt"), 999999)
+        self.assertEqual(
+            text2num("nove mil novecentos noventa e nove", "pt"), 9999)
+        self.assertEqual(text2num(
+            "novecentos noventa e nove mil novecentos noventa e nove", "pt"), 999999)
 
         self.assertEqual(alpha2digit("um vírgula um", "pt"), "1,1")
-        self.assertEqual(alpha2digit("um vírgula quatrocentos e um", "pt"), "1,401")
+        self.assertEqual(alpha2digit(
+            "um vírgula quatrocentos e um", "pt"), "1,401")
 
         # fail
 #        self.assertEqual(alpha2digit("zero vírgula cinco", "pt"), "0,5")
@@ -161,7 +164,6 @@ class TestTextToNumPT(TestCase):
         expected = "378027312"
         self.assertEqual(alpha2digit(source, "pt"), expected)
 
-
     def test_alpha2digit_zero(self):
         source = "treze mil zero noventa"
         expected = "13000 090"
@@ -207,10 +209,10 @@ class TestTextToNumPT(TestCase):
 
     def test_alpha2digit_ordinals(self):
         source = "Ordinais: primeiro, quinto, terceiro, vigésima, vigésimo primeiro, centésimo quadragésimo quinto"
-        expected = "Ordinais: primeiro, 5º, terceiro, 20ª, 21º, 145º"    
+        expected = "Ordinais: primeiro, 5º, terceiro, 20ª, 21º, 145º"
         self.assertEqual(alpha2digit(source, "pt"), expected)
 
     def test_alpha2digit_ordinals_more(self):
         source = "A décima quarta brigada do exército português, juntamento com o nonagésimo sexto regimento britânico, bateu o centésimo vigésimo sétimo regimento de infantaria de Napoleão"
-        expected = "A 14ª brigada do exército português, juntamento com o 96º regimento britânico, bateu o 127º regimento de infantaria de Napoleão"    
+        expected = "A 14ª brigada do exército português, juntamento com o 96º regimento britânico, bateu o 127º regimento de infantaria de Napoleão"
         self.assertEqual(alpha2digit(source, "pt"), expected)
