@@ -6,8 +6,8 @@ text2num
 
 ``text2num`` is a python package that provides functions and parser classes for:
 
-- parsing numbers expressed as words in French, English and Spanish and convert them to integer values;
-- detect ordinal, cardinal and decimal numbers in a stream of French, English or Spanish words and get their decimal digit representations. Spanish does not support ordinal numbers yet.
+- parsing numbers expressed as words in French, English, Spanish and Portuguese and convert them to integer values;
+- detect ordinal, cardinal and decimal numbers in a stream of French, English, Spanish and Portuguese words and get their decimal digit representations. Spanish does not support ordinal numbers yet.
 
 Compatibility
 -------------
@@ -88,6 +88,20 @@ Spanish examples:
     53243724
 
 
+Portuguese examples:
+
+.. code-block:: python
+
+    >>> from text_to_num import text2num
+    >>> text2num("trinta e dois", "pt")
+    32
+
+    >>> text2num("mil novecentos e seis", "pt")
+    1906
+
+    >>> text2num("vinte e quatro milhões duzentos mil quarenta e sete", "pt")
+    24200047
+
 Find and transcribe
 ~~~~~~~~~~~~~~~~~~~
 
@@ -141,6 +155,27 @@ Spanish (ordinals not supported):
     >>> text = "Tenemos mas veinte grados dentro y menos quince fuera."
     >>> alpha2digit(text, "es")
     'Tenemos +20 grados dentro y -15 fuera.'
+
+
+Portuguese:
+
+.. code-block:: python
+
+    >>> from text_to_num import alpha2digit
+
+    >>> text = "Comprámos vinte e cinco vacas, doze galinhas e cento vinte e cinco vírgula quarenta kg de batatas."
+    >>> alpha2digit(text, "pt")
+    'Comprámos 25 vacas, 12 galinhas e 125,40 kg de batatas.'
+
+    >>> text = "Temos mais vinte graus dentro e menos quinze fora."
+    >>> alpha2digit(text, "pt")
+   'Temos +20 graus dentro e -15 fora.'
+
+    >>> text = "Ordinais: quinto, terceiro, vigésimo, vigésimo primeiro, centésimo quarto"
+   >>> alpha2digit(text, "pt")
+   'Ordinais: 5º, terceiro, 20ª, 21º, 104º'
+
+
 
 Read the complete documentation on `ReadTheDocs <http://text2num.readthedocs.io/>`_.
 
