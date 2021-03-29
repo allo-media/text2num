@@ -32,6 +32,7 @@ from text_to_num.lang.portuguese import OrdinalsMerger
 omg = OrdinalsMerger()
 USE_PT_ORDINALS_MERGER = True
 
+
 def look_ahead(sequence: Sequence[Any]) -> Iterator[Tuple[Any, Any]]:
     """Look-ahead iterator.
 
@@ -68,14 +69,13 @@ def text2num(text: str, lang: str, relaxed: bool = False) -> int:
     return num_parser.value
 
 
-def alpha2digit(text: str, lang: str, relaxed: bool = False, signed: bool = True
-) -> str:
+def alpha2digit(text: str, lang: str, relaxed: bool = False, signed: bool = True) -> str:
     """Return the text of ``text`` with all the ``lang`` spelled numbers converted to digits.
     Takes care of punctuation.
     Set ``relaxed`` to True if you want to accept some disjoint numbers as compounds.
     Set ``signed`` to False if you don't want to produce signed numbers, that is, for example,
     if you prefer to get « moins 2 » instead of « -2 ».
-    
+
     """
     if lang not in LANG.keys():
         raise Exception("Language not supported")
@@ -105,7 +105,7 @@ def alpha2digit(text: str, lang: str, relaxed: bool = False, signed: bool = True
             out_tokens.append(num_builder.value)
         out_segments.append(" ".join(out_tokens))
         out_segments.append(sep)
-    text="".join(out_segments)
+    text = "".join(out_segments)
     if lang == 'pt' and USE_PT_ORDINALS_MERGER:
-        text = omg.merge_compound_ordinals_pt(text)    
+        text = omg.merge_compound_ordinals_pt(text)
     return text

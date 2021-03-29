@@ -52,7 +52,8 @@ class TestTextToNumES(TestCase):
         self.assertEqual(text2num("dos mil", "es"), 2000)
         self.assertEqual(text2num("dos mil noventa y nueve", "es"), 2099)
         self.assertEqual(text2num("nueve mil novecientos noventa y nueve", "es"), 9999)
-        self.assertEqual(text2num("novecientos noventa y nueve mil novecientos noventa y nueve", "es"), 999999)
+        self.assertEqual(text2num("novecientos noventa y nueve mil novecientos noventa y nueve", "es"),
+                         999999)
         long_text = "novecientos noventa y nueve mil novecientos noventa y nueve millones novecientos noventa y nueve mil novecientos noventa y nueve"
         self.assertEqual(text2num(long_text, "es"), 999999999999)
 
@@ -154,7 +155,7 @@ class TestTextToNumES(TestCase):
         self.assertEqual(alpha2digit(source, "es"), expected)
 
         self.assertEqual(alpha2digit("coma quince", "es"), "0.15")
-        #self.assertEqual(alpha2digit("cero coma quince", "es"), "0.15") # TODO
+        # self.assertEqual(alpha2digit("cero coma quince", "es"), "0.15")  # TODO
 
     def test_alpha2digit_signed(self):
         source = "Tenemos mas veinte grados dentro y menos quince fuera."
@@ -175,7 +176,6 @@ class TestTextToNumES(TestCase):
         self.assertEqual(text2num("un millón", "es"), 1000000)
         self.assertEqual(alpha2digit("Un millon", "es"), "1000000")
         self.assertEqual(alpha2digit("Un millón", "es"), "1000000")
-
 
     # ord2card NOT implemented in Spanish
     """
