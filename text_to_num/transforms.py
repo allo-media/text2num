@@ -62,7 +62,7 @@ def text2num(text: str, lang: str, relaxed: bool = False) -> int:
     """
 
     language = LANG[lang]
-    
+
     # The German number writing rules do not apply to the order of number processing
     # in the commin WordStreamValueParser
     if lang == "de":
@@ -73,7 +73,7 @@ def text2num(text: str, lang: str, relaxed: bool = False) -> int:
         return num_parser.value
     else:
         num_parser = WordStreamValueParser(language, relaxed=relaxed)
-        
+
     tokens = list(dropwhile(lambda x: x in language.ZERO, text.split()))
     if not all(num_parser.push(word, ahead) for word, ahead in look_ahead(tokens)):
         raise ValueError("invalid literal for text2num: {}".format(repr(text)))
@@ -94,7 +94,7 @@ def alpha2digit(text: str, lang: str, relaxed: bool = False, signed: bool = True
         language = LANG[lang]
         segments = re.split(r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text)
         punct = re.findall(r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text)
-  
+
         if len(punct) < len(segments):
             punct.append("")
 
@@ -111,17 +111,17 @@ def alpha2digit(text: str, lang: str, relaxed: bool = False, signed: bool = True
             while token_index < len(tokens):
                 t = tokens[token_index]
                 sentence.append(t)
-                                    
+
                 try:
                     num_result = text2num(" ".join(sentence), lang)
                     old_num_result = num_result
                     token_index += 1
-                except:
+                except AssertionError:
                     # " ".join(sentence) cannot be resolved to a number
-                    
+
                     # last token has to be tested again in case there is sth like "eins eins eins"
                     # which is invalid in sum but separately allowed
-                    if not old_num_result is None:
+                    if old_num_result is not None:
                         out_tokens.append(str(old_num_result))
                         out_tokens_is_num.append(True)
                         sentence.clear()
@@ -131,26 +131,25 @@ def alpha2digit(text: str, lang: str, relaxed: bool = False, signed: bool = True
                         sentence.clear()
                         token_index += 1
                     old_num_result = None
-                    
+
             # any remaining tokens to add?
-            if not old_num_result is None:
+            if old_num_result is not None:
                 out_tokens.append(str(old_num_result))
                 out_tokens_is_num.append(True)
-                
+
             # join all and keep track on signs
             out_segment = ""
             for index, ot in enumerate(out_tokens):
                 if (ot in language.SIGN) and signed:
-                    if index < len(out_tokens)-1:
-                        if out_tokens_is_num[index+1] == True:
+                    if index < len(out_tokens) - 1:
+                        if out_tokens_is_num[index + 1] is True:
                             out_segment += language.SIGN[ot]
                 else:
-                    out_segment +=ot + " "
-                        
+                    out_segment += ot + " "
+
             out_segments.append(out_segment.strip())
             out_segments.append(sep)
-        
-        
+
         return "".join(out_segments)
 
     language = LANG[lang]

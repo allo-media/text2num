@@ -60,8 +60,8 @@ class TestTextToNumDE(TestCase):
 
     def test_text2num_zeroes(self):
         self.assertEqual(text2num("null", "de"), 0)
-        self.assertRaises(ValueError, text2num, "null acht", "de") # This is not allowed and should be solved with alpha2digit
-        self.assertRaises(ValueError, text2num, "null null hundertfünfundzwanzig", "de") # This is not allowed and should be solved with alpha2digit
+        self.assertRaises(ValueError, text2num, "null acht", "de")  # This is not allowed and should be solved with alpha2digit
+        self.assertRaises(ValueError, text2num, "null null hundertfünfundzwanzig", "de")  # This is not allowed and should be solved with alpha2digit
         self.assertRaises(ValueError, text2num, "fünf null", "de")
         self.assertRaises(ValueError, text2num, "fünfzignullzwei", "de")
         self.assertRaises(ValueError, text2num, "fünfzigdreinull", "de")
@@ -70,7 +70,7 @@ class TestTextToNumDE(TestCase):
         source = "fünfundzwanzig Kühe, zwölf Hühner und einhundertfünfundzwanzig kg Kartoffeln."
         expected = "25 Kühe, 12 Hühner und 125 kg Kartoffeln."
         self.assertEqual(alpha2digit(source, "de"), expected)
-        
+
         source = "Eintausendzweihundertsechsundsechzig Dollar."
         expected = "1266 Dollar."
         self.assertEqual(alpha2digit(source, "de"), expected)
@@ -78,11 +78,10 @@ class TestTextToNumDE(TestCase):
         source = "eins zwei drei vier zwanzig fünfzehn"
         expected = "1 2 3 4 20 15"
         self.assertEqual(alpha2digit(source, "de"), expected)
-        
+
         source = "einundzwanzig, einunddreißig."
         expected = "21, 31."
         self.assertEqual(alpha2digit(source, "de"), expected)
-
 
     def test_relaxed(self):
         source = "eins zwei drei vier fünf und zwanzig."
@@ -117,7 +116,6 @@ class TestTextToNumDE(TestCase):
         source = "fünfzig sechzig dreißig und elf"
         expected = "50 60 30 und 11"
         self.assertEqual(alpha2digit(source, "de"), expected)
-		
 
     def test_alpha2digit_zero(self):
         source = "dreizehntausend null neunzig"
@@ -161,23 +159,23 @@ class TestTextToNumDE(TestCase):
 
     def test_one_as_noun_or_article(self):
         # Not applicable to German language
-        return
-        #source = "Ich nehme eins. Eins passt nicht!"
-        #expected = "Ich nehme eins. Eins passt nicht!"
-        #self.assertEqual(alpha2digit(source, "de"), expected)
-        #source = "No one is innocent. Another one bites the dust."
-        #self.assertEqual(alpha2digit(source, "de"), source)
+        # source = "Ich nehme eins. Eins passt nicht!"
+        # expected = "Ich nehme eins. Eins passt nicht!"
+        # self.assertEqual(alpha2digit(source, "de"), expected)
+        # source = "No one is innocent. Another one bites the dust."
+        # self.assertEqual(alpha2digit(source, "de"), source)
         # End of segment
-        #source = "No one. Another one. One one. Twenty one"
-        #expected = "No one. Another one. 1 1. 21"
-        #self.assertEqual(alpha2digit(source, "de"), expected)
-		
+        # source = "No one. Another one. One one. Twenty one"
+        # expected = "No one. Another one. 1 1. 21"
+        # self.assertEqual(alpha2digit(source, "de"), expected)
+        return
+
     def test_second_as_time_unit_vs_ordinal(self):
         # Not yet applicable to German language
+        # source = "One second please! twenty second is parsed as twenty-second and is different from twenty seconds."
+        # expected = "One second please! 22nd is parsed as 22nd and is different from 20 seconds."
+        # self.assertEqual(alpha2digit(source, "de"), expected)
         return
-    #    source = "One second please! twenty second is parsed as twenty-second and is different from twenty seconds."
-    #    expected = "One second please! 22nd is parsed as 22nd and is different from 20 seconds."
-    #    self.assertEqual(alpha2digit(source, "de"), expected)
 
     def test_uppercase(self):
         source = "FÜNFZEHN EINS ZEHN EINS"

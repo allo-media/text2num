@@ -20,10 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Dict, Optional, Set, Tuple
+from typing import Dict, Optional
 
 from .base import Language
-
 
 #
 # CONSTANTS
@@ -48,14 +47,11 @@ MULTIPLIERS = {
     "trilliarden": 1_000_000_000_000_000_000_000
 }
 
-
 # Units are terminals (see Rules)
 # Special case: "zero/O" is processed apart.
 UNITS: Dict[str, int] = {
     word: value
-    for value, word in enumerate(
-        "eins zwei drei vier fünf sechs sieben acht neun".split(), 1
-    )
+    for value, word in enumerate("eins zwei drei vier fünf sechs sieben acht neun".split(), 1)
 }
 # Unit variants
 UNITS["ein"] = 1
@@ -69,22 +65,18 @@ STENS: Dict[str, int] = {
     )
 }
 
-
 # Ten multiples
 # Ten multiples may be followed by a unit only;
 MTENS: Dict[str, int] = {
     word: value * 10
-    for value, word in enumerate(
-        "zwanzig dreißig vierzig fünfzig sechzig siebzig achtzig neunzig".split(), 2
-    )
+    for value, word in enumerate("zwanzig dreißig vierzig fünfzig sechzig siebzig achtzig neunzig".split(), 2)
 }
 
 # Ten multiples that can be combined with STENS
-#MTENS_WSTENS: Set[str] = set()
-
+# MTENS_WSTENS: Set[str] = set()
 
 # "hundred" has a special status (see Rules)
-HUNDRED = {"hundert": 100} # einhundert?
+HUNDRED = {"hundert": 100}  # einhundert?
 
 # All number words
 
@@ -93,12 +85,14 @@ NUMBERS.update(UNITS)
 NUMBERS.update(STENS)
 NUMBERS.update(MTENS)
 NUMBERS.update(HUNDRED)
-#NUMBERS.update(COMPOSITES) # CIMPOSITES are already in STENS for the German language
+# NUMBERS.update(COMPOSITES) # COMPOSITES are already in STENS for the German language
 
 AND = "und"
 ZERO = {"null"}
 
-ALL_WORDS = list(UNITS.keys()) + list(STENS.keys()) + list(MULTIPLIERS.keys()) + list(MTENS.keys()) + list(HUNDRED.keys())+ list(ZERO) + list([AND])
+ALL_WORDS = list(UNITS.keys()) + list(STENS.keys()) + list(MULTIPLIERS.keys()) + list(MTENS.keys()) + list(
+    HUNDRED.keys()) + list(ZERO) + list([AND])
+
 
 class German(Language):
 
@@ -153,7 +147,7 @@ class German(Language):
     UNITS = UNITS
     STENS = STENS
     MTENS = MTENS
-    #MTENS_WSTENS = MTENS_WSTENS
+    # MTENS_WSTENS = MTENS_WSTENS
     HUNDRED = HUNDRED
     NUMBERS = NUMBERS
 
@@ -162,24 +156,26 @@ class German(Language):
     DECIMAL_SEP = "komma"
     DECIMAL_SYM = ","
 
-    #AND_NUMS = set(UNITS.keys()).union(set(STENS.keys()).union(set(MTENS.keys())))
+    # AND_NUMS = set(UNITS.keys()).union(set(STENS.keys()).union(set(MTENS.keys())))
     AND = AND
-    #NEVER_IF_ALONE = {"one"} # ???
+
+    # NEVER_IF_ALONE = {"one"} # ???
 
     # Relaxed composed numbers (two-words only)
     # start => (next, target)
-    #RELAXED: Dict[str, Tuple[str, str]] = {}
+    # RELAXED: Dict[str, Tuple[str, str]] = {}
 
     def ord2card(self, word: str) -> Optional[str]:
         """Convert ordinal number to cardinal.
 
-		THIS IS STILL IN DEVELOPMENT FOR GERMAN LANGUAGE
-        
+        THIS IS STILL IN DEVELOPMENT FOR GERMAN LANGUAGE
+
         Return None if word is not an ordinal or is better left in letters
         as is the case for fist and second.
         """
-        plur_suff = word.endswith("ster") and not word.startswith("sechster") # Zwanzigster, Dreißigster, Hundertster, Tausendster ...
-        sing_suff = word.endswith("ter") # Zweiter, Vierter, Fünfter, Sechster 
+        plur_suff = word.endswith("ster") and not word.startswith(
+            "sechster")  # Zwanzigster, Dreißigster, Hundertster, Tausendster ...
+        sing_suff = word.endswith("ter")  # Zweiter, Vierter, Fünfter, Sechster
         if not (plur_suff or sing_suff):
             if word.endswith("erster"):
                 source = word.replace("erster", "eins")
@@ -204,23 +200,22 @@ class German(Language):
 
     def num_ord(self, digits: str, original_word: str) -> str:
         """Add suffix to number in digits to make an ordinal
-		
-		THIS IS STILL IN DEVELOPMENT FOR GERMAN LANGUAGE
-		
-		"""
+
+        THIS IS STILL IN DEVELOPMENT FOR GERMAN LANGUAGE
+
+        """
         sf = original_word[-3:] if original_word.endswith("s") else original_word[-2:]
         return f"{digits}{sf}"
 
     def normalize(self, word: str) -> str:
         return word
-		        
+
     def split_ger(self, word: str) -> str:
         """Splits number words into separate words, e.g. einhundertfünzig-> ein hundert fünfzig"""
-		
-        # Sort all numbers by length to start with the longest 
+
+        # Sort all numbers by length to start with the longest
         sorted_words = sorted(ALL_WORDS, key=len, reverse=True)
-        
-        current_word = ""
+
         text = word.lower()
         invalid_word = ""
         result = ""
@@ -228,18 +223,18 @@ class German(Language):
             # start with the longest
             found = False
             for sw in sorted_words:
-				# Check at the beginning of the current sentence for the longest word in ALL_WORDS
+                # Check at the beginning of the current sentence for the longest word in ALL_WORDS
                 if text.startswith(sw):
                     if len(invalid_word) > 0:
                         result += invalid_word + " "
                         invalid_word = ""
-                        
+
                     result += sw + " "
                     text = text[len(sw):]
                     found = True
                     break
             if not found:
-			
+
                 # current beginning could not be assigned to a word
                 if not text[0] == ' ':
                     invalid_word += text[0:1]
@@ -249,8 +244,8 @@ class German(Language):
                         result += invalid_word + " "
                         invalid_word = ""
                     text = text[1:]
-                    
+
         if len(invalid_word) > 0:
             result += invalid_word + " "
-    
+
         return result
