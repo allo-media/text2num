@@ -44,14 +44,16 @@ MULTIPLIERS = {
     "trillion": 1_000_000_000_000_000_000,
     "trillionen": 1_000_000_000_000_000_000,
     "trilliarde": 1_000_000_000_000_000_000_000,
-    "trilliarden": 1_000_000_000_000_000_000_000
+    "trilliarden": 1_000_000_000_000_000_000_000,
 }
 
 # Units are terminals (see Rules)
 # Special case: "zero/O" is processed apart.
 UNITS: Dict[str, int] = {
     word: value
-    for value, word in enumerate("eins zwei drei vier fünf sechs sieben acht neun".split(), 1)
+    for value, word in enumerate(
+        "eins zwei drei vier fünf sechs sieben acht neun".split(), 1
+    )
 }
 # Unit variants
 UNITS["ein"] = 1
@@ -69,7 +71,9 @@ STENS: Dict[str, int] = {
 # Ten multiples may be followed by a unit only;
 MTENS: Dict[str, int] = {
     word: value * 10
-    for value, word in enumerate("zwanzig dreißig vierzig fünfzig sechzig siebzig achtzig neunzig".split(), 2)
+    for value, word in enumerate(
+        "zwanzig dreißig vierzig fünfzig sechzig siebzig achtzig neunzig".split(), 2
+    )
 }
 
 # Ten multiples that can be combined with STENS
@@ -90,8 +94,15 @@ NUMBERS.update(HUNDRED)
 AND = "und"
 ZERO = {"null"}
 
-ALL_WORDS = list(UNITS.keys()) + list(STENS.keys()) + list(MULTIPLIERS.keys()) + list(MTENS.keys()) + list(
-    HUNDRED.keys()) + list(ZERO) + list([AND])
+ALL_WORDS = (
+    list(UNITS.keys())
+    + list(STENS.keys())
+    + list(MULTIPLIERS.keys())
+    + list(MTENS.keys())
+    + list(HUNDRED.keys())
+    + list(ZERO)
+    + list([AND])
+)
 
 
 class German(Language):
@@ -140,7 +151,7 @@ class German(Language):
         "trillion": 1_000_000_000_000_000_000,
         "trillionen": 1_000_000_000_000_000_000,
         "trilliarde": 1_000_000_000_000_000_000_000,
-        "trilliarden": 1_000_000_000_000_000_000_000
+        "trilliarden": 1_000_000_000_000_000_000_000,
     }
 
     MULTIPLIERS = MULTIPLIERS
@@ -174,7 +185,8 @@ class German(Language):
         as is the case for fist and second.
         """
         plur_suff = word.endswith("ster") and not word.startswith(
-            "sechster")  # Zwanzigster, Dreißigster, Hundertster, Tausendster ...
+            "sechster"
+        )  # Zwanzigster, Dreißigster, Hundertster, Tausendster ...
         sing_suff = word.endswith("ter")  # Zweiter, Vierter, Fünfter, Sechster
         if not (plur_suff or sing_suff):
             if word.endswith("erster"):
@@ -190,9 +202,9 @@ class German(Language):
         else:
             source = word[:-4] if plur_suff else word[:-3]
         if source in MTENS.keys() or source in MULTIPLIERS.keys():
-            source = source + 'ster'
+            source = source + "ster"
         else:
-            source = source + 'ter'
+            source = source + "ter"
 
         if source not in self.NUMBERS:
             return None
@@ -230,13 +242,13 @@ class German(Language):
                         invalid_word = ""
 
                     result += sw + " "
-                    text = text[len(sw):]
+                    text = text[len(sw) :]
                     found = True
                     break
             if not found:
 
                 # current beginning could not be assigned to a word
-                if not text[0] == ' ':
+                if not text[0] == " ":
                     invalid_word += text[0:1]
                     text = text[1:]
                 else:

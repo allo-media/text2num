@@ -25,7 +25,11 @@ from itertools import dropwhile
 from typing import Any, Iterator, List, Sequence, Tuple
 
 from .lang import LANG
-from .parsers import WordStreamValueParser, WordToDigitParser, WordStreamValueParserGerman
+from .parsers import (
+    WordStreamValueParser,
+    WordToDigitParser,
+    WordStreamValueParserGerman,
+)
 
 from text_to_num.lang.portuguese import OrdinalsMerger
 
@@ -80,7 +84,9 @@ def text2num(text: str, lang: str, relaxed: bool = False) -> int:
     return num_parser.value
 
 
-def alpha2digit(text: str, lang: str, relaxed: bool = False, signed: bool = True) -> str:
+def alpha2digit(
+    text: str, lang: str, relaxed: bool = False, signed: bool = True
+) -> str:
     """Return the text of ``text`` with all the ``lang`` spelled numbers converted to digits.
     Takes care of punctuation.
     Set ``relaxed`` to True if you want to accept some disjoint numbers as compounds.
@@ -168,7 +174,9 @@ def alpha2digit(text: str, lang: str, relaxed: bool = False, signed: bool = True
                 in_number = True
             elif in_number:
                 out_tokens.append(num_builder.value)
-                num_builder = WordToDigitParser(language, relaxed=relaxed, signed=signed)
+                num_builder = WordToDigitParser(
+                    language, relaxed=relaxed, signed=signed
+                )
                 in_number = num_builder.push(word.lower(), ahead and ahead.lower())
             if not in_number:
                 out_tokens.append(word)
@@ -179,6 +187,6 @@ def alpha2digit(text: str, lang: str, relaxed: bool = False, signed: bool = True
         out_segments.append(" ".join(out_tokens))
         out_segments.append(sep)
     text = "".join(out_segments)
-    if lang == 'pt' and USE_PT_ORDINALS_MERGER:
+    if lang == "pt" and USE_PT_ORDINALS_MERGER:
         text = omg.merge_compound_ordinals_pt(text)
     return text
