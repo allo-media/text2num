@@ -25,7 +25,7 @@ from itertools import dropwhile
 from typing import Any, Iterator, List, Sequence, Tuple
 
 from .lang import LANG
-from .parsers import WordStreamValueParser, WordToDigitParser
+from .parsers import WordStreamValueParser, WordToDigitParser, WordStreamValueParserGerman
 
 from text_to_num.lang.portuguese import OrdinalsMerger
 
@@ -62,7 +62,18 @@ def text2num(text: str, lang: str, relaxed: bool = False) -> int:
     """
 
     language = LANG[lang]
-    num_parser = WordStreamValueParser(language, relaxed=relaxed)
+    
+    # The German number writing rules do not apply to the order of number processing
+    # in the commin WordStreamValueParser
+    if lang == "de":
+        # German numbers are frequently written without spaces. Split them.
+        text = language.split_ger(text)
+        num_parser = WordStreamValueParserGerman(language)
+        num_parser.parse(text)
+        return num_parser.value
+    else:
+        num_parser = WordStreamValueParser(language, relaxed=relaxed)
+        
     tokens = list(dropwhile(lambda x: x in language.ZERO, text.split()))
     if not all(num_parser.push(word, ahead) for word, ahead in look_ahead(tokens)):
         raise ValueError("invalid literal for text2num: {}".format(repr(text)))
@@ -75,10 +86,73 @@ def alpha2digit(text: str, lang: str, relaxed: bool = False, signed: bool = True
     Set ``relaxed`` to True if you want to accept some disjoint numbers as compounds.
     Set ``signed`` to False if you don't want to produce signed numbers, that is, for example,
     if you prefer to get « moins 2 » instead of « -2 ».
-
     """
     if lang not in LANG.keys():
         raise Exception("Language not supported")
+
+    if lang == "de":
+        language = LANG[lang]
+        segments = re.split(r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text)
+        punct = re.findall(r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text)
+  
+        if len(punct) < len(segments):
+            punct.append("")
+
+        out_segments: List[str] = []
+        for segment, sep in zip(segments, punct):
+
+            tokens = segment.split()
+            sentence = []
+            out_tokens: List[str] = []
+            out_tokens_is_num: List[bool] = []
+            old_num_result = None
+            token_index = 0
+
+            while token_index < len(tokens):
+                t = tokens[token_index]
+                sentence.append(t)
+                                    
+                try:
+                    num_result = text2num(" ".join(sentence), lang)
+                    old_num_result = num_result
+                    token_index += 1
+                except:
+                    # " ".join(sentence) cannot be resolved to a number
+                    
+                    # last token has to be tested again in case there is sth like "eins eins eins"
+                    # which is invalid in sum but separately allowed
+                    if not old_num_result is None:
+                        out_tokens.append(str(old_num_result))
+                        out_tokens_is_num.append(True)
+                        sentence.clear()
+                    else:
+                        out_tokens.append(t)
+                        out_tokens_is_num.append(False)
+                        sentence.clear()
+                        token_index += 1
+                    old_num_result = None
+                    
+            # any remaining tokens to add?
+            if not old_num_result is None:
+                out_tokens.append(str(old_num_result))
+                out_tokens_is_num.append(True)
+                
+            # join all and keep track on signs
+            out_segment = ""
+            for index, ot in enumerate(out_tokens):
+                if (ot in language.SIGN) and signed:
+                    if index < len(out_tokens)-1:
+                        if out_tokens_is_num[index+1] == True:
+                            out_segment += language.SIGN[ot]
+                else:
+                    out_segment +=ot + " "
+                        
+            out_segments.append(out_segment.strip())
+            out_segments.append(sep)
+        
+        
+        return "".join(out_segments)
+
     language = LANG[lang]
     segments = re.split(r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text)
     punct = re.findall(r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text)

@@ -107,7 +107,7 @@ class WordStreamValueParser:
             # we test the square of ``coef``.
             return (
                 self.grp_val > 0 or coef == 1000
-            )  # "mille" without unit before is additive
+            )  # "mille" without unit      is additive
         # TODO: There is one exception to the above rule: "de milliard"
         # ex. : "mille milliards de milliards"
         return False
@@ -179,7 +179,242 @@ class WordStreamValueParser:
             self.skip = None
             return False
         return True
+        
+class WordStreamValueParserGerman:
+    """The actual value builder engine for the German language.
 
+    The engine processes numbers blockwise and sums them up at the end.
+
+    The algorithm is based on the observation that humans gather the
+    digits by group of three to more easily speak them out.
+    And indeed, the language uses powers of 1000 to structure big numbers.
+
+    Public API:
+
+        - ``self.parse(word)``
+        - ``self.value: int``
+    """
+    
+    def parse(self, word: str) -> bool:
+        
+        STATIC_HUNDRED = "hundert"
+        
+        # Split word at MULTIPLIERS
+        # drei und fünfzig Milliarden ||| zwei hundert drei und vierzig tausend ||| sieben hundert vier und zwanzig
+        
+        num_groups = []
+        num_block = []
+        word = word.lower()
+        words = word.split()
+        last_multiplier = None
+        equation_results = []
+
+        for w in words:
+            num_block.append(w)
+            if w in self.lang.MULTIPLIERS:
+                num_groups.append(num_block.copy())
+                num_block.clear()
+
+                # check for multiplier errors (avoid numbers like "tausend einhunder zwei tausend)
+                if last_multiplier is None:
+                    last_multiplier = self.lang.NUMBER_DICT_GER[w]
+                else:
+                    current_multiplier = self.lang.NUMBER_DICT_GER[w]
+                    if current_multiplier == last_multiplier or current_multiplier > last_multiplier:
+                        raise ValueError("invalid literal for text2num: {}".format(repr(word)))
+                
+            # Also interrupt if there is any other word
+            if not w in self.lang.NUMBER_DICT_GER and not w == self.lang.AND:
+                raise ValueError("invalid literal for text2num: {}".format(repr(word))) 
+				
+        if len(num_block) > 0:
+            num_groups.append(num_block.copy())
+            num_block.clear()
+
+        main_equation = "0"
+        ng = None
+
+        while len(num_groups) > 0: 
+            if ng is None:
+                ng = num_groups[0].copy()
+            equation = ""
+            processed_a_part = False
+            
+            sign_at_beginning = False
+            if (len(ng) > 0) and (ng[0] in self.lang.SIGN):
+                equation += self.lang.SIGN[ng[0]]
+                ng.pop(0)
+                equation_results.append(0)
+                sign_at_beginning = True
+                
+            if sign_at_beginning and ((len(ng) == 0) or ((len(ng) > 0) and not (ng[0] in self.lang.NUMBER_DICT_GER))):
+                raise ValueError("invalid literal for text2num: {}".format(repr(word)))                
+            
+            # prozess zero(s) at the beginning
+            null_at_beginning = False
+            while (len(ng) > 0) and (ng[0] in self.lang.ZERO):
+                equation += "0"
+                ng.pop(0)
+                equation_results.append(0)
+                processed_a_part = True
+                null_at_beginning = True
+                
+            if null_at_beginning and (len(ng) > 0) and (not ng[0] == self.lang.DECIMAL_SYM):
+                raise ValueError("invalid literal for text2num: {}".format(repr(word)))
+            
+            # Process "hundert" groups first
+            if STATIC_HUNDRED in ng:
+
+                hundred_index = ng.index(STATIC_HUNDRED)
+                if hundred_index == 0:
+                    if equation == "":
+                        equation = "100 "
+                    else:
+                        equation += " + 100 "
+                    equation_results.append(eval("100"))
+                    ng.pop(hundred_index)                  
+                    processed_a_part = True
+
+                elif (ng[hundred_index-1] in self.lang.UNITS) or (ng[hundred_index-1] in self.lang.STENS):
+                    multiplier = self.lang.NUMBER_DICT_GER[ng[hundred_index-1]]
+                    equation += "(" + str(multiplier) + " * 100)"
+                    equation_results.append(eval("(" + str(multiplier) + " * 100)"))
+                    ng.pop(hundred_index)
+                    ng.pop(hundred_index-1)
+                    processed_a_part = True
+            
+            # Process "und" groups
+            if self.lang.AND in ng:
+                and_index = ng.index(self.lang.AND)
+                
+                # get the number before and after the "und"
+                first_summand = ng[and_index-1]
+                second_summand = ng[and_index+1]
+                
+                # string to num for atomic numbers
+                first_summand_num = self.lang.NUMBER_DICT_GER[first_summand]
+                second_summand_num = self.lang.NUMBER_DICT_GER[second_summand]
+                
+                # Is there already a hundreds value in the equation?
+                if equation == "":
+                    equation += "(" + str(first_summand_num) + ' + ' + str(second_summand_num) + ")"
+                else:
+                    equation = "(" + equation + " + (" + str(first_summand_num) + ' + ' + str(second_summand_num) + "))"
+					
+                # calculate sum					
+                equation_results.append(eval("(" + str(first_summand_num) + ' + ' + str(second_summand_num) + ")"))
+                ng.pop(and_index+1)
+                ng.pop(and_index)
+                ng.pop(and_index-1)              
+                processed_a_part = True
+                
+            # MTENS (20, 30, 40 .. 90)
+            elif any(x in ng for x in self.lang.MTENS):
+                
+                # expect exactly one
+                mtens_res = [x for x in ng if x in self.lang.MTENS]
+                if not len(mtens_res) == 1:
+                    raise ValueError("invalid literal for text2num: {}".format(repr(word)))
+                    
+                mtens_num = self.lang.NUMBER_DICT_GER[mtens_res[0]]
+                if equation == "":
+                    equation += "(" + str(mtens_num) + ")"
+                else:
+                    equation = "(" + equation + " + (" + str(mtens_num) + "))"
+                mtens_index = ng.index(mtens_res[0])
+                equation_results.append(mtens_num)
+                ng.pop(mtens_index)
+                processed_a_part = True
+
+            # 11, 12, 13, ... 19
+            elif any(x in ng for x in self.lang.STENS):
+            
+                # expect exactly one
+                stens_res = [x for x in ng if x in self.lang.STENS]
+                if not len(stens_res) == 1:
+                    raise ValueError("invalid literal for text2num: {}".format(repr(word)))
+                    
+                stens_num = self.lang.NUMBER_DICT_GER[stens_res[0]]
+                if equation == "":
+                    equation += "(" + str(stens_num) + ")"
+                else:
+                    equation = "(" + equation + " + (" + str(stens_num) + "))"
+                stens_index = ng.index(stens_res[0])
+                equation_results.append(stens_num)
+                ng.pop(stens_index)
+                processed_a_part = True
+                
+            elif any(x in ng for x in self.lang.UNITS):
+            
+                # expect exactly one
+                units_res = [x for x in ng if x in self.lang.UNITS]
+                if not len(units_res) == 1:
+                    raise ValueError("invalid literal for text2num: {}".format(repr(word)))
+                    
+                units_num = self.lang.NUMBER_DICT_GER[units_res[0]]
+                if equation == "":
+                    equation += "(" + str(units_num) + ")"
+                else:
+                    equation = "(" + equation + " + (" + str(units_num) + "))"
+                units_index = ng.index(units_res[0])
+                equation_results.append(units_num)
+                ng.pop(units_index)
+                processed_a_part = True
+                
+            # Add multipliers
+            if any(x in ng for x in self.lang.MULTIPLIERS):
+                # Multiplier is always the last word
+                if ng[len(ng)-1] in self.lang.MULTIPLIERS:
+                    multiplier = self.lang.NUMBER_DICT_GER[ng[len(ng)-1]]
+                    if (len(ng) > 1):
+                        if (ng[len(ng)-2] in self.lang.UNITS) or (ng[len(ng)-2] in self.lang.STENS) or (ng[len(ng)-2] in self.lang.MTENS):
+                            factor = self.lang.NUMBER_DICT_GER[ng[len(ng)-2]]
+                            if equation == "":
+                                equation += "(" + str(factor) + " * " + str(multiplier) + ")"
+                            else:
+                                equation += " * (" + str(factor) + " * " + str(multiplier) + ")"
+                            equation_results.append(eval("(" + str(factor) + " * " + str(multiplier) + ")"))
+                            ng.pop(len(ng)-1)
+                            processed_a_part = True                            
+                    else:
+                        if equation == "":
+                            equation += "(" + str(multiplier) + ")"
+                        else:
+                            equation += " * (" + str(multiplier) + ")"
+                        equation_results.append(eval("(" + str(multiplier) + ")"))
+                    ng.pop(len(ng)-1)                   
+                    processed_a_part = True
+                    
+            if not processed_a_part:
+                raise ValueError("invalid literal for text2num: {}".format(repr(word)))
+				
+            # done, remove number group
+            if len(ng) == 0:
+                num_groups.pop(0)
+                if len(num_groups) > 0:
+                    ng = num_groups[0].copy()
+            else:
+                # at this point there should not be any more number parts
+                raise ValueError("invalid literal for text2num: {}".format(repr(word)))
+                
+            # Any sub-equation that results to 0 and is not the first sub-equation means an error
+            if len(equation_results) > 1 and equation_results[len(equation_results)-1] == 0:
+                raise ValueError("invalid literal for text2num: {}".format(repr(word)))
+                
+            main_equation = main_equation + " + (" + equation + ")"
+        
+        self.val = eval(main_equation)
+
+    def __init__(self, lang: Language) -> None:
+        """Initialize the parser.
+        """
+        self.lang = lang
+        self.val = 0
+
+    @property
+    def value(self) -> int:
+        """At any moment, get the value of the currently recognized number."""
+        return self.val
 
 class WordToDigitParser:
     """Words to digit transcriber.
@@ -292,7 +527,6 @@ class WordToDigitParser:
         Then, to parse a new number, you need to instanciate a new engine and start
         again from the last word you tried (the one that has just been rejected).
         """
-
         if self.closed or self.is_alone(word, look_ahead):
             self.last_word = word
             return False
