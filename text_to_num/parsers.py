@@ -27,8 +27,6 @@ from typing import List, Optional
 
 from text_to_num.lang import Language
 
-##
-
 
 class WordStreamValueParser:
     """The actual value builder engine.
