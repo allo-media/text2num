@@ -40,6 +40,7 @@ class TestTextToNumPT(TestCase):
         self.assertEqual(text2num("vinte e um", "pt"), 21)
         self.assertEqual(text2num("trinta", "pt"), 30)
         self.assertEqual(text2num("trinta e um", "pt"), 31)
+        self.assertEqual(text2num("trinta e dois", "pt"), 32)
         self.assertEqual(text2num("trinta e três", "pt"), 33)
         self.assertEqual(text2num("trinta e nove", "pt"), 39)
         self.assertEqual(text2num("noventa e nove", "pt"), 99)
