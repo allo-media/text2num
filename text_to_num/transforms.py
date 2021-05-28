@@ -27,6 +27,11 @@ from typing import Any, Iterator, List, Sequence, Tuple
 from .lang import LANG
 from .parsers import WordStreamValueParser, WordToDigitParser
 
+from text_to_num.lang.portuguese import OrdinalsMerger
+
+omg = OrdinalsMerger()
+USE_PT_ORDINALS_MERGER = True
+
 
 def look_ahead(sequence: Sequence[Any]) -> Iterator[Tuple[Any, Any]]:
     """Look-ahead iterator.
@@ -67,12 +72,15 @@ def text2num(text: str, lang: str, relaxed: bool = False) -> int:
 def alpha2digit(
     text: str, lang: str, relaxed: bool = False, signed: bool = True
 ) -> str:
-    """Return the text of ``text`` with all the French spelled numbers converted to digits.
+    """Return the text of ``text`` with all the ``lang`` spelled numbers converted to digits.
     Takes care of punctuation.
     Set ``relaxed`` to True if you want to accept some disjoint numbers as compounds.
     Set ``signed`` to False if you don't want to produce signed numbers, that is, for example,
     if you prefer to get « moins 2 » instead of « -2 ».
+
     """
+    if lang not in LANG.keys():
+        raise Exception("Language not supported")
     language = LANG[lang]
     segments = re.split(r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text)
     punct = re.findall(r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text)
@@ -89,7 +97,9 @@ def alpha2digit(
                 in_number = True
             elif in_number:
                 out_tokens.append(num_builder.value)
-                num_builder = WordToDigitParser(language, relaxed=relaxed)
+                num_builder = WordToDigitParser(
+                    language, relaxed=relaxed, signed=signed
+                )
                 in_number = num_builder.push(word.lower(), ahead and ahead.lower())
             if not in_number:
                 out_tokens.append(word)
@@ -99,4 +109,7 @@ def alpha2digit(
             out_tokens.append(num_builder.value)
         out_segments.append(" ".join(out_tokens))
         out_segments.append(sep)
-    return "".join(out_segments)
+    text = "".join(out_segments)
+    if lang == "pt" and USE_PT_ORDINALS_MERGER:
+        text = omg.merge_compound_ordinals_pt(text)
+    return text
