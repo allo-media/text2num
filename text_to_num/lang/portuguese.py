@@ -72,6 +72,10 @@ STENS: Dict[str, int] = {
         10,
     )
 }
+STENS["catorze"] = 14
+STENS["dezesseis"] = 16
+STENS["dezessete"] = 17
+STENS["dezenove"] = 19
 
 # Stens variants
 UNITS["catorze"] = 14
@@ -165,6 +169,7 @@ class Portuguese(Language):
         "treze",
         "catorze",
         "quatorze",
+        "catorze",
         "quinze",
         "dezasseis",
         "dezesseis",
