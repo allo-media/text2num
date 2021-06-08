@@ -177,7 +177,6 @@ Portuguese:
    >>> alpha2digit(text, "pt")
    'Ordinais: 5º, terceiro, 20ª, 21º, 104º'
 
->> feature/ptbr_support
 Note: Please note that for Portuguese, you might deal manually with terms such as "meia", "meia dúzia", "duzia", which in this case could be a representation of "6", "6", "12", respectively.
 
 Read the complete documentation on `ReadTheDocs <http://text2num.readthedocs.io/>`_.
