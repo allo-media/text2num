@@ -116,6 +116,7 @@ PortugueseBr examples:
     >>> text2num("catorze milhões duzentos e dezenove mil e quarenta e sete", "ptbr")
     14219047
 
+Note: Please note that for Portuguese, you might deal manually with terms such as "meia", "meia dúzia", "duzia", which in this case could be a representation of "6", "6", "12", respectively.
 
 Find and transcribe
 ~~~~~~~~~~~~~~~~~~~
@@ -190,7 +191,25 @@ Portuguese:
    >>> alpha2digit(text, "pt")
    'Ordinais: 5º, terceiro, 20ª, 21º, 104º'
 
+PortugueseBr:
 
+.. code-block:: python
+
+    >>> from text_to_num import alpha2digit
+
+    >>> text = "Compramos vinte e cinco vacas, doze galinhas e cento vinte e cinco vírgula quarenta kg de batatas."
+    >>> alpha2digit(text, "ptbr")
+    'Compramos 25 vacas, 12 galinhas e 125,40 kg de batatas.'
+
+    >>> text = "Temos mais vinte graus dentro e menos quinze fora."
+    >>> alpha2digit(text, "ptbr")
+   'Temos +20 graus dentro e -15 fora.'
+
+    >>> text = "Ordinais: quinto, terceiro, vigésimo, vigésimo primeiro, centésimo quarto"
+   >>> alpha2digit(text, "ptbr")
+   'Ordinais: 5º, terceiro, 20ª, 21º, 104º'
+
+Note: Please note that for Portuguese, you might deal manually with terms such as "meia", "meia dúzia", "duzia", which in this case could be a representation of "6", "6", "12", respectively.
 
 Read the complete documentation on `ReadTheDocs <http://text2num.readthedocs.io/>`_.
 
