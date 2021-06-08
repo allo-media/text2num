@@ -102,6 +102,21 @@ Portuguese examples:
     >>> text2num("vinte e quatro milhões duzentos mil quarenta e sete", "pt")
     24200047
 
+PortugueseBr examples:
+
+.. code-block:: python
+
+    >>> from text_to_num import text2num
+    >>> text2num("vinte e oito", "ptbr")
+    28
+
+    >>> text2num("doze mil novecentos e trinta", "ptbr")
+    12930
+
+    >>> text2num("catorze milhões duzentos e dezenove mil e quarenta e sete", "ptbr")
+    14219047
+
+
 Find and transcribe
 ~~~~~~~~~~~~~~~~~~~
 
