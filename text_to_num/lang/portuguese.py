@@ -61,7 +61,7 @@ UNITS: Dict[str, int] = {
 # Unit variants
 UNITS["uma"] = 1
 UNITS["duas"] = 2
-UNITS["tres"] = 2
+UNITS["tres"] = 3
 
 # Single tens are terminals (see Rules)
 # exact find
