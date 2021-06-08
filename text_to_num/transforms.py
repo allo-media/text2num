@@ -110,6 +110,6 @@ def alpha2digit(
         out_segments.append(" ".join(out_tokens))
         out_segments.append(sep)
     text = "".join(out_segments)
-    if lang in ["pt", "ptbr"] and USE_PT_ORDINALS_MERGER:
+    if lang == "pt" and USE_PT_ORDINALS_MERGER:
         text = omg.merge_compound_ordinals_pt(text)
     return text
