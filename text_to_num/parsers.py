@@ -215,7 +215,7 @@ class WordToDigitParser:
     """
 
     def __init__(
-        self, lang: Language, relaxed: bool = False, signed: bool = True
+        self, lang: Language, relaxed: bool = False, signed: bool = True, ordinal_threshold: int = 3
     ) -> None:
         """Initialize the parser.
 
@@ -224,6 +224,8 @@ class WordToDigitParser:
 
         If ``signed`` is True, we parse signed numbers like
         « plus deux » (+2), or « moins vingt » (-20).
+
+        Ordinals up to `ordinal_threshold` are not converted.
         """
         self.lang = lang
         self._value: List[str] = []
@@ -234,6 +236,7 @@ class WordToDigitParser:
         self.closed = False  # For deferred stop
         self.open = False  # For efficiency
         self.last_word: Optional[str] = None  # For context
+        self.ordinal_threshold = ordinal_threshold
 
     @property
     def value(self) -> str:
@@ -324,7 +327,7 @@ class WordToDigitParser:
                     ),
                     word,
                 )
-                if self.int_builder.value > 3
+                if self.int_builder.value > self.ordinal_threshold
                 else word
             )
             self.closed = True

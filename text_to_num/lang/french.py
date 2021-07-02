@@ -127,6 +127,13 @@ NUMBERS.update(HUNDRED)
 NUMBERS.update(COMPOSITES)
 NUMBERS["quatre-vingts"] = 80
 
+IRR_ORD = {
+    "premier": ("un", "1er"),
+    "première": ("un", "1ère"),
+    "second": ("deux", "2nd"),
+    "seconde": ("deux", "2nde"),
+}
+
 
 class French(Language):
 
@@ -154,9 +161,10 @@ class French(Language):
     def ord2card(self, word: str) -> Optional[str]:
         """Convert ordinal number to cardinal.
 
-        Return None if word is not an ordinal or is better left in letters
-        as is the case for fist and second.
+        Return None if word is not an ordinal or is better left in letters.
         """
+        if word in IRR_ORD:
+            return IRR_ORD[word][0]
         plur_suff = word.endswith("ièmes")
         sing_suff = word.endswith("ième")
         if not (plur_suff or sing_suff):
@@ -174,6 +182,8 @@ class French(Language):
 
     def num_ord(self, digits: str, original_word: str) -> str:
         """Add suffix to number in digits to make an ordinal"""
+        if original_word in IRR_ORD:
+            return IRR_ORD[original_word][1]
         return f"{digits}ème" if original_word.endswith("e") else f"{digits}èmes"
 
     def normalize(self, word: str) -> str:
