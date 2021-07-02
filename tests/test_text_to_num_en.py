@@ -139,6 +139,13 @@ class TestTextToNumEN(TestCase):
         expected = "first, second, third, 4th, 5th, 6th, 7th, 8th, 9th, 10th."
         self.assertEqual(alpha2digit(source, "en"), expected)
 
+    def test_alpha2digit_ordinals_force(self):
+        source = (
+            "first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth."
+        )
+        expected = "1st, 2nd, 3rd, 4th, 5th, 6th, 7th, 8th, 9th, 10th."
+        self.assertEqual(alpha2digit(source, "en", ordinal_threshold=0), expected)
+
     def test_alpha2digit_decimals(self):
         source = (
             "twelve point ninety-nine, one hundred twenty point zero five,"
