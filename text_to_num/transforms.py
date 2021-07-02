@@ -90,7 +90,8 @@ def alpha2digit(
     out_segments: List[str] = []
     for segment, sep in zip(segments, punct):
         tokens = segment.split()
-        num_builder = WordToDigitParser(language, relaxed=relaxed, signed=signed, ordinal_threshold=ordinal_threshold)
+        num_builder = WordToDigitParser(
+            language, relaxed=relaxed, signed=signed, ordinal_threshold=ordinal_threshold)
         in_number = False
         out_tokens: List[str] = []
         for word, ahead in look_ahead(tokens):
