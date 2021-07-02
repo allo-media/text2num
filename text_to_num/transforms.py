@@ -70,7 +70,7 @@ def text2num(text: str, lang: str, relaxed: bool = False) -> int:
 
 
 def alpha2digit(
-    text: str, lang: str, relaxed: bool = False, signed: bool = True
+    text: str, lang: str, relaxed: bool = False, signed: bool = True, ordinal_threshold: int = 3
 ) -> str:
     """Return the text of ``text`` with all the ``lang`` spelled numbers converted to digits.
     Takes care of punctuation.
@@ -78,6 +78,7 @@ def alpha2digit(
     Set ``signed`` to False if you don't want to produce signed numbers, that is, for example,
     if you prefer to get « moins 2 » instead of « -2 ».
 
+    Ordinals up to `ordinal_threshold` are not converted.
     """
     if lang not in LANG.keys():
         raise Exception("Language not supported")
@@ -89,7 +90,8 @@ def alpha2digit(
     out_segments: List[str] = []
     for segment, sep in zip(segments, punct):
         tokens = segment.split()
-        num_builder = WordToDigitParser(language, relaxed=relaxed, signed=signed)
+        num_builder = WordToDigitParser(
+            language, relaxed=relaxed, signed=signed, ordinal_threshold=ordinal_threshold)
         in_number = False
         out_tokens: List[str] = []
         for word, ahead in look_ahead(tokens):
@@ -98,7 +100,7 @@ def alpha2digit(
             elif in_number:
                 out_tokens.append(num_builder.value)
                 num_builder = WordToDigitParser(
-                    language, relaxed=relaxed, signed=signed
+                    language, relaxed=relaxed, signed=signed, ordinal_threshold=ordinal_threshold
                 )
                 in_number = num_builder.push(word.lower(), ahead and ahead.lower())
             if not in_number:
