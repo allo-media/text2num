@@ -24,7 +24,7 @@ import re
 from itertools import dropwhile
 from typing import Any, Iterator, List, Sequence, Tuple, Union
 
-from .lang import LANG, Language
+from .lang import LANG, Language, German
 from .parsers import (
     WordStreamValueParserInterface,
     WordStreamValueParser,  # we should rename this to 'WordStreamValueParserCommon'
@@ -71,7 +71,7 @@ def text2num(text: str, lang: Union[str, Language], relaxed: bool = False) -> in
     num_parser: WordStreamValueParserInterface
 
     # German
-    if lang == "de":
+    if type(language) is German:
         # The German number writing rules do not apply to the common order of number processing
         num_parser = WordStreamValueParserGerman(
             language, relaxed=relaxed
