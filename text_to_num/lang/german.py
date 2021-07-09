@@ -107,6 +107,7 @@ ALL_WORDS = (
 
 class German(Language):
 
+    # TODO: can this be replaced by NUMBERS ? (or extended NUMBERS)
     NUMBER_DICT_GER = {
         "null": 0,
         "eins": 1,
@@ -222,12 +223,15 @@ class German(Language):
     def normalize(self, word: str) -> str:
         return word
 
-    def split_ger(self, word: str) -> str:
+    def split_number_word(self, word: str) -> str:
         """Splits number words into separate words, e.g. einhundertfünzig-> ein hundert fünfzig"""
 
         # Sort all numbers by length to start with the longest
+        # TODO: shouldn't this be done only once for ALL_WORDS ??
         sorted_words = sorted(ALL_WORDS, key=len, reverse=True)
 
+        # TODO: this can probably be optimized because complex number-words will always start with
+        # "ein", "zwei", ... "neun", "hundert", "tausend", ... I think
         text = word.lower()
         invalid_word = ""
         result = ""
@@ -246,7 +250,6 @@ class German(Language):
                     found = True
                     break
             if not found:
-
                 # current beginning could not be assigned to a word
                 if not text[0] == " ":
                     invalid_word += text[0:1]

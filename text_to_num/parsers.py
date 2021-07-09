@@ -26,9 +26,29 @@ Convert spelled numbers into numeric values or digit strings.
 from typing import List, Optional
 
 from text_to_num.lang import Language
+from text_to_num.lang.german import German
 
+class WordStreamValueParserInterface():
+    """Interface for language-dependent 'WordStreamValueParser'"""
+    def __init__(self, lang: Language, relaxed: bool = False) -> None:
+        """Initialize the parser."""
+        self.lang = lang
+        self.relaxed = relaxed
 
-class WordStreamValueParser:
+    def push(self, word: str, look_ahead: Optional[str] = None) -> bool:
+        """Push next word from the stream."""
+        return NotImplemented
+
+    def parse(self, text: str) -> bool:
+        """Parse whole text (or fail)."""
+        return NotImplemented
+
+    @property
+    def value(self) -> int:
+        """At any moment, get the value of the currently recognized number."""
+        return NotImplemented
+
+class WordStreamValueParser(WordStreamValueParserInterface):
     """The actual value builder engine.
 
     The engine incrementaly recognize a stream of words as a valid number and build the
@@ -43,14 +63,12 @@ class WordStreamValueParser:
         - ``self.push(word)``
         - ``self.value: int``
     """
-
     def __init__(self, lang: Language, relaxed: bool = False) -> None:
         """Initialize the parser.
 
         If ``relaxed`` is True, we treat the sequences described in ``lang.RELAXED`` as single numbers.
         """
-        self.lang = lang
-        self.relaxed = relaxed
+        super().__init__(lang, relaxed)
         self.skip: Optional[str] = None
         self.n000_val: int = 0  # the number value part > 1000
         self.grp_val: int = 0  # the current three digit group value
@@ -179,7 +197,7 @@ class WordStreamValueParser:
         return True
 
 
-class WordStreamValueParserGerman:
+class WordStreamValueParserGerman(WordStreamValueParserInterface):
     """The actual value builder engine for the German language.
 
     The engine processes numbers blockwise and sums them up at the end.
@@ -193,8 +211,24 @@ class WordStreamValueParserGerman:
         - ``self.parse(word)``
         - ``self.value: int``
     """
+    def __init__(self, lang: Language, relaxed: bool = False) -> None:
+        """Initialize the parser.
 
-    def parse(self, word: str) -> bool:
+        If ``relaxed`` is True, we treat the sequences described in ``lang.RELAXED`` as single numbers.
+        """
+        super().__init__(lang, relaxed)
+        self.val: int = 0
+
+    @property
+    def value(self) -> int:
+        """At any moment, get the value of the currently recognized number."""
+        return self.val
+
+    def parse(self, text: str) -> bool:
+        """Check text for number words, split complex number words (hundertfünfzig) if necessary and parse all"""
+
+        # German numbers are frequently written without spaces. Split them.
+        text = self.lang.split_number_word(text)
 
         STATIC_HUNDRED = "hundert"
 
@@ -203,8 +237,8 @@ class WordStreamValueParserGerman:
 
         num_groups = []
         num_block = []
-        word = word.lower()
-        words = word.split()
+        text = text.lower()
+        words = text.split()
         last_multiplier = None
         equation_results = []
 
@@ -216,20 +250,20 @@ class WordStreamValueParserGerman:
 
                 # check for multiplier errors (avoid numbers like "tausend einhunder zwei tausend)
                 if last_multiplier is None:
-                    last_multiplier = self.lang.NUMBER_DICT_GER[w]
+                    last_multiplier = German.NUMBER_DICT_GER[w]
                 else:
-                    current_multiplier = self.lang.NUMBER_DICT_GER[w]
+                    current_multiplier = German.NUMBER_DICT_GER[w]
                     if (
                         current_multiplier == last_multiplier
                         or current_multiplier > last_multiplier
                     ):
                         raise ValueError(
-                            "invalid literal for text2num: {}".format(repr(word))
+                            "invalid literal for text2num: {}".format(repr(w))
                         )
 
             # Also interrupt if there is any other word
-            if w not in self.lang.NUMBER_DICT_GER and w != self.lang.AND:
-                raise ValueError("invalid literal for text2num: {}".format(repr(word)))
+            if w not in German.NUMBER_DICT_GER and w != self.lang.AND:
+                raise ValueError("invalid literal for text2num: {}".format(repr(w)))
 
         if len(num_block) > 0:
             num_groups.append(num_block.copy())
@@ -253,9 +287,9 @@ class WordStreamValueParserGerman:
 
             if sign_at_beginning and (
                 (len(ng) == 0)
-                or ((len(ng) > 0) and not (ng[0] in self.lang.NUMBER_DICT_GER))
+                or ((len(ng) > 0) and not (ng[0] in German.NUMBER_DICT_GER))
             ):
-                raise ValueError("invalid literal for text2num: {}".format(repr(word)))
+                raise ValueError("invalid literal for text2num: {}".format(repr(num_groups)))
 
             # prozess zero(s) at the beginning
             null_at_beginning = False
@@ -271,7 +305,7 @@ class WordStreamValueParserGerman:
                 and (len(ng) > 0)
                 and (not ng[0] == self.lang.DECIMAL_SYM)
             ):
-                raise ValueError("invalid literal for text2num: {}".format(repr(word)))
+                raise ValueError("invalid literal for text2num: {}".format(repr(num_groups)))
 
             # Process "hundert" groups first
             if STATIC_HUNDRED in ng:
@@ -289,7 +323,7 @@ class WordStreamValueParserGerman:
                 elif (ng[hundred_index - 1] in self.lang.UNITS) or (
                     ng[hundred_index - 1] in self.lang.STENS
                 ):
-                    multiplier = self.lang.NUMBER_DICT_GER[ng[hundred_index - 1]]
+                    multiplier = German.NUMBER_DICT_GER[ng[hundred_index - 1]]
                     equation += "(" + str(multiplier) + " * 100)"
                     equation_results.append(eval("(" + str(multiplier) + " * 100)"))
                     ng.pop(hundred_index)
@@ -297,16 +331,20 @@ class WordStreamValueParserGerman:
                     processed_a_part = True
 
             # Process "und" groups
-            if self.lang.AND in ng:
+            if self.lang.AND in ng and len(ng) >= 3:
                 and_index = ng.index(self.lang.AND)
+
+                # TODO: what if "und" comes at the end?
+                if (and_index + 1 >= len(ng)):
+                    raise ValueError("invalid 'and' index for text2num: {}".format(repr(ng)))
 
                 # get the number before and after the "und"
                 first_summand = ng[and_index - 1]
                 second_summand = ng[and_index + 1]
 
                 # string to num for atomic numbers
-                first_summand_num = self.lang.NUMBER_DICT_GER[first_summand]
-                second_summand_num = self.lang.NUMBER_DICT_GER[second_summand]
+                first_summand_num = German.NUMBER_DICT_GER[first_summand]
+                second_summand_num = German.NUMBER_DICT_GER[second_summand]
 
                 # Is there already a hundreds value in the equation?
                 if equation == "":
@@ -350,10 +388,10 @@ class WordStreamValueParserGerman:
                 mtens_res = [x for x in ng if x in self.lang.MTENS]
                 if not len(mtens_res) == 1:
                     raise ValueError(
-                        "invalid literal for text2num: {}".format(repr(word))
+                        "invalid literal for text2num: {}".format(repr(ng))
                     )
 
-                mtens_num = self.lang.NUMBER_DICT_GER[mtens_res[0]]
+                mtens_num = German.NUMBER_DICT_GER[mtens_res[0]]
                 if equation == "":
                     equation += "(" + str(mtens_num) + ")"
                 else:
@@ -370,10 +408,10 @@ class WordStreamValueParserGerman:
                 stens_res = [x for x in ng if x in self.lang.STENS]
                 if not len(stens_res) == 1:
                     raise ValueError(
-                        "invalid literal for text2num: {}".format(repr(word))
+                        "invalid literal for text2num: {}".format(repr(ng))
                     )
 
-                stens_num = self.lang.NUMBER_DICT_GER[stens_res[0]]
+                stens_num = German.NUMBER_DICT_GER[stens_res[0]]
                 if equation == "":
                     equation += "(" + str(stens_num) + ")"
                 else:
@@ -389,10 +427,10 @@ class WordStreamValueParserGerman:
                 units_res = [x for x in ng if x in self.lang.UNITS]
                 if not len(units_res) == 1:
                     raise ValueError(
-                        "invalid literal for text2num: {}".format(repr(word))
+                        "invalid literal for text2num: {}".format(repr(ng))
                     )
 
-                units_num = self.lang.NUMBER_DICT_GER[units_res[0]]
+                units_num = German.NUMBER_DICT_GER[units_res[0]]
                 if equation == "":
                     equation += "(" + str(units_num) + ")"
                 else:
@@ -406,14 +444,14 @@ class WordStreamValueParserGerman:
             if any(x in ng for x in self.lang.MULTIPLIERS):
                 # Multiplier is always the last word
                 if ng[len(ng) - 1] in self.lang.MULTIPLIERS:
-                    multiplier = self.lang.NUMBER_DICT_GER[ng[len(ng) - 1]]
+                    multiplier = German.NUMBER_DICT_GER[ng[len(ng) - 1]]
                     if len(ng) > 1:
                         if (
                             (ng[len(ng) - 2] in self.lang.UNITS)
                             or (ng[len(ng) - 2] in self.lang.STENS)
                             or (ng[len(ng) - 2] in self.lang.MTENS)
                         ):
-                            factor = self.lang.NUMBER_DICT_GER[ng[len(ng) - 2]]
+                            factor = German.NUMBER_DICT_GER[ng[len(ng) - 2]]
                             if equation == "":
                                 equation += (
                                     "(" + str(factor) + " * " + str(multiplier) + ")"
@@ -437,7 +475,7 @@ class WordStreamValueParserGerman:
                     processed_a_part = True
 
             if not processed_a_part:
-                raise ValueError("invalid literal for text2num: {}".format(repr(word)))
+                raise ValueError("invalid literal for text2num: {}".format(repr(ng)))
 
             # done, remove number group
             if len(ng) == 0:
@@ -446,28 +484,19 @@ class WordStreamValueParserGerman:
                     ng = num_groups[0].copy()
             else:
                 # at this point there should not be any more number parts
-                raise ValueError("invalid literal for text2num: {}".format(repr(word)))
+                raise ValueError("invalid literal for text2num: {}".format(repr(num_groups)))
 
             # Any sub-equation that results to 0 and is not the first sub-equation means an error
             if (
                 len(equation_results) > 1
                 and equation_results[len(equation_results) - 1] == 0
             ):
-                raise ValueError("invalid literal for text2num: {}".format(repr(word)))
+                raise ValueError("invalid literal for text2num: {}".format(repr(text)))
 
             main_equation = main_equation + " + (" + equation + ")"
 
         self.val = eval(main_equation)
-
-    def __init__(self, lang: Language) -> None:
-        """Initialize the parser."""
-        self.lang = lang
-        self.val = 0
-
-    @property
-    def value(self) -> int:
-        """At any moment, get the value of the currently recognized number."""
-        return self.val
+        return True
 
 
 class WordToDigitParser:
@@ -504,7 +533,7 @@ class WordToDigitParser:
     """
 
     def __init__(
-        self, lang: Language, relaxed: bool = False, signed: bool = True
+        self, lang: Language, relaxed: bool = False, signed: bool = True, ordinal_threshold: int = 3
     ) -> None:
         """Initialize the parser.
 
@@ -513,6 +542,8 @@ class WordToDigitParser:
 
         If ``signed`` is True, we parse signed numbers like
         « plus deux » (+2), or « moins vingt » (-20).
+
+        Ordinals up to `ordinal_threshold` are not converted.
         """
         self.lang = lang
         self._value: List[str] = []
@@ -523,6 +554,7 @@ class WordToDigitParser:
         self.closed = False  # For deferred stop
         self.open = False  # For efficiency
         self.last_word: Optional[str] = None  # For context
+        self.ordinal_threshold = ordinal_threshold
 
     @property
     def value(self) -> str:
@@ -612,7 +644,7 @@ class WordToDigitParser:
                     ),
                     word,
                 )
-                if self.int_builder.value > 3
+                if self.int_builder.value > self.ordinal_threshold
                 else word
             )
             self.closed = True

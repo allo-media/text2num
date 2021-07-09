@@ -45,6 +45,7 @@ class TestTextToNumDE(TestCase):
         self.assertEqual(text2num(test4, "de"), 81)
 
         self.assertEqual(text2num("fünfzehn", "de"), 15)
+        self.assertEqual(text2num("zwei und vierzig", "de"), 42)
         self.assertEqual(text2num("einhundertfünfzehn", "de"), 115)
         self.assertEqual(text2num("hundertfünfzehn", "de"), 115)
         self.assertEqual(text2num("fünfundsiebzigtausend", "de"), 75000)
@@ -57,6 +58,7 @@ class TestTextToNumDE(TestCase):
         self.assertRaises(ValueError, text2num, "tausendtausendzweihundert", "de")
         self.assertRaises(ValueError, text2num, "sechzigfünfzehn", "de")
         self.assertRaises(ValueError, text2num, "sechzighundert", "de")
+        self.assertRaises(ValueError, text2num, "zwei und vierzig und", "de")
 
     def test_text2num_zeroes(self):
         self.assertEqual(text2num("null", "de"), 0)
