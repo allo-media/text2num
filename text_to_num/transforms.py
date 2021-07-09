@@ -73,7 +73,9 @@ def text2num(text: str, lang: Union[str, Language], relaxed: bool = False) -> in
     # German
     if lang == "de":
         # The German number writing rules do not apply to the common order of number processing
-        num_parser = WordStreamValueParserGerman(language, relaxed=relaxed)      # TODO: relaxed not supported yet
+        num_parser = WordStreamValueParserGerman(
+            language, relaxed=relaxed
+        )  # TODO: relaxed not supported yet
         num_parser.parse(text)
         return num_parser.value
     # Common
@@ -87,7 +89,11 @@ def text2num(text: str, lang: Union[str, Language], relaxed: bool = False) -> in
 
 
 def alpha2digit(
-    text: str, lang: str, relaxed: bool = False, signed: bool = True, ordinal_threshold: int = 3
+    text: str,
+    lang: str,
+    relaxed: bool = False,
+    signed: bool = True,
+    ordinal_threshold: int = 3,
 ) -> str:
     """Return the text of ``text`` with all the ``lang`` spelled numbers converted to digits.
     Takes care of punctuation.
@@ -101,7 +107,9 @@ def alpha2digit(
         raise Exception("Language not supported")
 
     language = LANG[lang]
-    segments = re.split(r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text)    # TODO: what if you have 3.14 or 11:55 in your text?
+    segments = re.split(
+        r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text
+    )  # TODO: what if you have 3.14 or 11:55 in your text?
     punct = re.findall(r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text)
     if len(punct) < len(segments):
         punct.append("")
@@ -114,7 +122,11 @@ def alpha2digit(
         for segment, sep in zip(segments, punct):
             tokens = segment.split()
             num_builder = WordToDigitParser(
-                language, relaxed=relaxed, signed=signed, ordinal_threshold=ordinal_threshold)
+                language,
+                relaxed=relaxed,
+                signed=signed,
+                ordinal_threshold=ordinal_threshold,
+            )
             in_number = False
             out_tokens: List[str] = []
             for word, ahead in look_ahead(tokens):
@@ -123,7 +135,10 @@ def alpha2digit(
                 elif in_number:
                     out_tokens.append(num_builder.value)
                     num_builder = WordToDigitParser(
-                        language, relaxed=relaxed, signed=signed, ordinal_threshold=ordinal_threshold
+                        language,
+                        relaxed=relaxed,
+                        signed=signed,
+                        ordinal_threshold=ordinal_threshold,
                     )
                     in_number = num_builder.push(word.lower(), ahead and ahead.lower())
                 if not in_number:
@@ -143,7 +158,9 @@ def alpha2digit(
     return text
 
 
-def _alpha2digit_agg(language: Language, segments: List[str], punct: List[Any], signed: bool) -> str:
+def _alpha2digit_agg(
+    language: Language, segments: List[str], punct: List[Any], signed: bool
+) -> str:
     """Variant for "agglutinative" languages.
     Only German for now.
     """
@@ -199,4 +216,3 @@ def _alpha2digit_agg(language: Language, segments: List[str], punct: List[Any], 
         out_segments.append(out_segment.strip())
         out_segments.append(sep)
     return "".join(out_segments)
-

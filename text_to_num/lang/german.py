@@ -246,7 +246,7 @@ class German(Language):
                         invalid_word = ""
 
                     result += sw + " "
-                    text = text[len(sw) :]
+                    text = text[len(sw):]
                     found = True
                     break
             if not found:

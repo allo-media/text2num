@@ -28,8 +28,10 @@ from typing import List, Optional
 from text_to_num.lang import Language
 from text_to_num.lang.german import German
 
-class WordStreamValueParserInterface():
+
+class WordStreamValueParserInterface:
     """Interface for language-dependent 'WordStreamValueParser'"""
+
     def __init__(self, lang: Language, relaxed: bool = False) -> None:
         """Initialize the parser."""
         self.lang = lang
@@ -48,6 +50,7 @@ class WordStreamValueParserInterface():
         """At any moment, get the value of the currently recognized number."""
         return NotImplemented
 
+
 class WordStreamValueParser(WordStreamValueParserInterface):
     """The actual value builder engine.
 
@@ -63,6 +66,7 @@ class WordStreamValueParser(WordStreamValueParserInterface):
         - ``self.push(word)``
         - ``self.value: int``
     """
+
     def __init__(self, lang: Language, relaxed: bool = False) -> None:
         """Initialize the parser.
 
@@ -211,6 +215,7 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
         - ``self.parse(word)``
         - ``self.value: int``
     """
+
     def __init__(self, lang: Language, relaxed: bool = False) -> None:
         """Initialize the parser.
 
@@ -289,7 +294,9 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
                 (len(ng) == 0)
                 or ((len(ng) > 0) and not (ng[0] in German.NUMBER_DICT_GER))
             ):
-                raise ValueError("invalid literal for text2num: {}".format(repr(num_groups)))
+                raise ValueError(
+                    "invalid literal for text2num: {}".format(repr(num_groups))
+                )
 
             # prozess zero(s) at the beginning
             null_at_beginning = False
@@ -305,7 +312,9 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
                 and (len(ng) > 0)
                 and (not ng[0] == self.lang.DECIMAL_SYM)
             ):
-                raise ValueError("invalid literal for text2num: {}".format(repr(num_groups)))
+                raise ValueError(
+                    "invalid literal for text2num: {}".format(repr(num_groups))
+                )
 
             # Process "hundert" groups first
             if STATIC_HUNDRED in ng:
@@ -335,8 +344,10 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
                 and_index = ng.index(self.lang.AND)
 
                 # TODO: what if "und" comes at the end?
-                if (and_index + 1 >= len(ng)):
-                    raise ValueError("invalid 'and' index for text2num: {}".format(repr(ng)))
+                if and_index + 1 >= len(ng):
+                    raise ValueError(
+                        "invalid 'and' index for text2num: {}".format(repr(ng))
+                    )
 
                 # get the number before and after the "und"
                 first_summand = ng[and_index - 1]
@@ -484,7 +495,9 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
                     ng = num_groups[0].copy()
             else:
                 # at this point there should not be any more number parts
-                raise ValueError("invalid literal for text2num: {}".format(repr(num_groups)))
+                raise ValueError(
+                    "invalid literal for text2num: {}".format(repr(num_groups))
+                )
 
             # Any sub-equation that results to 0 and is not the first sub-equation means an error
             if (
@@ -533,7 +546,11 @@ class WordToDigitParser:
     """
 
     def __init__(
-        self, lang: Language, relaxed: bool = False, signed: bool = True, ordinal_threshold: int = 3
+        self,
+        lang: Language,
+        relaxed: bool = False,
+        signed: bool = True,
+        ordinal_threshold: int = 3,
     ) -> None:
         """Initialize the parser.
 
