@@ -22,9 +22,9 @@
 
 import re
 from itertools import dropwhile
-from typing import Any, Iterator, List, Sequence, Tuple
+from typing import Any, Iterator, List, Sequence, Tuple, Union
 
-from .lang import LANG
+from .lang import LANG, Language
 from .parsers import (
     WordStreamValueParserInterface,
     WordStreamValueParser,  # we should rename this to 'WordStreamValueParserCommon'
@@ -56,7 +56,7 @@ def look_ahead(sequence: Sequence[Any]) -> Iterator[Tuple[Any, Any]]:
         yield val, ahead
 
 
-def text2num(text: str, lang: str, relaxed: bool = False) -> int:
+def text2num(text: str, lang: Union[str, Language], relaxed: bool = False) -> int:
     """Convert the ``text`` string containing an integer number written as letters
     into an integer value.
 
@@ -65,7 +65,9 @@ def text2num(text: str, lang: str, relaxed: bool = False) -> int:
     Raises an AssertionError if ``text`` does not describe a valid number.
     Return an int.
     """
-    language = LANG[lang]
+    language: Language
+    # mypy seems unable to understand this
+    language = LANG[lang] if type(lang) is str else lang  # type: ignore
     num_parser: WordStreamValueParserInterface
 
     # German
@@ -83,6 +85,7 @@ def text2num(text: str, lang: str, relaxed: bool = False) -> int:
 
     return num_parser.value
 
+
 def alpha2digit(
     text: str, lang: str, relaxed: bool = False, signed: bool = True, ordinal_threshold: int = 3
 ) -> str:
@@ -94,7 +97,7 @@ def alpha2digit(
 
     Ordinals up to `ordinal_threshold` are not converted.
     """
-    if lang not in LANG.keys():
+    if lang not in LANG:
         raise Exception("Language not supported")
 
     language = LANG[lang]
@@ -102,62 +105,12 @@ def alpha2digit(
     punct = re.findall(r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text)
     if len(punct) < len(segments):
         punct.append("")
-    out_segments: List[str] = []
 
     # Process segments
     if lang == "de":
-        for segment, sep in zip(segments, punct):
-            tokens = segment.split()
-            sentence = []
-            out_tokens: List[str] = []
-            out_tokens_is_num: List[bool] = []
-            old_num_result = None
-            token_index = 0
-
-            while token_index < len(tokens):
-                t = tokens[token_index]
-                sentence.append(t)
-
-                try:
-                    num_result = text2num(" ".join(sentence), lang)
-                    old_num_result = num_result
-                    token_index += 1
-                except ValueError:
-                    # " ".join(sentence) cannot be resolved to a number
-
-                    # last token has to be tested again in case there is sth like "eins eins eins"
-                    # which is invalid in sum but separately allowed
-                    if old_num_result is not None:
-                        out_tokens.append(str(old_num_result))
-                        out_tokens_is_num.append(True)
-                        sentence.clear()
-                    else:
-                        out_tokens.append(t)
-                        out_tokens_is_num.append(False)
-                        sentence.clear()
-                        token_index += 1
-                    old_num_result = None
-
-            # any remaining tokens to add?
-            if old_num_result is not None:
-                out_tokens.append(str(old_num_result))
-                out_tokens_is_num.append(True)
-
-            # join all and keep track on signs
-            out_segment = ""
-            for index, ot in enumerate(out_tokens):
-                if (ot in language.SIGN) and signed:
-                    if index < len(out_tokens) - 1:
-                        if out_tokens_is_num[index + 1] is True:
-                            out_segment += language.SIGN[ot]
-                else:
-                    out_segment += ot + " "
-
-            out_segments.append(out_segment.strip())
-            out_segments.append(sep)
-        text = "".join(out_segments)
-
+        text = _alpha2digit_agg(language, segments, punct, signed)
     else:
+        out_segments: List[str] = []
         for segment, sep in zip(segments, punct):
             tokens = segment.split()
             num_builder = WordToDigitParser(
@@ -182,9 +135,68 @@ def alpha2digit(
             out_segments.append(" ".join(out_tokens))
             out_segments.append(sep)
         text = "".join(out_segments)
-    
+
     # Post-processing
     if lang == "pt" and USE_PT_ORDINALS_MERGER:
         text = omg.merge_compound_ordinals_pt(text)
 
     return text
+
+
+def _alpha2digit_agg(language: Language, segments: List[str], punct: List[Any], signed: bool) -> str:
+    """Variant for "agglutinative" languages.
+    Only German for now.
+    """
+    out_segments: List[str] = []
+
+    for segment, sep in zip(segments, punct):
+        tokens = segment.split()
+        sentence = []
+        out_tokens: List[str] = []
+        out_tokens_is_num: List[bool] = []
+        old_num_result = None
+        token_index = 0
+
+        while token_index < len(tokens):
+            t = tokens[token_index]
+            sentence.append(t)
+
+            try:
+                num_result = text2num(" ".join(sentence), language)
+                old_num_result = num_result
+                token_index += 1
+            except ValueError:
+                # " ".join(sentence) cannot be resolved to a number
+
+                # last token has to be tested again in case there is sth like "eins eins eins"
+                # which is invalid in sum but separately allowed
+                if old_num_result is not None:
+                    out_tokens.append(str(old_num_result))
+                    out_tokens_is_num.append(True)
+                    sentence.clear()
+                else:
+                    out_tokens.append(t)
+                    out_tokens_is_num.append(False)
+                    sentence.clear()
+                    token_index += 1
+                old_num_result = None
+
+        # any remaining tokens to add?
+        if old_num_result is not None:
+            out_tokens.append(str(old_num_result))
+            out_tokens_is_num.append(True)
+
+        # join all and keep track on signs
+        out_segment = ""
+        for index, ot in enumerate(out_tokens):
+            if (ot in language.SIGN) and signed:
+                if index < len(out_tokens) - 1:
+                    if out_tokens_is_num[index + 1] is True:
+                        out_segment += language.SIGN[ot]
+            else:
+                out_segment += ot + " "
+
+        out_segments.append(out_segment.strip())
+        out_segments.append(sep)
+    return "".join(out_segments)
+
