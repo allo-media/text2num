@@ -230,7 +230,8 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
         return self.val
 
     def parse(self, text: str) -> bool:
-        """Check text for number words, split complex number words (hundertfünfzig) if necessary and parse all"""
+        """Check text for number words, split complex number words (hundertfünfzig)
+        if necessary and parse all"""
 
         # German numbers are frequently written without spaces. Split them.
         text = self.lang.split_number_word(text)
@@ -238,7 +239,8 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
         STATIC_HUNDRED = "hundert"
 
         # Split word at MULTIPLIERS
-        # drei und fünfzig Milliarden ||| zwei hundert drei und vierzig tausend ||| sieben hundert vier und zwanzig
+        # drei und fünfzig Milliarden
+        # | zwei hundert drei und vierzig tausend | sieben hundert vier und zwanzig
 
         num_groups = []
         num_block = []
