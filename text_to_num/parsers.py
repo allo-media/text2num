@@ -26,7 +26,7 @@ Convert spelled numbers into numeric values or digit strings.
 from typing import List, Optional
 
 from text_to_num.lang import Language
-from text_to_num.lang.german import German
+from text_to_num.lang.german import German  # TODO: optimize and remove
 
 
 class WordStreamValueParserInterface:
@@ -231,7 +231,7 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
 
     def parse(self, text: str) -> bool:
         """Check text for number words, split complex number words (hundertfünfzig)
-        if necessary and parse all"""
+        if necessary and parse all at once"""
 
         # German numbers are frequently written without spaces. Split them.
         text = self.lang.split_number_word(text)
@@ -255,7 +255,7 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
                 num_groups.append(num_block.copy())
                 num_block.clear()
 
-                # check for multiplier errors (avoid numbers like "tausend einhunder zwei tausend)
+                # check for multiplier errors (avoid numbers like "tausend einhundert zwei tausend)
                 if last_multiplier is None:
                     last_multiplier = German.NUMBER_DICT_GER[w]
                 else:
