@@ -57,6 +57,7 @@ UNITS: Dict[str, int] = {
 }
 # Unit variants
 UNITS["ein"] = 1
+UNITS["eine"] = 1
 
 # Single tens are terminals (see Rules)
 STENS: Dict[str, int] = {
@@ -103,11 +104,14 @@ ALL_WORDS = (
     + list(ZERO)
     + list([AND])
 )
+# Sort all numbers by length and start with the longest
+ALL_WORDS_SORTED_REVERSE = sorted(ALL_WORDS, key=len, reverse=True)
 
 
 class German(Language):
 
     # TODO: can this be replaced by NUMBERS ? (or extended NUMBERS)
+    # Currently it has to be imported into 'parsers' as well ...
     NUMBER_DICT_GER = {
         "null": 0,
         "eins": 1,
@@ -171,7 +175,7 @@ class German(Language):
     # AND_NUMS = set(UNITS.keys()).union(set(STENS.keys()).union(set(MTENS.keys())))
     AND = AND
 
-    # NEVER_IF_ALONE = {"one"} # ???
+    # NEVER_IF_ALONE = {"ein", "eine"}  # TODO: use
 
     # Relaxed composed numbers (two-words only)
     # start => (next, target)
@@ -226,19 +230,15 @@ class German(Language):
     def split_number_word(self, word: str) -> str:
         """Splits number words into separate words, e.g. einhundertfünzig-> ein hundert fünfzig"""
 
-        # Sort all numbers by length to start with the longest
-        # TODO: shouldn't this be done only once for ALL_WORDS ??
-        sorted_words = sorted(ALL_WORDS, key=len, reverse=True)
-
         # TODO: this can probably be optimized because complex number-words will always start with
-        # "ein", "zwei", ... "neun", "hundert", "tausend", ... I think
+        # "ein", "eine", "zwei", ... "neun", "hundert", "tausend", ... I think
         text = word.lower()
         invalid_word = ""
         result = ""
         while len(text) > 0:
             # start with the longest
             found = False
-            for sw in sorted_words:
+            for sw in ALL_WORDS_SORTED_REVERSE:
                 # Check at the beginning of the current sentence for the longest word in ALL_WORDS
                 if text.startswith(sw):
                     if len(invalid_word) > 0:
