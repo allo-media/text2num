@@ -47,7 +47,10 @@ class TestTextToNumDE(TestCase):
         self.assertEqual(text2num("fünfzehn", "de"), 15)
         self.assertEqual(text2num("zwei und vierzig", "de"), 42)
         self.assertEqual(text2num("einhundertfünfzehn", "de"), 115)
+        self.assertEqual(text2num("einhundert fünfzehn", "de"), 115)
+        self.assertEqual(text2num("ein hundert fünfzehn", "de"), 115)
         self.assertEqual(text2num("hundertfünfzehn", "de"), 115)
+        self.assertEqual(text2num("hundert fünfzehn", "de"), 115)
         self.assertEqual(text2num("fünfundsiebzigtausend", "de"), 75000)
         self.assertEqual(text2num("eintausendneunhundertzwanzig", "de"), 1920)
 
@@ -55,6 +58,7 @@ class TestTextToNumDE(TestCase):
         self.assertEqual(text2num("neunzehnhundertdreiundsiebzig", "de"), 1973)
 
     def test_text2num_exc(self):
+        # Expected to fail:
         self.assertRaises(ValueError, text2num, "tausendtausendzweihundert", "de")
         self.assertRaises(ValueError, text2num, "sechzigfünfzehn", "de")
         self.assertRaises(ValueError, text2num, "sechzighundert", "de")
@@ -62,6 +66,7 @@ class TestTextToNumDE(TestCase):
 
     def test_text2num_zeroes(self):
         self.assertEqual(text2num("null", "de"), 0)
+        # Expected to fail:
         self.assertRaises(ValueError, text2num, "null acht", "de")  # This is not allowed and should be solved with alpha2digit
         self.assertRaises(ValueError, text2num, "null null hundertfünfundzwanzig", "de")  # This is not allowed and should be solved with alpha2digit
         self.assertRaises(ValueError, text2num, "fünf null", "de")
@@ -128,25 +133,21 @@ class TestTextToNumDE(TestCase):
         self.assertEqual(result, "0")
 
     def test_alpha2digit_ordinals(self):
-        # Not yet applicable to German language
         return
+        # TODO: Not yet applicable to German language
         source = (
-            " Fünfter dritter zweiter einundzwanzigster hundertster eintausendzweihundertdreißigster fünfundzwanzigster achtunddreißigster neunundvierzigster."
+            "erster, zweiter, dritter, vierter, fünfter, sechster, siebter, achter, neunter,"
+            " zehnter, zwanzigster, einundzwanzigster, fünfundzwanzigster, achtunddreißigster, neunundvierzigster,"
+            " hundertster, eintausendzweihundertdreißigster."
         )
-        expected = "5ter third second 21st 100th 1230th 25th 38th 49th."
-        self.assertEqual(alpha2digit(source, "de"), expected)
-
-        source = (
-            "first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth."
-        )
-        expected = "first, second, third, 4th, 5th, 6th, 7th, 8th, 9th, 10th."
+        expected = "1., 2., ..."
         self.assertEqual(alpha2digit(source, "de"), expected)
 
     def test_alpha2digit_decimals(self):
-        # Not yet applicable to German language
         return
+        # TODO: Not yet applicable to German language
         source = (
-            "zwölf komma neunundneunzig, einhundertzwanzig komma null fünf,"
+            "zwölf komma neunundneunzig, zwölf komma neun, einhundertzwanzig komma null fünf,"
             " eins komma zweihundertsechsunddreißig."
         )
         expected = "12.99, 120.05, 1.236."
@@ -160,17 +161,18 @@ class TestTextToNumDE(TestCase):
         self.assertEqual(alpha2digit(source, "de"), expected)
 
     def test_one_as_noun_or_article(self):
-        # Not applicable to German language
-        # source = "Ich nehme eins. Eins passt nicht!"
-        # expected = "Ich nehme eins. Eins passt nicht!"
-        # self.assertEqual(alpha2digit(source, "de"), expected)
-        # source = "No one is innocent. Another one bites the dust."
-        # self.assertEqual(alpha2digit(source, "de"), source)
+        return
+        # TODO: Not yet applicable to German language
+        source = "Ich nehme eins. Eins passt nicht!"
+        self.assertEqual(alpha2digit(source, "de"), source)
+        source = "Velma hat eine Spur"
+        self.assertEqual(alpha2digit(source, "de"), source)
+        source = "Ich suche ein Buch"
+        self.assertEqual(alpha2digit(source, "de"), source)
         # End of segment
         # source = "No one. Another one. One one. Twenty one"
         # expected = "No one. Another one. 1 1. 21"
         # self.assertEqual(alpha2digit(source, "de"), expected)
-        return
 
     def test_second_as_time_unit_vs_ordinal(self):
         # Not yet applicable to German language
