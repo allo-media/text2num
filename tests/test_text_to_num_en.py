@@ -167,6 +167,8 @@ class TestTextToNumEN(TestCase):
         self.assertEqual(alpha2digit(source, "en"), expected)
         source = "No one is innocent. Another one bites the dust."
         self.assertEqual(alpha2digit(source, "en"), source)
+        source = "one cannot know"
+        self.assertEqual(alpha2digit(source, "en"), source)
         # End of segment
         source = "No one. Another one. One one. Twenty one"
         expected = "No one. Another one. 1 1. 21"

@@ -6,8 +6,9 @@ text2num
 
 ``text2num`` is a python package that provides functions and parser classes for:
 
-- parsing numbers expressed as words in French, English, Spanish and Portuguese and convert them to integer values;
-- detect ordinal, cardinal and decimal numbers in a stream of French, English, Spanish and Portuguese words and get their decimal digit representations. Spanish does not support ordinal numbers yet.
+- Parsing of numbers expressed as words in French, English, Spanish, Portuguese and German and convert them to integer values.
+- Detection of ordinal, cardinal and decimal numbers in a stream of French, English, Spanish and Portuguese words and get their decimal digit representations. NOTE: Spanish does not support ordinal numbers yet.
+- Detection of ordinal numbers in a German text (BETA)
 
 Compatibility
 -------------
@@ -102,6 +103,20 @@ Portuguese examples:
     >>> text2num("vinte e quatro milhões duzentos mil quarenta e sete", "pt")
     24200047
 
+
+German examples:
+
+.. code-block:: python
+
+    >>> from text_to_num import text2num
+
+    >>> text2num("einundfünfzigmillionenfünfhundertachtundsiebzigtausenddreihundertzwei", "de")
+    51578302
+
+    >>> text2num("ein und achtzig", "de")
+    81
+
+
 Find and transcribe
 ~~~~~~~~~~~~~~~~~~~
 
@@ -142,7 +157,7 @@ English:
     'On May 23rd, I bought 25 cows, 12 chickens and 125.40 kg of potatoes.'
 
 
-Spanish (ordinals not supported):
+Spanish (ordinals not supported yet):
 
 .. code-block:: python
 
@@ -175,6 +190,24 @@ Portuguese:
    >>> alpha2digit(text, "pt")
    'Ordinais: 5º, terceiro, 20ª, 21º, 104º'
 
+
+German (BETA, ordinals and decimals not supported yet):
+
+.. code-block:: python
+
+    >>> from text_to_num import alpha2digit
+
+    >>> text = "Ich habe fünfundzwanzig Kühe, zwölf Hühner und einhundertfünfundzwanzig kg Kartoffeln gekauft."
+    >>> alpha2digit(text, "de")
+    'Ich habe 25 Kühe, 12 Hühner und 125 kg Kartoffeln gekauft.'
+
+    >>> text = "Die Temperatur beträgt minus fünfzehn Grad."
+    >>> alpha2digit(text, "de")
+    'Die Temperatur beträgt -15 Grad.'
+
+    >>> text = "Die Telefonnummer lautet plus dreiunddreißig neun sechzig null sechs zwölf einundzwanzig."
+    >>> alpha2digit(text, "de")
+    'Die Telefonnummer lautet +33 9 60 0 6 12 21.'
 
 
 Read the complete documentation on `ReadTheDocs <http://text2num.readthedocs.io/>`_.
