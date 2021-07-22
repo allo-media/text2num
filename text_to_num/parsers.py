@@ -238,8 +238,8 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
 
         STATIC_HUNDRED = "hundert"
 
-        # Split word at MULTIPLIERS
-        # drei und fünfzig Milliarden
+        # Split text at MULTIPLIERS into 'num_groups'
+        # E.g.: 53.243.724 -> drei und fünfzig Millionen
         # | zwei hundert drei und vierzig tausend | sieben hundert vier und zwanzig
 
         num_groups = []
@@ -268,7 +268,7 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
                             "invalid literal for text2num: {}".format(repr(w))
                         )
 
-            # Also interrupt if there is any other word
+            # Also interrupt if there is any other word (no number, no AND)
             if w not in German.NUMBER_DICT_GER and w != self.lang.AND:
                 raise ValueError("invalid literal for text2num: {}".format(repr(w)))
 
@@ -345,8 +345,8 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
             if self.lang.AND in ng and len(ng) >= 3:
                 and_index = ng.index(self.lang.AND)
 
-                # TODO: what if "und" comes at the end?
-                if and_index + 1 >= len(ng):
+                # what if "und" comes at the end or beginnig?
+                if and_index + 1 >= len(ng) or and_index == 0:
                     raise ValueError(
                         "invalid 'and' index for text2num: {}".format(repr(ng))
                     )
@@ -358,6 +358,12 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
                 # string to num for atomic numbers
                 first_summand_num = German.NUMBER_DICT_GER[first_summand]
                 second_summand_num = German.NUMBER_DICT_GER[second_summand]
+
+                # not all combinations are allowed
+                if first_summand_num >= 10 or second_summand_num < 20:
+                    raise ValueError(
+                        "invalid 'and' group for text2num: {}".format(repr(ng))
+                    )
 
                 # Is there already a hundreds value in the equation?
                 if equation == "":
@@ -378,6 +384,7 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
                         + str(second_summand_num)
                         + "))"
                     )
+                #print("equation:", equation) # for debugging
 
                 # calculate sum
                 equation_results.append(
@@ -498,7 +505,7 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
             else:
                 # at this point there should not be any more number parts
                 raise ValueError(
-                    "invalid literal for text2num: {}".format(repr(num_groups))
+                    "invalid literal for text2num - group {} in {}".format(repr(num_groups), text)
                 )
 
             # Any sub-equation that results to 0 and is not the first sub-equation means an error
