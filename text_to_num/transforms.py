@@ -62,7 +62,7 @@ def text2num(text: str, lang: Union[str, Language], relaxed: bool = False) -> in
 
     Set ``relaxed`` to True if you want to accept "quatre vingt(s)" as "quatre-vingt".
 
-    Raises an AssertionError if ``text`` does not describe a valid number.
+    Raises an ValueError if ``text`` does not describe a valid number.
     Return an int.
     """
     language: Language
@@ -74,8 +74,8 @@ def text2num(text: str, lang: Union[str, Language], relaxed: bool = False) -> in
     if type(language) is German:
         # The German number writing rules do not apply to the common order of number processing
         num_parser = WordStreamValueParserGerman(
-            language, relaxed=relaxed
-        )  # TODO: relaxed not supported yet
+            language, relaxed=relaxed # TODO: relaxed not supported yet (what do we expect here?)
+        )
         num_parser.parse(text)
         return num_parser.value
     # Common
@@ -109,7 +109,7 @@ def alpha2digit(
     language = LANG[lang]
     segments = re.split(
         r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text
-    )  # TODO: what if you have 3.14 or 11:55 in your text?
+    )  # TODO: what if you have "1." (1st) or "3.14" or "11:55" in your text?
     punct = re.findall(r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text)
     if len(punct) < len(segments):
         punct.append("")
@@ -168,40 +168,75 @@ def _alpha2digit_agg(
 
     for segment, sep in zip(segments, punct):
         tokens = segment.split()
-        sentence = []
+        sentence: List[str] = []
         out_tokens: List[str] = []
         out_tokens_is_num: List[bool] = []
-        old_num_result = None
+        combined_num_result = None
+        reset_to_last_if_failed = False
         token_index = 0
+
+        def revert_if_alone(sentence_effective_len: int) -> bool:
+            if sentence_effective_len == 1 and sentence[0].lower() in language.NEVER_IF_ALONE:
+                return True
+            else:
+                return False
 
         while token_index < len(tokens):
             t = tokens[token_index]
             sentence.append(t)
-
+            token_to_add = None
+            token_to_add_is_num = False
             try:
+                # TODO: this is inefficient because we analyze the same again and again until ERROR
                 num_result = text2num(" ".join(sentence), language)
-                old_num_result = num_result
+                combined_num_result = num_result
                 token_index += 1
+                reset_to_last_if_failed = False
             except ValueError:
-                # " ".join(sentence) cannot be resolved to a number
-
-                # last token has to be tested again in case there is sth like "eins eins eins"
-                # which is invalid in sum but separately allowed
-                if old_num_result is not None:
-                    out_tokens.append(str(old_num_result))
-                    out_tokens_is_num.append(True)
-                    sentence.clear()
+                # This can happen if we required current token to be a num. but failed:
+                if reset_to_last_if_failed:
+                    reset_to_last_if_failed = False
+                    # repeat last try but ...
+                    token_index -= 1
+                    # ... finish old group first and clean up
+                    token_to_add = str(combined_num_result)
+                    token_to_add_is_num = True
+                # This can happen if a) ends with not num. b) ends with AND c) ends with invalid next num:
+                elif combined_num_result is not None:
+                    if t == language.AND and (token_index + 1) < len(tokens):
+                        # number might continue after AND
+                        # test the next and then decide to keep it or reset group
+                        reset_to_last_if_failed = True
+                        token_index += 1
+                    else:
+                        # last token has to be tested again in case there is sth like "eins eins"
+                        # finish last group but keep token_index
+                        token_to_add = str(combined_num_result)
+                        token_to_add_is_num = True
                 else:
-                    out_tokens.append(t)
-                    out_tokens_is_num.append(False)
-                    sentence.clear()
+                    # previous text was not a valid number
+                    # prep. for next group
                     token_index += 1
-                old_num_result = None
+                    token_to_add = t
+                    token_to_add_is_num = False
+            # new grouped tokens? then add and prep. next
+            if token_to_add:
+                if token_to_add_is_num and revert_if_alone(len(sentence)-1):
+                    token_to_add = str(sentence[0])
+                    token_to_add_is_num = False
+                out_tokens.append(token_to_add)
+                out_tokens_is_num.append(token_to_add_is_num)
+                sentence.clear()
+                combined_num_result = None
 
         # any remaining tokens to add?
-        if old_num_result is not None:
-            out_tokens.append(str(old_num_result))
-            out_tokens_is_num.append(True)
+        if combined_num_result is not None:
+            if revert_if_alone(len(sentence)):
+                out_tokens.append(str(sentence[0]))
+                out_tokens_is_num.append(False)
+            else:
+                out_tokens.append(str(combined_num_result))
+                out_tokens_is_num.append(True)
 
         # join all and keep track on signs
         out_segment = ""
