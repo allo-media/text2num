@@ -159,6 +159,13 @@ class German(Language):
         "trilliarden": 1_000_000_000_000_000_000_000,
     }
 
+    ORDINALS_FIXED_GER = {
+        "erste": "eins",
+        "ditte": "drei",
+        "siebte": "sieben",
+        "achte": "acht"
+    }
+
     MULTIPLIERS = MULTIPLIERS
     UNITS = UNITS
     STENS = STENS
@@ -186,34 +193,24 @@ class German(Language):
 
         THIS IS STILL IN DEVELOPMENT FOR GERMAN LANGUAGE
 
-        Return None if word is not an ordinal or is better left in letters
-        as is the case for fist and second.
+        Return None if word is not an ordinal or is better left in letters.
         """
-        plur_suff = word.endswith("ster") and not word.startswith(
-            "sechster"
-        )  # Zwanzigster, Dreißigster, Hundertster, Tausendster ...
-        sing_suff = word.endswith("ter")  # Zweiter, Vierter, Fünfter, Sechster
-        if not (plur_suff or sing_suff):
-            if word.endswith("erster"):
-                source = word.replace("erster", "eins")
-            elif word.endswith("second"):
-                source = word.replace("dritter", "drei")
-            elif word.endswith("siebter"):
-                source = word.replace("siebter", "sieben")
-            elif word.endswith("achter"):
-                source = word.replace("achter", "acht")
+        if len(word) > 4:
+            if word.endswith("ter") or word.endswith("tes") or word.endswith("ten"):
+                if word[:-1] in self.ORDINALS_FIXED_GER:
+                    return self.ORDINALS_FIXED_GER[word[:-1]]
+                else:
+                    source = word[:-3]
+                    if source in self.NUMBER_DICT_GER:
+                        return source
+                    elif source.endswith("s") and source[:-1] in self.NUMBER_DICT_GER:
+                        return source[:-1]
+                    else:
+                        return None
             else:
                 return None
         else:
-            source = word[:-4] if plur_suff else word[:-3]
-        if source in MTENS.keys() or source in MULTIPLIERS.keys():
-            source = source + "ster"
-        else:
-            source = source + "ter"
-
-        if source not in self.NUMBERS:
             return None
-        return source
 
     def num_ord(self, digits: str, original_word: str) -> str:
         """Add suffix to number in digits to make an ordinal
@@ -221,8 +218,7 @@ class German(Language):
         THIS IS STILL IN DEVELOPMENT FOR GERMAN LANGUAGE
 
         """
-        sf = original_word[-3:] if original_word.endswith("s") else original_word[-2:]
-        return f"{digits}{sf}"
+        return f"{digits}."
 
     def normalize(self, word: str) -> str:
         return word

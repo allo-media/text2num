@@ -171,6 +171,7 @@ def _alpha2digit_agg(
         sentence: List[str] = []
         out_tokens: List[str] = []
         out_tokens_is_num: List[bool] = []
+        out_tokens_is_ordinal: List[bool] = []
         combined_num_result = None
         reset_to_last_if_failed = False
         token_index = 0
@@ -183,15 +184,24 @@ def _alpha2digit_agg(
 
         while token_index < len(tokens):
             t = tokens[token_index]
-            sentence.append(t)
             token_to_add = None
             token_to_add_is_num = False
+            token_to_add_is_ordinal = False
+            cardinal_for_ordinal = language.ord2card(t)
+            if cardinal_for_ordinal:
+                token_to_add_is_ordinal = True
+                t = cardinal_for_ordinal
+            sentence.append(t)
             try:
                 # TODO: this is inefficient because we analyze the same again and again until ERROR
                 num_result = text2num(" ".join(sentence), language)
                 combined_num_result = num_result
                 token_index += 1
                 reset_to_last_if_failed = False
+                # ordinals end groups
+                if token_to_add_is_ordinal:
+                    token_to_add = str(combined_num_result)
+                    token_to_add_is_num = True
             except ValueError:
                 # This can happen if we required current token to be a num. but failed:
                 if reset_to_last_if_failed:
@@ -226,6 +236,7 @@ def _alpha2digit_agg(
                     token_to_add_is_num = False
                 out_tokens.append(token_to_add)
                 out_tokens_is_num.append(token_to_add_is_num)
+                out_tokens_is_ordinal.append(token_to_add_is_ordinal)
                 sentence.clear()
                 combined_num_result = None
 
@@ -234,9 +245,11 @@ def _alpha2digit_agg(
             if revert_if_alone(len(sentence)):
                 out_tokens.append(str(sentence[0]))
                 out_tokens_is_num.append(False)
+                out_tokens_is_ordinal.append(False)
             else:
                 out_tokens.append(str(combined_num_result))
                 out_tokens_is_num.append(True)
+                out_tokens_is_ordinal.append(False) # can reach this only if not ordinal
 
         # join all and keep track on signs
         out_segment = ""
