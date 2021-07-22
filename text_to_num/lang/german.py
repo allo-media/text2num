@@ -115,8 +115,8 @@ class German(Language):
     NUMBER_DICT_GER = {
         "null": 0,
         "eins": 1,
-        "ein": 1,
-        "eine": 1,
+        "ein": 1,   # TODO: only 100, 1000, und
+        "eine": 1,  # TODO: only > 1000
         "zwei": 2,
         "drei": 3,
         "vier": 4,
@@ -175,11 +175,11 @@ class German(Language):
     # AND_NUMS = set(UNITS.keys()).union(set(STENS.keys()).union(set(MTENS.keys())))
     AND = AND
 
-    # NEVER_IF_ALONE = {"ein", "eine"}  # TODO: use
+    NEVER_IF_ALONE = {"ein", "eine"}
 
     # Relaxed composed numbers (two-words only)
     # start => (next, target)
-    # RELAXED: Dict[str, Tuple[str, str]] = {}
+    # RELAXED: Dict[str, Tuple[str, str]] = {}  # TODO: not supported yet
 
     def ord2card(self, word: str) -> Optional[str]:
         """Convert ordinal number to cardinal.
