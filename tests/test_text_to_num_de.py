@@ -66,6 +66,7 @@ class TestTextToNumDE(TestCase):
         self.assertRaises(ValueError, text2num, "dreißig und elf", "de")
         self.assertRaises(ValueError, text2num, "ein und zehn", "de")
         self.assertRaises(ValueError, text2num, "zwei und neunzehn", "de")
+        self.assertRaises(ValueError, text2num, "zwanzig zweitausend", "de")
         self.assertRaises(ValueError, text2num, "hundert und elf", "de")    # TODO: humans get this...
         self.assertRaises(ValueError, text2num, "hundert und eins", "de")   # TODO: humans get this...
 
@@ -93,6 +94,17 @@ class TestTextToNumDE(TestCase):
 
         source = "einundzwanzig, einunddreißig."
         expected = "21, 31."
+        self.assertEqual(alpha2digit(source, "de"), expected)
+
+        source = "zweiundzwanzig zweitausendeinundzwanzig"
+        expected = "22 2021"
+        self.assertEqual(alpha2digit(source, "de"), expected)
+        source = "zwei und zwanzig zwei tausend ein und zwanzig"
+        expected = "22 2021"
+        self.assertEqual(alpha2digit(source, "de"), expected)
+
+        source = "tausend hundertzweitausend zweihunderttausend vierzehntausend"
+        expected = "1000 102000 200000 14000"
         self.assertEqual(alpha2digit(source, "de"), expected)
 
     def test_relaxed(self):
@@ -158,14 +170,37 @@ class TestTextToNumDE(TestCase):
         self.assertEqual(result, "0")
 
     def test_alpha2digit_ordinals(self):
-        return
-        # TODO: Not yet applicable to German language
         source = (
-            "erster, zweiter, dritter, vierter, fünfter, sechster, siebter, achter, neunter,"
-            " zehnter, zwanzigster, einundzwanzigster, fünfundzwanzigster, achtunddreißigster, neunundvierzigster,"
-            " hundertster, eintausendzweihundertdreißigster."
+            "erster, zweiter, dritter, vierter, fünfter, sechster, siebter, achter, neunter."
         )
-        expected = "1., 2., ..."
+        expected = "1., 2., 3., 4., 5., 6., 7., 8., 9.."
+        self.assertEqual(alpha2digit(source, "de"), expected)
+
+        source = (
+            "zehnter, zwanzigster, einundzwanzigster, fünfundzwanzigster, achtunddreißigster, "
+            "neunundvierzigster, hundertster, eintausendzweihundertdreißigster."
+        )
+        expected = "10., 20., 21., 25., 38., 49., 100., 1230.."
+        self.assertEqual(alpha2digit(source, "de"), expected)
+
+        source = "zwei tausend zweite"
+        expected = "2002."
+        self.assertEqual(alpha2digit(source, "de"), expected)
+
+        source = "zweitausendzweite"
+        expected = "2002."
+        self.assertEqual(alpha2digit(source, "de"), expected)
+
+        source = "der zweiundzwanzigste erste zweitausendzweiundzwanzig"
+        expected = "der 22. 1. 2022"
+        self.assertEqual(alpha2digit(source, "de"), expected)
+
+        source = "der zwei und zwanzigste erste zwei tausend zwei und zwanzig"
+        expected = "der 22. 1. 2022"
+        self.assertEqual(alpha2digit(source, "de"), expected)
+
+        source = "das erste lustigste hundertste dreißigste beste"
+        expected = "das 1. lustigste 100. 30. beste"
         self.assertEqual(alpha2digit(source, "de"), expected)
 
     def test_alpha2digit_decimals(self):
