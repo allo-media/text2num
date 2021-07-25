@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from typing import Dict, Optional
+import re
 
 from .base import Language
 
@@ -115,8 +116,8 @@ class German(Language):
     NUMBER_DICT_GER = {
         "null": 0,
         "eins": 1,
-        "ein": 1,   # TODO: only 100, 1000, und
-        "eine": 1,  # TODO: only > 1000
+        "ein": 1,   # TODO: followed only by "100", "1000", "und"
+        "eine": 1,  # TODO: followed only by multipliers > 1000
         "zwei": 2,
         "drei": 3,
         "vier": 4,
@@ -161,10 +162,12 @@ class German(Language):
 
     ORDINALS_FIXED_GER = {
         "erste": "eins",
-        "ditte": "drei",
+        "dritte": "drei",
+        "sechste": "sechs",     # we need this because it ends with "s" ^^
         "siebte": "sieben",
         "achte": "acht"
     }
+    LARGE_ORDINAL_SUFFIXES_GER = "^(ster|stes|sten|ste)(\s|$)" # RegExp
 
     MULTIPLIERS = MULTIPLIERS
     UNITS = UNITS
@@ -190,45 +193,49 @@ class German(Language):
 
     def ord2card(self, word: str) -> Optional[str]:
         """Convert ordinal number to cardinal.
-
-        THIS IS STILL IN DEVELOPMENT FOR GERMAN LANGUAGE
-
         Return None if word is not an ordinal or is better left in letters.
         """
         if len(word) > 4:
+            word_base = None
+            # example transf.: zwanzigster -> zwanzigste -> zwanzigs -> zwanzig
             if word.endswith("ter") or word.endswith("tes") or word.endswith("ten"):
-                if word[:-1] in self.ORDINALS_FIXED_GER:
-                    return self.ORDINALS_FIXED_GER[word[:-1]]
+                word_base = word[:-1].lower()       # e.g. erster -> erste
+            elif word.endswith("te"):
+                word_base = word.lower()
+            if word_base:
+                if word_base in self.ORDINALS_FIXED_GER:
+                    return self.ORDINALS_FIXED_GER[word_base]
                 else:
-                    source = word[:-3]
-                    if source in self.NUMBER_DICT_GER:
-                        return source
-                    elif source.endswith("s") and source[:-1] in self.NUMBER_DICT_GER:
-                        return source[:-1]
-                    else:
-                        return None
+                    word_base = word_base[:-2]      # e.g. vierte -> vier
+                    if word_base.endswith("s"):
+                        word_base = word_base[:-1]  # e.g. zwanzigs -> zwanzig
+                    if word_base in self.NUMBER_DICT_GER:
+                        return word_base
+                    # here we could still have e.g: "zweiundzwanzig"
+                    if word_base.endswith(tuple(self.NUMBER_DICT_GER)):
+                        # once again split - TODO: we should try to reduce split calls
+                        word_base_split = self.split_number_word(word_base).split()
+                        wbs_length = len(word_base_split)
+                        if wbs_length > 0 and word_base_split[wbs_length - 1] in self.NUMBER_DICT_GER:
+                            return "".join(word_base_split)
+                    return None
             else:
                 return None
         else:
             return None
 
     def num_ord(self, digits: str, original_word: str) -> str:
-        """Add suffix to number in digits to make an ordinal
-
-        THIS IS STILL IN DEVELOPMENT FOR GERMAN LANGUAGE
-
-        """
+        """Add suffix to number in digits to make an ordinal"""
         return f"{digits}."
 
     def normalize(self, word: str) -> str:
         return word
 
     def split_number_word(self, word: str) -> str:
-        """Splits number words into separate words, e.g. einhundertfünzig-> ein hundert fünfzig"""
-
-        # TODO: this can probably be optimized because complex number-words will always start with
-        # "ein", "eine", "zwei", ... "neun", "hundert", "tausend", ... I think
-        text = word.lower()
+        """Splits number words into separate words, e.g.
+        einhundertfünzig -> ein hundert fünfzig
+        """
+        text = word.lower() # NOTE: if we want to use this outside it should keep case
         invalid_word = ""
         result = ""
         while len(text) > 0:
@@ -240,14 +247,26 @@ class German(Language):
                     if len(invalid_word) > 0:
                         result += invalid_word + " "
                         invalid_word = ""
-
                     result += sw + " "
                     text = text[len(sw):]
                     found = True
                     break
+            # current beginning could not be assigned to a word:
             if not found:
-                # current beginning could not be assigned to a word
-                if not text[0] == " ":
+                # is (large) ordinal ending?
+                ord_match = None
+                if len(result) > 3 and text.startswith("ste"):
+                    ord_match = re.search(self.LARGE_ORDINAL_SUFFIXES_GER, text)
+
+                if ord_match:
+                    # add ordinal ending
+                    start = ord_match.span()[0]
+                    end = ord_match.span()[1]
+                    #result = result[:-1] + text[start:end]   # drop last space and add suffix
+                    text = text[end:]
+                    invalid_word = ""
+                elif not text[0] == " ":
+                    # move one index
                     invalid_word += text[0:1]
                     text = text[1:]
                 else:
@@ -255,8 +274,6 @@ class German(Language):
                         result += invalid_word + " "
                         invalid_word = ""
                     text = text[1:]
-
         if len(invalid_word) > 0:
             result += invalid_word + " "
-
         return result
