@@ -116,7 +116,7 @@ def alpha2digit(
 
     # Process segments
     if type(language) is German:
-        text = _alpha2digit_agg(language, segments, punct, signed)
+        text = _alpha2digit_agg(language, segments, punct, signed, ordinal_threshold)
     else:
         out_segments: List[str] = []
         for segment, sep in zip(segments, punct):
@@ -159,7 +159,11 @@ def alpha2digit(
 
 
 def _alpha2digit_agg(
-    language: Language, segments: List[str], punct: List[Any], signed: bool
+    language: Language,
+    segments: List[str],
+    punct: List[Any],
+    signed: bool,
+    ordinal_threshold: int = 3
 ) -> str:
     """Variant for "agglutinative" languages.
     Only German for now.
@@ -181,6 +185,7 @@ def _alpha2digit_agg(
         out_tokens_is_num: List[bool] = []
         out_tokens_ordinal_org: List[Optional[str]] = []
         combined_num_result = None
+        current_token_ordinal_org = None
         reset_to_last_if_failed = False
         token_index = 0
 
@@ -188,11 +193,10 @@ def _alpha2digit_agg(
             t = tokens[token_index]
             token_to_add = None
             token_to_add_is_num = False
-            token_ordinal_org = None
+            tmp_token_ordinal_org = None
             cardinal_for_ordinal = language.ord2card(t)
             if cardinal_for_ordinal:
-                # print("cardinal_for_ordinal", cardinal_for_ordinal, t)
-                token_ordinal_org = t
+                tmp_token_ordinal_org = t
                 t = cardinal_for_ordinal
             sentence.append(t)
             try:
@@ -200,14 +204,21 @@ def _alpha2digit_agg(
                 # including 'split_number_word' and all the heavy lifting ... but it works ¯\_(ツ)_/¯
                 num_result = text2num(" ".join(sentence), language)
                 combined_num_result = num_result
+                current_token_ordinal_org = tmp_token_ordinal_org
                 token_index += 1
                 reset_to_last_if_failed = False
                 # ordinals end groups
-                if token_ordinal_org:
+                if current_token_ordinal_org and num_result > ordinal_threshold:
                     token_to_add = str(combined_num_result)
                     token_to_add_is_num = True
+                # ... but ordinals threshold reverts number back 
+                elif current_token_ordinal_org:
+                    current_token_ordinal_org = None
+                    sentence[len(sentence)-1] = str(tmp_token_ordinal_org)
+                    token_to_add = " ".join(sentence)
+                    token_to_add_is_num = False
             except ValueError:
-                # This can happen if we required current token to be a num. but failed:
+                # This will happen if look-ahead was required (e.g. because of AND) but failed:
                 if reset_to_last_if_failed:
                     reset_to_last_if_failed = False
                     # repeat last try but ...
@@ -224,7 +235,7 @@ def _alpha2digit_agg(
                         token_index += 1
                     else:
                         # last token has to be tested again in case there is sth like "eins eins"
-                        # finish last group but keep token_index
+                        # finish LAST group but keep token_index
                         token_to_add = str(combined_num_result)
                         token_to_add_is_num = True
                 else:
@@ -238,11 +249,13 @@ def _alpha2digit_agg(
                 if token_to_add_is_num and revert_if_alone(len(sentence)-1, sentence):
                     token_to_add = str(sentence[0])
                     token_to_add_is_num = False
+                    current_token_ordinal_org = None
                 out_tokens.append(token_to_add)
                 out_tokens_is_num.append(token_to_add_is_num)
-                out_tokens_ordinal_org.append(token_ordinal_org)
+                out_tokens_ordinal_org.append(current_token_ordinal_org)
                 sentence.clear()
                 combined_num_result = None
+                current_token_ordinal_org = None
 
         # any remaining tokens to add?
         if combined_num_result is not None:
@@ -252,7 +265,7 @@ def _alpha2digit_agg(
             else:
                 out_tokens.append(str(combined_num_result))
                 out_tokens_is_num.append(True)
-            out_tokens_ordinal_org.append(None) # can reach this only if not ordinal
+            out_tokens_ordinal_org.append(None) # we can't reach this if it was ordinal
 
         # join all and keep track on signs
         out_segment = ""
@@ -266,6 +279,7 @@ def _alpha2digit_agg(
             else:
                 out_segment += ot + " "
 
+        # print("all:", out_tokens, out_tokens_is_num, out_tokens_ordinal_org) # DEBUG
         out_segments.append(out_segment.strip())
         out_segments.append(sep)
     return "".join(out_segments)
