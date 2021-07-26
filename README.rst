@@ -217,9 +217,9 @@ German (BETA, decimals are not supported yet):
     >>> alpha2digit(text, "de")
     '22. Januar 2022'
 
-    >>> text = "Es ist ein Buch mit dreihundert Seiten."
-    >>> alpha2digit(text, "de")
-    'Es ist ein Buch mit 300 Seiten.'
+    >>> text = "Es ist ein Buch mit dreitausend Seiten aber nicht das erste."
+    >>> alpha2digit(text, "de", ordinal_threshold=0)
+    'Es ist ein Buch mit 3000 Seiten aber nicht das 1..'
 
 
 Read the complete documentation on `ReadTheDocs <http://text2num.readthedocs.io/>`_.
