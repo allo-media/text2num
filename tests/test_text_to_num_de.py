@@ -174,14 +174,14 @@ class TestTextToNumDE(TestCase):
             "erster, zweiter, dritter, vierter, fünfter, sechster, siebter, achter, neunter."
         )
         expected = "1., 2., 3., 4., 5., 6., 7., 8., 9.."
-        self.assertEqual(alpha2digit(source, "de"), expected)
+        self.assertEqual(alpha2digit(source, "de", ordinal_threshold=0), expected)
 
         source = (
             "zehnter, zwanzigster, einundzwanzigster, fünfundzwanzigster, achtunddreißigster, "
             "neunundvierzigster, hundertster, eintausendzweihundertdreißigster."
         )
         expected = "10., 20., 21., 25., 38., 49., 100., 1230.."
-        self.assertEqual(alpha2digit(source, "de"), expected)
+        self.assertEqual(alpha2digit(source, "de", ordinal_threshold=0), expected)
 
         source = "zwei tausend zweite"
         expected = "2002."
@@ -193,15 +193,31 @@ class TestTextToNumDE(TestCase):
 
         source = "der zweiundzwanzigste erste zweitausendzweiundzwanzig"
         expected = "der 22. 1. 2022"
-        self.assertEqual(alpha2digit(source, "de"), expected)
+        self.assertEqual(alpha2digit(source, "de", ordinal_threshold=0), expected)
 
         source = "der zwei und zwanzigste erste zwei tausend zwei und zwanzig"
         expected = "der 22. 1. 2022"
-        self.assertEqual(alpha2digit(source, "de"), expected)
+        self.assertEqual(alpha2digit(source, "de", ordinal_threshold=0), expected)
+
+        source = "zweiundzwanzigster zweiter und zwei und zwanzigster zweiter"
+        expected = "zweiundzwanzigster zweiter und zwei und zwanzigster zweiter"
+        self.assertEqual(alpha2digit(source, "de", ordinal_threshold=22), expected)
+        source = "zweiundzwanzigster zweiter und zwei und zwanzigster zweiter"
+        expected = "22. 2. und 22. 2."
+        self.assertEqual(alpha2digit(source, "de", ordinal_threshold=1), expected)
 
         source = "das erste lustigste hundertste dreißigste beste"
         expected = "das 1. lustigste 100. 30. beste"
+        self.assertEqual(alpha2digit(source, "de", ordinal_threshold=0), expected)
+
+        source = "zwanzig erste Versuche"
+        expected = "20 erste Versuche"
         self.assertEqual(alpha2digit(source, "de"), expected)
+
+        source = "Es ist ein Buch mit dreitausend Seiten aber nicht das erste."
+        expected = "Es ist ein Buch mit 3000 Seiten aber nicht das 1.."
+        self.assertEqual(alpha2digit(source, "de", ordinal_threshold=0), expected)
+
 
     def test_alpha2digit_decimals(self):
         return
