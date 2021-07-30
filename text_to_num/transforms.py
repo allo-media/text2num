@@ -109,7 +109,7 @@ def alpha2digit(
     language = LANG[lang]
     segments = re.split(
         r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text
-    )  # TODO: what if you have "1." (1st) or "3.14" or "11:55" in your text?
+    )
     punct = re.findall(r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text)
     if len(punct) < len(segments):
         punct.append("")
