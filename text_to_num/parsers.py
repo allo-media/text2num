@@ -359,7 +359,6 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
                 # get the number before and after the "und"
                 first_summand = ng[and_index - 1]
                 second_summand = ng[and_index + 1]
-                print("first_summand", first_summand, "second_summand", second_summand)
 
                 # string to num for atomic numbers
                 first_summand_num = German.NUMBER_DICT_GER[first_summand]

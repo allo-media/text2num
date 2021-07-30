@@ -69,6 +69,8 @@ class TestTextToNumDE(TestCase):
         self.assertRaises(ValueError, text2num, "zwanzig zweitausend", "de")
         self.assertRaises(ValueError, text2num, "hundert und elf", "de")    # TODO: humans get this...
         self.assertRaises(ValueError, text2num, "hundert und eins", "de")   # TODO: humans get this...
+        self.assertRaises(ValueError, text2num, "eins und zwanzig", "de")
+        self.assertRaises(ValueError, text2num, "eine und zwanzig", "de")
 
     def test_text2num_zeroes(self):
         self.assertEqual(text2num("null", "de"), 0)
@@ -134,6 +136,10 @@ class TestTextToNumDE(TestCase):
 
         source = "Einhundert und drei"  # TODO: actually this is unclear
         expected = "100 und 3"
+        self.assertEqual(alpha2digit(source, "de", relaxed=True), expected)
+
+        source = "eins und zwanzig ist nicht einundzwanzig"
+        expected = "1 und 20 ist nicht 21"
         self.assertEqual(alpha2digit(source, "de", relaxed=True), expected)
 
         source = "Einhundert und Ende"
@@ -214,6 +220,10 @@ class TestTextToNumDE(TestCase):
         expected = "20 erste Versuche"
         self.assertEqual(alpha2digit(source, "de"), expected)
 
+        source = "der dritte und dreißig"
+        expected = "der 3. und 30"
+        self.assertEqual(alpha2digit(source, "de", ordinal_threshold=0), expected)
+
         source = "Es ist ein Buch mit dreitausend Seiten aber nicht das erste."
         expected = "Es ist ein Buch mit 3000 Seiten aber nicht das 1.."
         self.assertEqual(alpha2digit(source, "de", ordinal_threshold=0), expected)
@@ -252,6 +262,10 @@ class TestTextToNumDE(TestCase):
         source = "Eine Eins und eine Zwei"
         expected = "Eine 1 und eine 2"
         self.assertEqual(alpha2digit(source, "de"), expected)
+        # TODO: fails:
+        #source = "Ein Millionen Deal"
+        #expected = "Ein 1000000 Deal"
+        #self.assertEqual(alpha2digit(source, "de"), expected)
 
     def test_second_as_time_unit_vs_ordinal(self):
         # Not yet applicable to German language

@@ -165,7 +165,12 @@ def _alpha2digit_agg(
     signed: bool,
     ordinal_threshold: int = 3
 ) -> str:
-    """Variant for "agglutinative" languages.
+    """Variant for "agglutinative" languages and languages with different style
+    of processing numbers, for example:
+    
+    Default parser: "twenty one" (en) = 20, 1, "vingt et un" (fr) = 20, 1
+    German parser: "einundzwanzig" or "ein und zwanzig" (de) = 1, 20
+
     Only German for now.
     """
     out_segments: List[str] = []
@@ -201,8 +206,8 @@ def _alpha2digit_agg(
             sentence.append(t)
             try:
                 # TODO: this is very inefficient because we analyze the same text
-                # again and again until we get an ERROR including 'split_number_word'
-                # and all the heavy lifting ... but for now it works ¯\_(ツ)_/¯
+                # again and again until it fails including 'split_number_word' and all the
+                # heavy lifting ... but it works and is hard to optimize ¯\_(ツ)_/¯
                 num_result = text2num(" ".join(sentence), language)
                 combined_num_result = num_result
                 current_token_ordinal_org = tmp_token_ordinal_org
