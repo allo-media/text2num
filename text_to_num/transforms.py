@@ -120,9 +120,9 @@ def alpha2digit(
         # TODO: we should try to build a proper 'WordToDigitParser' for German
         # and refactor the code to be more similar to the default logic below
         text = _alpha2digit_agg(
-            language, 
-            segments, 
-            punct, 
+            language,
+            segments,
+            punct,
             relaxed=relaxed,
             signed=signed,
             ordinal_threshold=ordinal_threshold
