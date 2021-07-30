@@ -289,13 +289,36 @@ def _alpha2digit_agg(
 
         # join all and keep track on signs
         out_segment = ""
+        num_of_tokens = len(out_tokens)
+        next_is_decimal_num = False
         for index, ot in enumerate(out_tokens):
-            if (ot in language.SIGN) and signed:
-                if index < len(out_tokens) - 1:
+            if next_is_decimal_num:
+                if (
+                    index < num_of_tokens - 1
+                    and out_tokens_is_num[index + 1]
+                    and int(out_tokens[index + 1]) < 10
+                ):
+                    out_segment += ot
+                else:
+                    next_is_decimal_num = False
+                    out_segment += ot + " "
+            elif (ot in language.SIGN) and signed:
+                # sign check
+                if index < num_of_tokens - 1:
                     if out_tokens_is_num[index + 1] is True:
                         out_segment += language.SIGN[ot]
             elif out_tokens_ordinal_org[index] is not None:
+                # ordinal transform
                 out_segment += language.num_ord(ot, str(out_tokens_ordinal_org[index])) + " "
+            elif (
+                (ot.lower() in language.DECIMAL_SEP)
+                and index > 0 and index < num_of_tokens - 1
+                and out_tokens_is_num[index - 1] and out_tokens_is_num[index + 1]
+                and int(out_tokens[index + 1]) < 10
+            ):
+                # decimal?
+                out_segment = out_segment.strip() + language.DECIMAL_SYM
+                next_is_decimal_num = True
             else:
                 out_segment += ot + " "
 
