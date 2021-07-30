@@ -293,6 +293,7 @@ def _alpha2digit_agg(
         next_is_decimal_num = False
         for index, ot in enumerate(out_tokens):
             if next_is_decimal_num:
+                # continue decimals?
                 if (
                     index < num_of_tokens - 1
                     and out_tokens_is_num[index + 1]
@@ -308,7 +309,7 @@ def _alpha2digit_agg(
                     if out_tokens_is_num[index + 1] is True:
                         out_segment += language.SIGN[ot]
             elif out_tokens_ordinal_org[index] is not None:
-                # ordinal transform
+                # cardinal transform
                 out_segment += language.num_ord(ot, str(out_tokens_ordinal_org[index])) + " "
             elif (
                 (ot.lower() in language.DECIMAL_SEP)
@@ -316,7 +317,7 @@ def _alpha2digit_agg(
                 and out_tokens_is_num[index - 1] and out_tokens_is_num[index + 1]
                 and int(out_tokens[index + 1]) < 10
             ):
-                # decimal?
+                # decimal
                 out_segment = out_segment.strip() + language.DECIMAL_SYM
                 next_is_decimal_num = True
             else:
