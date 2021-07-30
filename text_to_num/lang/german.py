@@ -57,8 +57,8 @@ UNITS: Dict[str, int] = {
     )
 }
 # Unit variants
-UNITS["ein"] = 1
-UNITS["eine"] = 1
+UNITS["ein"] = 1    # TODO: use that this can be followed only by "100", "1000", "und"
+UNITS["eine"] = 1   # TODO: use that this can be followed only by multipliers > 1000
 
 # Single tens are terminals (see Rules)
 STENS: Dict[str, int] = {
@@ -96,69 +96,21 @@ NUMBERS.update(HUNDRED)
 AND = "und"
 ZERO = {"null"}
 
-ALL_WORDS = (
-    list(UNITS.keys())
-    + list(STENS.keys())
-    + list(MULTIPLIERS.keys())
-    + list(MTENS.keys())
-    + list(HUNDRED.keys())
-    + list(ZERO)
-    + list([AND])
-)
-# Sort all numbers by length and start with the longest
-ALL_WORDS_SORTED_REVERSE = sorted(ALL_WORDS, key=len, reverse=True)
+# Sort all numbers by length and start with the longest (we keep dict structure)
+ALL_WORDS_SORTED_REVERSE = dict(sorted(
+    # add "und" and "null" to NUMBERS
+    {"und": None, "null": 0, **NUMBERS}.items(),
+    # take reverse length of keys to sort
+    key=lambda kv: len(kv[0]),
+    reverse=True
+))
 
 
 class German(Language):
 
-    # TODO: can this be replaced by NUMBERS ? (or extended NUMBERS)
+    # TODO: can this be replaced entirely?
     # Currently it has to be imported into 'parsers' as well ...
-    NUMBER_DICT_GER = {
-        "null": 0,
-        "eins": 1,
-        "ein": 1,   # TODO: followed only by "100", "1000", "und"
-        "eine": 1,  # TODO: followed only by multipliers > 1000
-        "zwei": 2,
-        "drei": 3,
-        "vier": 4,
-        "fünf": 5,
-        "sechs": 6,
-        "sieben": 7,
-        "acht": 8,
-        "neun": 9,
-        "zehn": 10,
-        "elf": 11,
-        "zwölf": 12,
-        "dreizehn": 13,
-        "vierzehn": 14,
-        "fünfzehn": 15,
-        "sechzehn": 16,
-        "siebzehn": 17,
-        "achzehn": 18,
-        "neunzehn": 19,
-        "zwanzig": 20,
-        "dreißig": 30,
-        "vierzig": 40,
-        "fünfzig": 50,
-        "sechzig": 60,
-        "siebzig": 70,
-        "achtzig": 80,
-        "neunzig": 90,
-        "hundert": 100,
-        "tausend": 1_000,
-        "million": 1_000_000,
-        "millionen": 1_000_000,
-        "milliarde": 1_000_000_000,
-        "milliarden": 1_000_000_000,
-        "billion": 1_000_000_000_000,
-        "billionen": 1_000_000_000_000,
-        "billiarde": 1_000_000_000_000_000,
-        "billiarden": 1_000_000_000_000_000,
-        "trillion": 1_000_000_000_000_000_000,
-        "trillionen": 1_000_000_000_000_000_000,
-        "trilliarde": 1_000_000_000_000_000_000_000,
-        "trilliarden": 1_000_000_000_000_000_000_000,
-    }
+    NUMBER_DICT_GER = {"null": 0, **NUMBERS}
 
     ORDINALS_FIXED_GER = {
         "erste": "eins",
@@ -245,7 +197,7 @@ class German(Language):
         while len(text) > 0:
             # start with the longest
             found = False
-            for sw in ALL_WORDS_SORTED_REVERSE:
+            for sw, int_num in ALL_WORDS_SORTED_REVERSE.items():
                 # Check at the beginning of the current sentence for the longest word in ALL_WORDS
                 if text.startswith(sw):
                     if len(invalid_word) > 0:
