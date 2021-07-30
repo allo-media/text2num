@@ -167,7 +167,7 @@ class German(Language):
         "siebte": "sieben",
         "achte": "acht"
     }
-    LARGE_ORDINAL_SUFFIXES_GER = "^(ster|stes|sten|ste)(\s|$)" # RegExp
+    LARGE_ORDINAL_SUFFIXES_GER = r"^(ster|stes|sten|ste)(\s|$)"  # RegEx for ord. > 19
 
     MULTIPLIERS = MULTIPLIERS
     UNITS = UNITS
@@ -218,7 +218,7 @@ class German(Language):
                         word_base_split = self.split_number_word(word_base).split()
                         wbs_length = len(word_base_split)
                         if (
-                            wbs_length > 0 
+                            wbs_length > 0
                             and word_base_split[wbs_length - 1] in self.NUMBER_DICT_GER
                         ):
                             return "".join(word_base_split)
@@ -239,7 +239,7 @@ class German(Language):
         """Splits number words into separate words, e.g.
         einhundertfünzig -> ein hundert fünfzig
         """
-        text = word.lower() # NOTE: if we want to use this outside it should keep case
+        text = word.lower()  # NOTE: if we want to use this outside it should keep case
         invalid_word = ""
         result = ""
         while len(text) > 0:
@@ -265,7 +265,7 @@ class German(Language):
                 if ord_match:
                     # add ordinal ending
                     end = ord_match.span()[1]
-                    #result = result[:-1] + text[start:end]   # drop last space and add suffix
+                    # result = result[:-1] + text[start:end]   # drop last space and add suffix
                     text = text[end:]
                     invalid_word = ""
                 elif not text[0] == " ":

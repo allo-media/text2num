@@ -60,7 +60,8 @@ def text2num(text: str, lang: Union[str, Language], relaxed: bool = False) -> in
     """Convert the ``text`` string containing an integer number written as letters
     into an integer value.
 
-    Set ``relaxed`` to True if you want to accept "quatre vingt(s)" as "quatre-vingt".
+    Set ``relaxed`` to True if you want to accept "quatre vingt(s)" as "quatre-vingt"
+    (fr) or "ein und zwanzig" as "einundzwanzig" (de) etc..
 
     Raises an ValueError if ``text`` does not describe a valid number.
     Return an int.
@@ -74,11 +75,11 @@ def text2num(text: str, lang: Union[str, Language], relaxed: bool = False) -> in
     if type(language) is German:
         # The German number writing rules do not apply to the common order of number processing
         num_parser = WordStreamValueParserGerman(
-            language, relaxed=relaxed # TODO: relaxed not supported yet (what do we expect here?)
+            language, relaxed=relaxed
         )
         num_parser.parse(text)
         return num_parser.value
-    # Common
+    # Default
     else:
         num_parser = WordStreamValueParser(language, relaxed=relaxed)
         tokens = list(dropwhile(lambda x: x in language.ZERO, text.split()))
@@ -116,8 +117,18 @@ def alpha2digit(
 
     # Process segments
     if type(language) is German:
-        text = _alpha2digit_agg(language, segments, punct, signed, ordinal_threshold)
+        # TODO: we should try to build a proper 'WordToDigitParser' for German
+        # and refactor the code to be more similar to the default logic below
+        text = _alpha2digit_agg(
+            language, 
+            segments, 
+            punct, 
+            relaxed=relaxed,
+            signed=signed,
+            ordinal_threshold=ordinal_threshold
+        )
     else:
+        # Default
         out_segments: List[str] = []
         for segment, sep in zip(segments, punct):
             tokens = segment.split()
@@ -162,6 +173,7 @@ def _alpha2digit_agg(
     language: Language,
     segments: List[str],
     punct: List[Any],
+    relaxed: bool,
     signed: bool,
     ordinal_threshold: int = 3
 ) -> str:
@@ -185,6 +197,7 @@ def _alpha2digit_agg(
 
     for segment, sep in zip(segments, punct):
         tokens = segment.split()
+        # TODO: Should we use 'split_number_word' once on each token here if relaxed=True?
         sentence: List[str] = []
         out_tokens: List[str] = []
         out_tokens_is_num: List[bool] = []
@@ -208,7 +221,8 @@ def _alpha2digit_agg(
                 # TODO: this is very inefficient because we analyze the same text
                 # again and again until it fails including 'split_number_word' and all the
                 # heavy lifting ... but it works and is hard to optimize ¯\_(ツ)_/¯
-                num_result = text2num(" ".join(sentence), language)
+                num_result = text2num(" ".join(sentence), language, relaxed=relaxed)
+                # TODO: here we need to use 'relaxed' to check how to continue
                 combined_num_result = num_result
                 current_token_ordinal_org = tmp_token_ordinal_org
                 token_index += 1
@@ -271,7 +285,7 @@ def _alpha2digit_agg(
             else:
                 out_tokens.append(str(combined_num_result))
                 out_tokens_is_num.append(True)
-            out_tokens_ordinal_org.append(None) # we can't reach this if it was ordinal
+            out_tokens_ordinal_org.append(None)  # we can't reach this if it was ordinal
 
         # join all and keep track on signs
         out_segment = ""

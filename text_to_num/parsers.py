@@ -220,8 +220,8 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
     def __init__(self, lang: Language, relaxed: bool = False) -> None:
         """Initialize the parser.
 
-        If ``relaxed`` is True, we treat the sequences described in
-        ``lang.RELAXED`` as single numbers.
+        If ``relaxed`` is True, we treat "ein und zwanzig" the same way as
+        "einundzwanzig".
         """
         super().__init__(lang, relaxed)
         self.val: int = 0
@@ -235,10 +235,10 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
         """Check text for number words, split complex number words (hundertfünfzig)
         if necessary and parse all at once.
         """
-        # German numbers are frequently written without spaces. Split them.
-        # TODO: can we apply this once in 'alpha2digit' instead? it might lead to strange effects
+        # Correct way of writing German numbers is one single word only if < 1 Mio.
+        # We need to split to be able to parse the text:
         text = self.lang.split_number_word(text)
-        #print("split text:", text) # for debugging
+        # print("split text:", text) # for debugging
 
         STATIC_HUNDRED = "hundert"
 
@@ -279,7 +279,6 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
         if len(num_block) > 0:
             num_groups.append(num_block.copy())
             num_block.clear()
-        #print("num_groups:", num_groups) # for debugging
 
         main_equation = "0"
         ng = None
@@ -379,7 +378,7 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
                 if equation == "":
                     equation += and_sum_eq
                 else:
-                    equation = "(" + equation  + " + " + and_sum_eq + ")"
+                    equation = "(" + equation + " + " + and_sum_eq + ")"
                 equation_results.append(first_summand_num + second_summand_num)
                 ng.pop(and_index + 1)
                 ng.pop(and_index)
@@ -501,8 +500,8 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
                 raise ValueError("invalid literal for text2num: {}".format(repr(text)))
 
             main_equation = main_equation + " + (" + equation + ")"
-            #print("equation:", main_equation) # for debugging
-            #print("equation_results", equation_results) # for debugging
+            # print("equation:", main_equation)  # for debugging
+            # print("equation_results", equation_results)  # for debugging
 
         self.val = eval(main_equation)  # TODO: use 'equation_results' instead
         return True
