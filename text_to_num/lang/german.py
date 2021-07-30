@@ -186,6 +186,7 @@ class German(Language):
     AND = AND
 
     NEVER_IF_ALONE = {"ein", "eine"}
+    NEVER_CONNECTS_WITH_AND = {"eins", "eine"}
 
     # Relaxed composed numbers (two-words only)
     # start => (next, target)
@@ -216,7 +217,10 @@ class German(Language):
                         # once again split - TODO: we should try to reduce split calls
                         word_base_split = self.split_number_word(word_base).split()
                         wbs_length = len(word_base_split)
-                        if wbs_length > 0 and word_base_split[wbs_length - 1] in self.NUMBER_DICT_GER:
+                        if (
+                            wbs_length > 0 
+                            and word_base_split[wbs_length - 1] in self.NUMBER_DICT_GER
+                        ):
                             return "".join(word_base_split)
                     return None
             else:
@@ -260,7 +264,6 @@ class German(Language):
 
                 if ord_match:
                     # add ordinal ending
-                    start = ord_match.span()[0]
                     end = ord_match.span()[1]
                     #result = result[:-1] + text[start:end]   # drop last space and add suffix
                     text = text[end:]

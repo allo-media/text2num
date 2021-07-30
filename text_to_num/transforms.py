@@ -200,8 +200,9 @@ def _alpha2digit_agg(
                 t = cardinal_for_ordinal
             sentence.append(t)
             try:
-                # TODO: this is very inefficient because we analyze the same again and again until ERROR
-                # including 'split_number_word' and all the heavy lifting ... but it works ¯\_(ツ)_/¯
+                # TODO: this is very inefficient because we analyze the same text
+                # again and again until we get an ERROR including 'split_number_word'
+                # and all the heavy lifting ... but for now it works ¯\_(ツ)_/¯
                 num_result = text2num(" ".join(sentence), language)
                 combined_num_result = num_result
                 current_token_ordinal_org = tmp_token_ordinal_org
@@ -226,7 +227,7 @@ def _alpha2digit_agg(
                     # ... finish old group first and clean up
                     token_to_add = str(combined_num_result)
                     token_to_add_is_num = True
-                # This can happen if a) ends with not num. b) ends with AND c) ends with invalid next num:
+                # Happens if a) ends with no num b) ends with AND c) ends with invalid next num:
                 elif combined_num_result is not None:
                     if t == language.AND and (token_index + 1) < len(tokens):
                         # number might continue after AND
