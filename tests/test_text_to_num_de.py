@@ -63,6 +63,14 @@ class TestTextToNumDE(TestCase):
         self.assertRaises(ValueError, text2num, "sechzigfünfzehn", "de")
         self.assertRaises(ValueError, text2num, "sechzighundert", "de")
         self.assertRaises(ValueError, text2num, "zwei und vierzig und", "de")
+        self.assertRaises(ValueError, text2num, "dreißig und elf", "de")
+        self.assertRaises(ValueError, text2num, "ein und zehn", "de")
+        self.assertRaises(ValueError, text2num, "zwei und neunzehn", "de")
+        self.assertRaises(ValueError, text2num, "zwanzig zweitausend", "de")
+        self.assertRaises(ValueError, text2num, "hundert und elf", "de")    # TODO: humans get this...
+        self.assertRaises(ValueError, text2num, "hundert und eins", "de")   # TODO: humans get this...
+        self.assertRaises(ValueError, text2num, "eins und zwanzig", "de")
+        self.assertRaises(ValueError, text2num, "eine und zwanzig", "de")
 
     def test_text2num_zeroes(self):
         self.assertEqual(text2num("null", "de"), 0)
@@ -90,9 +98,24 @@ class TestTextToNumDE(TestCase):
         expected = "21, 31."
         self.assertEqual(alpha2digit(source, "de"), expected)
 
+        source = "zweiundzwanzig zweitausendeinundzwanzig"
+        expected = "22 2021"
+        self.assertEqual(alpha2digit(source, "de"), expected)
+        source = "zwei und zwanzig zwei tausend ein und zwanzig"
+        expected = "22 2021"
+        self.assertEqual(alpha2digit(source, "de"), expected)
+
+        source = "tausend hundertzweitausend zweihunderttausend vierzehntausend"
+        expected = "1000 102000 200000 14000"
+        self.assertEqual(alpha2digit(source, "de"), expected)
+
     def test_relaxed(self):
-        source = "eins zwei drei vier fünf und zwanzig."
-        expected = "1 2 3 4 5 und 20."
+        source = "eins zwei drei vier fünf und zwanzig."    
+        expected = "1 2 3 4 25."        # TODO: only humans can see the pattern ^^
+        self.assertEqual(alpha2digit(source, "de", relaxed=True), expected)
+
+        source = "eins zwei drei vier fünf und zuletzt zwanzig."
+        expected = "1 2 3 4 5 und zuletzt 20."
         self.assertEqual(alpha2digit(source, "de", relaxed=True), expected)
 
         source = "eins zwei drei vier fünfundzwanzig."
@@ -103,8 +126,28 @@ class TestTextToNumDE(TestCase):
         expected = "1 2 3 4 5 20."
         self.assertEqual(alpha2digit(source, "de", relaxed=True), expected)
 
-        source = "vierunddreißig = vierunddreißig"
+        source = "vier und dreißig = vierunddreißig"
         expected = "34 = 34"
+        self.assertEqual(alpha2digit(source, "de", relaxed=True), expected)
+
+        source = "Ein hundert ein und dreißig"
+        expected = "131"
+        self.assertEqual(alpha2digit(source, "de", relaxed=True), expected)
+
+        source = "Einhundert und drei"  # TODO: actually this is unclear
+        expected = "100 und 3"
+        self.assertEqual(alpha2digit(source, "de", relaxed=True), expected)
+
+        source = "eins und zwanzig ist nicht einundzwanzig"
+        expected = "1 und 20 ist nicht 21"
+        self.assertEqual(alpha2digit(source, "de", relaxed=True), expected)
+
+        source = "Einhundert und Ende"
+        expected = "100 und Ende"
+        self.assertEqual(alpha2digit(source, "de", relaxed=True), expected)
+
+        source = "Einhundert und und"
+        expected = "100 und und"
         self.assertEqual(alpha2digit(source, "de", relaxed=True), expected)
 
     def test_alpha2digit_formal(self):
@@ -133,15 +176,58 @@ class TestTextToNumDE(TestCase):
         self.assertEqual(result, "0")
 
     def test_alpha2digit_ordinals(self):
-        return
-        # TODO: Not yet applicable to German language
         source = (
-            "erster, zweiter, dritter, vierter, fünfter, sechster, siebter, achter, neunter,"
-            " zehnter, zwanzigster, einundzwanzigster, fünfundzwanzigster, achtunddreißigster, neunundvierzigster,"
-            " hundertster, eintausendzweihundertdreißigster."
+            "erster, zweiter, dritter, vierter, fünfter, sechster, siebter, achter, neunter."
         )
-        expected = "1., 2., ..."
+        expected = "1., 2., 3., 4., 5., 6., 7., 8., 9.."
+        self.assertEqual(alpha2digit(source, "de", ordinal_threshold=0), expected)
+
+        source = (
+            "zehnter, zwanzigster, einundzwanzigster, fünfundzwanzigster, achtunddreißigster, "
+            "neunundvierzigster, hundertster, eintausendzweihundertdreißigster."
+        )
+        expected = "10., 20., 21., 25., 38., 49., 100., 1230.."
+        self.assertEqual(alpha2digit(source, "de", ordinal_threshold=0), expected)
+
+        source = "zwei tausend zweite"
+        expected = "2002."
         self.assertEqual(alpha2digit(source, "de"), expected)
+
+        source = "zweitausendzweite"
+        expected = "2002."
+        self.assertEqual(alpha2digit(source, "de"), expected)
+
+        source = "der zweiundzwanzigste erste zweitausendzweiundzwanzig"
+        expected = "der 22. 1. 2022"
+        self.assertEqual(alpha2digit(source, "de", ordinal_threshold=0), expected)
+
+        source = "der zwei und zwanzigste erste zwei tausend zwei und zwanzig"
+        expected = "der 22. 1. 2022"
+        self.assertEqual(alpha2digit(source, "de", ordinal_threshold=0), expected)
+
+        source = "zweiundzwanzigster zweiter und zwei und zwanzigster zweiter"
+        expected = "zweiundzwanzigster zweiter und zwei und zwanzigster zweiter"
+        self.assertEqual(alpha2digit(source, "de", ordinal_threshold=22), expected)
+        source = "zweiundzwanzigster zweiter und zwei und zwanzigster zweiter"
+        expected = "22. 2. und 22. 2."
+        self.assertEqual(alpha2digit(source, "de", ordinal_threshold=1), expected)
+
+        source = "das erste lustigste hundertste dreißigste beste"
+        expected = "das 1. lustigste 100. 30. beste"
+        self.assertEqual(alpha2digit(source, "de", ordinal_threshold=0), expected)
+
+        source = "zwanzig erste Versuche"
+        expected = "20 erste Versuche"
+        self.assertEqual(alpha2digit(source, "de"), expected)
+
+        source = "der dritte und dreißig"
+        expected = "der 3. und 30"
+        self.assertEqual(alpha2digit(source, "de", ordinal_threshold=0), expected)
+
+        source = "Es ist ein Buch mit dreitausend Seiten aber nicht das erste."
+        expected = "Es ist ein Buch mit 3000 Seiten aber nicht das 1.."
+        self.assertEqual(alpha2digit(source, "de", ordinal_threshold=0), expected)
+
 
     def test_alpha2digit_decimals(self):
         return
@@ -161,18 +247,25 @@ class TestTextToNumDE(TestCase):
         self.assertEqual(alpha2digit(source, "de"), expected)
 
     def test_one_as_noun_or_article(self):
-        return
-        # TODO: Not yet applicable to German language
         source = "Ich nehme eins. Eins passt nicht!"
-        self.assertEqual(alpha2digit(source, "de"), source)
+        expected = "Ich nehme 1. 1 passt nicht!"    # TODO: this is ambiguous - acceptable? 
+        self.assertEqual(alpha2digit(source, "de"), expected)
         source = "Velma hat eine Spur"
         self.assertEqual(alpha2digit(source, "de"), source)
+        source = "Er sieht eine Zwei"
+        expected = "Er sieht eine 2"
+        self.assertEqual(alpha2digit(source, "de"), expected)
         source = "Ich suche ein Buch"
         self.assertEqual(alpha2digit(source, "de"), source)
-        # End of segment
-        # source = "No one. Another one. One one. Twenty one"
-        # expected = "No one. Another one. 1 1. 21"
-        # self.assertEqual(alpha2digit(source, "de"), expected)
+        source = "Er sieht es nicht ein"
+        self.assertEqual(alpha2digit(source, "de"), source)
+        source = "Eine Eins und eine Zwei"
+        expected = "Eine 1 und eine 2"
+        self.assertEqual(alpha2digit(source, "de"), expected)
+        # TODO: fails:
+        #source = "Ein Millionen Deal"
+        #expected = "Ein 1000000 Deal"
+        #self.assertEqual(alpha2digit(source, "de"), expected)
 
     def test_second_as_time_unit_vs_ordinal(self):
         # Not yet applicable to German language

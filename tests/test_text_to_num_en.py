@@ -132,11 +132,14 @@ class TestTextToNumEN(TestCase):
         )
         expected = "5th third second 21st 100th 1230th 25th 38th 49th."
         self.assertEqual(alpha2digit(source, "en"), expected)
-
         source = (
             "first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth."
         )
         expected = "first, second, third, 4th, 5th, 6th, 7th, 8th, 9th, 10th."
+        self.assertEqual(alpha2digit(source, "en"), expected)
+
+        source = "twenty second position at the twenty first event lost after the first second"
+        expected = "22nd position at the 21st event lost after the first second"
         self.assertEqual(alpha2digit(source, "en"), expected)
 
     def test_alpha2digit_ordinals_force(self):

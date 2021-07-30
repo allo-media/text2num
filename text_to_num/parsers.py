@@ -70,7 +70,8 @@ class WordStreamValueParser(WordStreamValueParserInterface):
     def __init__(self, lang: Language, relaxed: bool = False) -> None:
         """Initialize the parser.
 
-        If ``relaxed`` is True, we treat the sequences described in ``lang.RELAXED`` as single numbers.
+        If ``relaxed`` is True, we treat the sequences described in
+        ``lang.RELAXED`` as single numbers.
         """
         super().__init__(lang, relaxed)
         self.skip: Optional[str] = None
@@ -219,7 +220,8 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
     def __init__(self, lang: Language, relaxed: bool = False) -> None:
         """Initialize the parser.
 
-        If ``relaxed`` is True, we treat the sequences described in ``lang.RELAXED`` as single numbers.
+        If ``relaxed`` is True, we treat "ein und zwanzig" the same way as
+        "einundzwanzig".
         """
         super().__init__(lang, relaxed)
         self.val: int = 0
@@ -231,15 +233,17 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
 
     def parse(self, text: str) -> bool:
         """Check text for number words, split complex number words (hundertfünfzig)
-        if necessary and parse all at once"""
-
-        # German numbers are frequently written without spaces. Split them.
+        if necessary and parse all at once.
+        """
+        # Correct way of writing German numbers is one single word only if < 1 Mio.
+        # We need to split to be able to parse the text:
         text = self.lang.split_number_word(text)
+        # print("split text:", text) # for debugging
 
         STATIC_HUNDRED = "hundert"
 
-        # Split word at MULTIPLIERS
-        # drei und fünfzig Milliarden
+        # Split text at MULTIPLIERS into 'num_groups'
+        # E.g.: 53.243.724 -> drei und fünfzig Millionen
         # | zwei hundert drei und vierzig tausend | sieben hundert vier und zwanzig
 
         num_groups = []
@@ -268,7 +272,7 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
                             "invalid literal for text2num: {}".format(repr(w))
                         )
 
-            # Also interrupt if there is any other word
+            # Also interrupt if there is any other word (no number, no AND)
             if w not in German.NUMBER_DICT_GER and w != self.lang.AND:
                 raise ValueError("invalid literal for text2num: {}".format(repr(w)))
 
@@ -294,7 +298,7 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
 
             if sign_at_beginning and (
                 (len(ng) == 0)
-                or ((len(ng) > 0) and not (ng[0] in German.NUMBER_DICT_GER))
+                or ((len(ng) > 0) and not ng[0] in German.NUMBER_DICT_GER)
             ):
                 raise ValueError(
                     "invalid literal for text2num: {}".format(repr(num_groups))
@@ -327,7 +331,7 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
                         equation = "100 "
                     else:
                         equation += " + 100 "
-                    equation_results.append(eval("100"))
+                    equation_results.append(100)
                     ng.pop(hundred_index)
                     processed_a_part = True
 
@@ -336,7 +340,7 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
                 ):
                     multiplier = German.NUMBER_DICT_GER[ng[hundred_index - 1]]
                     equation += "(" + str(multiplier) + " * 100)"
-                    equation_results.append(eval("(" + str(multiplier) + " * 100)"))
+                    equation_results.append(multiplier * 100)
                     ng.pop(hundred_index)
                     ng.pop(hundred_index - 1)
                     processed_a_part = True
@@ -345,8 +349,8 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
             if self.lang.AND in ng and len(ng) >= 3:
                 and_index = ng.index(self.lang.AND)
 
-                # TODO: what if "und" comes at the end?
-                if and_index + 1 >= len(ng):
+                # what if "und" comes at the end or beginnig?
+                if and_index + 1 >= len(ng) or and_index == 0:
                     raise ValueError(
                         "invalid 'and' index for text2num: {}".format(repr(ng))
                     )
@@ -359,36 +363,23 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
                 first_summand_num = German.NUMBER_DICT_GER[first_summand]
                 second_summand_num = German.NUMBER_DICT_GER[second_summand]
 
-                # Is there already a hundreds value in the equation?
-                if equation == "":
-                    equation += (
-                        "("
-                        + str(first_summand_num)
-                        + " + "
-                        + str(second_summand_num)
-                        + ")"
-                    )
-                else:
-                    equation = (
-                        "("
-                        + equation
-                        + " + ("
-                        + str(first_summand_num)
-                        + " + "
-                        + str(second_summand_num)
-                        + "))"
+                # not all combinations are allowed
+                if (
+                    first_summand_num >= 10
+                    or second_summand_num < 20
+                    or first_summand in German.NEVER_CONNECTS_WITH_AND
+                ):
+                    raise ValueError(
+                        "invalid 'and' group for text2num: {}".format(repr(ng))
                     )
 
-                # calculate sum
-                equation_results.append(
-                    eval(
-                        "("
-                        + str(first_summand_num)
-                        + " + "
-                        + str(second_summand_num)
-                        + ")"
-                    )
-                )
+                and_sum_eq = "(" + str(first_summand_num) + " + " + str(second_summand_num) + ")"
+                # Is there already a hundreds value in the equation?
+                if equation == "":
+                    equation += and_sum_eq
+                else:
+                    equation = "(" + equation + " + " + and_sum_eq + ")"
+                equation_results.append(first_summand_num + second_summand_num)
                 ng.pop(and_index + 1)
                 ng.pop(and_index)
                 ng.pop(and_index - 1)
@@ -397,7 +388,7 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
             # MTENS (20, 30, 40 .. 90)
             elif any(x in ng for x in self.lang.MTENS):
 
-                # expect exactly one
+                # expect exactly one - TODO: ??! O_o who can read this?
                 mtens_res = [x for x in ng if x in self.lang.MTENS]
                 if not len(mtens_res) == 1:
                     raise ValueError(
@@ -434,6 +425,7 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
                 ng.pop(stens_index)
                 processed_a_part = True
 
+            # 1, 2, ... 9
             elif any(x in ng for x in self.lang.UNITS):
 
                 # expect exactly one
@@ -459,31 +451,30 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
                 if ng[len(ng) - 1] in self.lang.MULTIPLIERS:
                     multiplier = German.NUMBER_DICT_GER[ng[len(ng) - 1]]
                     if len(ng) > 1:
-                        if (
-                            (ng[len(ng) - 2] in self.lang.UNITS)
-                            or (ng[len(ng) - 2] in self.lang.STENS)
-                            or (ng[len(ng) - 2] in self.lang.MTENS)
-                        ):
-                            factor = German.NUMBER_DICT_GER[ng[len(ng) - 2]]
+                        # before last has to be UNITS, STENS or MTENS and cannot follow prev. num.
+                        factor = German.NUMBER_DICT_GER[ng[len(ng) - 2]]
+                        if len(equation_results) > 0:
+                            # This prevents things like "zwei zweitausend" (DE) to become 4000
+                            raise ValueError("invalid literal for text2num: {}".format(repr(ng)))
+                        if factor and factor >= 1 and factor <= 90:
+                            multiply_eq = "(" + str(factor) + " * " + str(multiplier) + ")"
                             if equation == "":
-                                equation += (
-                                    "(" + str(factor) + " * " + str(multiplier) + ")"
-                                )
+                                equation += multiply_eq
                             else:
-                                equation += (
-                                    " * (" + str(factor) + " * " + str(multiplier) + ")"
-                                )
-                            equation_results.append(
-                                eval("(" + str(factor) + " * " + str(multiplier) + ")")
-                            )
+                                equation += (" * " + multiply_eq)
+                            equation_results.append(factor * multiplier)
                             ng.pop(len(ng) - 1)
                             processed_a_part = True
-                    else:
-                        if equation == "":
-                            equation += "(" + str(multiplier) + ")"
                         else:
-                            equation += " * (" + str(multiplier) + ")"
-                        equation_results.append(eval("(" + str(multiplier) + ")"))
+                            # I think we should fail here instead of ignore?
+                            raise ValueError("invalid literal for text2num: {}".format(repr(ng)))
+                    else:
+                        multiply_eq = "(" + str(multiplier) + ")"
+                        if equation == "":
+                            equation += multiply_eq
+                        else:
+                            equation += " * " + multiply_eq
+                        equation_results.append(multiplier)
                     ng.pop(len(ng) - 1)
                     processed_a_part = True
 
@@ -498,7 +489,7 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
             else:
                 # at this point there should not be any more number parts
                 raise ValueError(
-                    "invalid literal for text2num: {}".format(repr(num_groups))
+                    "invalid literal for text2num - group {} in {}".format(repr(num_groups), text)
                 )
 
             # Any sub-equation that results to 0 and is not the first sub-equation means an error
@@ -509,8 +500,10 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
                 raise ValueError("invalid literal for text2num: {}".format(repr(text)))
 
             main_equation = main_equation + " + (" + equation + ")"
+            # print("equation:", main_equation)  # for debugging
+            # print("equation_results", equation_results)  # for debugging
 
-        self.val = eval(main_equation)
+        self.val = eval(main_equation)  # TODO: use 'equation_results' instead
         return True
 
 
@@ -518,10 +511,12 @@ class WordToDigitParser:
     """Words to digit transcriber.
 
     The engine incrementaly recognize a stream of words as a valid cardinal, ordinal,
-    decimal or formal number (including leading zeros) and build the corresponding digit string.
+    decimal or formal number (including leading zeros) and build the corresponding digit
+    string.
 
-    The submitted stream must be logically bounded: it is a phrase, it has a beginning and an end and does not
-    contain sub-phrases. Formally, it does not contain punctuation nor voice pauses.
+    The submitted stream must be logically bounded: it is a phrase, it has a beginning
+    and an end and does not contain sub-phrases. Formally, it does not contain punctuation
+    nor voice pauses.
 
     For example, this text:
 
@@ -533,9 +528,9 @@ class WordToDigitParser:
         - « I want two cups of coffee »
         - « three cups of tea and an apple pie »
 
-    In other words, a stream must not cross (nor include) punctuation marks or voice pauses. Otherwise
-    you may get unexpected, illogical, results. If you need to parse complete texts with punctuation, consider
-    using `alpha2digit` transformer.
+    In other words, a stream must not cross (nor include) punctuation marks or voice pauses.
+    Otherwise you may get unexpected, illogical, results. If you need to parse complete texts
+    with punctuation, consider using `alpha2digit` transformer.
 
     Zeros are not treated as isolates but are considered as starting a new formal number
     and are concatenated to the following digit.
@@ -577,6 +572,7 @@ class WordToDigitParser:
 
     @property
     def value(self) -> str:
+        """Return the current value."""
         return "".join(self._value)
 
     def close(self) -> None:
@@ -610,6 +606,8 @@ class WordToDigitParser:
         return builder.push(word, look_ahead)
 
     def is_alone(self, word: str, next_word: Optional[str]) -> bool:
+        """Check if the word is 'alone' meaning its part of 'Language.NEVER_IF_ALONE'
+        exceptions and has no other numbers around itself."""
         return (
             not self.open
             and word in self.lang.NEVER_IF_ALONE
