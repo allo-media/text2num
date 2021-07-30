@@ -366,7 +366,7 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
 
                 # not all combinations are allowed
                 if (
-                    first_summand_num >= 10 
+                    first_summand_num >= 10
                     or second_summand_num < 20
                     or first_summand in German.NEVER_CONNECTS_WITH_AND
                 ):
