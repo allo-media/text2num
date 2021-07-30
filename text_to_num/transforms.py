@@ -167,7 +167,7 @@ def _alpha2digit_agg(
 ) -> str:
     """Variant for "agglutinative" languages and languages with different style
     of processing numbers, for example:
-    
+
     Default parser: "twenty one" (en) = 20, 1, "vingt et un" (fr) = 20, 1
     German parser: "einundzwanzig" or "ein und zwanzig" (de) = 1, 20
 
@@ -217,7 +217,7 @@ def _alpha2digit_agg(
                 if current_token_ordinal_org and num_result > ordinal_threshold:
                     token_to_add = str(combined_num_result)
                     token_to_add_is_num = True
-                # ... but ordinals threshold reverts number back 
+                # ... but ordinals threshold reverts number back
                 elif current_token_ordinal_org:
                     current_token_ordinal_org = None
                     sentence[len(sentence)-1] = str(tmp_token_ordinal_org)
