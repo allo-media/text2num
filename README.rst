@@ -6,7 +6,7 @@ text2num
 
 ``text2num`` is a python package that provides functions and parser classes for:
 
-- Parsing of numbers expressed as words in French, English, Spanish, Portuguese and German and convert them to integer values.
+- Parsing of numbers expressed as words in French, English, Spanish, Portuguese, German and Catalan and convert them to integer values.
 - Detection of ordinal, cardinal and decimal numbers in a stream of French, English, Spanish and Portuguese words and get their decimal digit representations. NOTE: Spanish does not support ordinal numbers yet.
 - Detection of ordinal, cardinal and decimal numbers in a German text (BETA). NOTE: No support for 'relaxed=False' yet (behaves like 'True' by default).
 
@@ -115,6 +115,27 @@ German examples:
 
     >>> text2num("ein und achtzig", "de")
     81
+
+
+Catalan examples:
+
+.. code-block:: python
+
+    >>> from text_to_num import text2num
+    >>> text2num('noranta-cinc', "ca")
+    95
+
+    >>> text2num('huitanta-u', "ca")
+    81
+
+    >>> text2num('mil nou-cents noranta-nou', "ca")
+    1999
+
+    >>> text2num("cinquanta-un milions cinc-cents setanta-vuit mil tres-cents dos", "ca")
+    51578302
+
+    >>> text2num('mil mil dos-cents', "ca")
+    ValueError: invalid literal for text2num: 'mil mil dos-cents'
 
 
 Find and transcribe
