@@ -103,23 +103,24 @@ HUNDRED = {
     "cent": 100,
 #    "cents": 100,
     "dos-cents": 200,
-    "dos-centes": 200,
+    "dos-centes": 200, #feminine
+    "dues-centes": 200, #feminine alternative
     "tres-cents": 300,
-    "tres-centes": 300,
+    "tres-centes": 300, #feminine
     "quatre-cents": 400,
-    "quatre-centes": 400,
+    "quatre-centes": 400, #feminine
     "cinc-cents": 500,
-    "cinc-centes": 500,
+    "cinc-centes": 500, #feminine
     "sis-cents": 600,
-    "sis-centes": 600,
+    "sis-centes": 600, #feminine
     "set-cents": 700,
-    "set-centes": 700,
-    "huit-cents": 800,
-    "huit-centes": 800,
+    "set-centes": 700, #feminine
+    "huit-cents": 800, #Valencian dialects
+    "huit-centes": 800, #Valencian dialects #feminine
     "vuit-cents": 800,
-    "vuit-centes": 800,
+    "vuit-centes": 800, #feminine
     "nou-cents": 900,
-    "nou-centes": 900,
+    "nou-centes": 900, #feminine
 }
 
 
