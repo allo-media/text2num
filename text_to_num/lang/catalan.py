@@ -33,8 +33,8 @@ from .base import Language
 # Special case: "cent" is processed apart.
 MULTIPLIERS = {
     "mil": 1000,
-#    "miler": 1000,
-#    "milers": 1000,
+    # "miler": 1000,
+    # "milers": 1000,
     "milió": 1000000,
     "milions": 1000000,
     "miliard": 1000000000,
@@ -56,10 +56,10 @@ UNITS: Dict[str, int] = {
     )
 }
 # Unit variants
-UNITS["u"] = 1     #standard variant
-UNITS["una"] = 1   #feminine
-UNITS["dues"] = 2  #feminine
-UNITS["huit"] = 8  #Valencian dialects
+UNITS["u"] = 1     # standard variant
+UNITS["una"] = 1   # feminine
+UNITS["dues"] = 2  # feminine
+UNITS["huit"] = 8  # Valencian dialects
 
 
 # Single tens are terminals (see Rules)
@@ -72,13 +72,13 @@ STENS: Dict[str, int] = {
     )
 }
 # Variants
-STENS["desset"] = 17 #dialectal variant
-STENS["dèsset"] = 17 #Valencian dialects
-STENS["devuit"] = 18 #dialectal variant
-STENS["díhuit"] = 18 #Valencian dialects
-STENS["dèneu"] = 19  #Valencian dialects
-STENS["denou"] = 19  #dialectal variant
-STENS["dènou"] = 19  #dialectal variant
+STENS["desset"] = 17  # dialectal variant
+STENS["dèsset"] = 17  # Valencian dialects
+STENS["devuit"] = 18  # dialectal variant
+STENS["díhuit"] = 18  # Valencian dialects
+STENS["dèneu"] = 19   # Valencian dialects
+STENS["denou"] = 19   # dialectal variant
+STENS["dènou"] = 19   # dialectal variant
 
 
 # Ten multiples
@@ -91,10 +91,10 @@ MTENS: Dict[str, int] = {
     )
 }
 # Variants
-MTENS["huitanta"] = 80 #Valencian dialects
+MTENS["huitanta"] = 80  # Valencian dialects
 
 # Ten multiples that can be combined with STENS
-MTENS_WSTENS: Set[str] = set() # {}
+MTENS_WSTENS: Set[str] = set()  # {}
 
 
 # "cent" has a special status (see Rules)
@@ -104,31 +104,31 @@ HUNDRED = {
     # "cents": 100,
     # "centes": 100,
     "dos-cents": 200,
-    "dos-centes": 200, #feminine
-    "dues-centes": 200, #feminine alternative
+    "dos-centes": 200,  # feminine
+    "dues-centes": 200,  # feminine alternative
     "tres-cents": 300,
-    "tres-centes": 300, #feminine
+    "tres-centes": 300,  # feminine
     "quatre-cents": 400,
-    "quatre-centes": 400, #feminine
+    "quatre-centes": 400,  # feminine
     "cinc-cents": 500,
-    "cinc-centes": 500, #feminine
+    "cinc-centes": 500,  # feminine
     "sis-cents": 600,
-    "sis-centes": 600, #feminine
+    "sis-centes": 600,  # feminine
     "set-cents": 700,
-    "set-centes": 700, #feminine
-    "huit-cents": 800, #Valencian dialects
-    "huit-centes": 800, #Valencian dialects #feminine
+    "set-centes": 700,  # feminine
+    "huit-cents": 800,  # Valencian dialects
+    "huit-centes": 800,  # Valencian dialects #feminine
     "vuit-cents": 800,
-    "vuit-centes": 800, #feminine
+    "vuit-centes": 800,  # feminine
     "nou-cents": 900,
-    "nou-centes": 900, #feminine
+    "nou-centes": 900,  # feminine
 }
 
 
 # Composites are tens already composed with terminals in one word.
 # Composites are terminals.
 
-#31, 32, ..., 41, 42..., 91, 92... 99
+# 31, 32, ..., 41, 42..., 91, 92... 99
 COMPOSITES: Dict[str, int] = {
     "-".join((ten_word, unit_word)): ten_val + unit_val
     for ten_word, ten_val in MTENS.items()
@@ -136,15 +136,16 @@ COMPOSITES: Dict[str, int] = {
     if 20 < ten_val <= 90
 }
 
-#21, 22, ..., 29
+# 21, 22, ..., 29
 COMPOSITES.update(
     {
         "-".join((ten_word, et_word)): ten_val + et_val
         for ten_word, ten_val in MTENS.items()
-        for et_word, et_val in (("i-u", 1), ("i-un", 1), ("i-una", 1),
-        ("i-dos", 2), ("i-dues", 2), ("i-tres", 3), ("i-quatre", 4),
-        ("i-cinc", 5), ("i-sis", 6), ("i-set", 7), ("i-huit", 8),
-        ("i-vuit", 8),("i-nou", 9))
+        for et_word, et_val in (
+            ("i-u", 1), ("i-un", 1), ("i-una", 1),
+            ("i-dos", 2), ("i-dues", 2), ("i-tres", 3), ("i-quatre", 4),
+            ("i-cinc", 5), ("i-sis", 6), ("i-set", 7), ("i-huit", 8),
+            ("i-vuit", 8), ("i-nou", 9))
         if ten_val == 20
     }
 )
@@ -197,6 +198,7 @@ IRR_ORD = {
     "dècimes": ("deu", "10es"),
 }
 
+
 class Catalan(Language):
 
     MULTIPLIERS = MULTIPLIERS
@@ -212,7 +214,7 @@ class Catalan(Language):
     DECIMAL_SEP = "coma"
     DECIMAL_SYM = ","
 
-    AND_NUMS: Set[str] = set() #{}
+    AND_NUMS: Set[str] = set()  # {}
     AND = "i"
     NEVER_IF_ALONE = {"u", "un", "una"}
 
@@ -229,7 +231,7 @@ class Catalan(Language):
             return IRR_ORD[word][0]
         plur_masc_suff = word.endswith("ens")
         plur_fem_suff = word.endswith("enes")
-        sing_masc_suff = word.endswith("è") or word.endswith("é") # dialectal variant
+        sing_masc_suff = word.endswith("è") or word.endswith("é")  # dialectal variant
         sing_fem_suff = word.endswith("ena")
         if not (plur_masc_suff or plur_fem_suff or sing_masc_suff or sing_fem_suff):
             return None
@@ -237,26 +239,26 @@ class Catalan(Language):
             source = word[:-4]
         elif sing_masc_suff:
             source = word[:-1]
-        else: # if plur_masc_suff or sing_fem_suff:
+        else:  # if plur_masc_suff or sing_fem_suff:
             source = word[:-3]
-        if source == "cinqu": #5
+        if source == "cinqu":  # 5
             source = "cinc"
-        elif source == "nov": #9
+        elif source == "nov":  # 9
             source = "nou"
-        elif source == "des": #10
+        elif source == "des":  # 10
             source = "deu"
-        elif source == "dihuit": #18
+        elif source == "dihuit":  # 18 Valencian variant
             source = "díhuit"
-        elif source == "deneu": #19
+        elif source == "deneu":  # 19 Valencian variant
             source = "dèneu"
-        elif source == "milion": #1000000  # TODO: Fix "un milioné"->"1000000é"
+        elif source == "milion":  # 1000000  # TODO: Fix "un milioné"->"1000000é"
             source = "milió"
         elif source not in self.NUMBERS:
-            source = source + "e" #11, 12, ..., 16
+            source = source + "e"  # 11, 12, ..., 16
             if source not in self.NUMBERS:
-                source = source[:-1] + "a" #30, 40, ..., 90
+                source = source[:-1] + "a"  # 30, 40, ..., 90
                 if source not in self.NUMBERS:
-                    source = source[:-1] + "s" #200, 300, ..., 900
+                    source = source[:-1] + "s"  # 200, 300, ..., 900
                     if source not in self.NUMBERS:
                         return None
         return source
@@ -265,15 +267,15 @@ class Catalan(Language):
         """Add suffix to number in digits to make an ordinal"""
         if original_word in IRR_ORD:
             return IRR_ORD[original_word][1]
-        elif original_word.endswith("è"): #masc. sing.
+        elif original_word.endswith("è"):  # masc. sing.
             return f"{digits}è"
-        elif original_word.endswith("é"): #masc. sing. dialectal variant
+        elif original_word.endswith("é"):  # masc. sing. dialectal variant
             return f"{digits}é"
-        elif original_word.endswith("ns"): #masc. plur.
+        elif original_word.endswith("ns"):  # masc. plur.
             return f"{digits}ns"
-        elif original_word.endswith("a"): #fem. sing.
+        elif original_word.endswith("a"):  # fem. sing.
             return f"{digits}a"
-        else: # if original_word.endswith("es"): #fem. plur.
+        else:  # if original_word.endswith("es"):  # fem. plur.
             return f"{digits}es"
 
     def normalize(self, word: str) -> str:
