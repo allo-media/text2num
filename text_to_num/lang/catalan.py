@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Dict, Optional
+from typing import Dict, Optional, Set, Tuple
 
 from .base import Language
 
@@ -94,7 +94,7 @@ MTENS: Dict[str, int] = {
 MTENS["huitanta"] = 80 #Valencian dialects
 
 # Ten multiples that can be combined with STENS
-MTENS_WSTENS = {}
+MTENS_WSTENS: Set[str] = set() # {}
 
 
 # "cent" has a special status (see Rules)
@@ -212,13 +212,13 @@ class Catalan(Language):
     DECIMAL_SEP = "coma"
     DECIMAL_SYM = ","
 
-    AND_NUMS = {}
+    AND_NUMS: Set[str] = set() #{}
     AND = "i"
     NEVER_IF_ALONE = {"u", "un", "una"}
 
     # Relaxed composed numbers (two-words only)
     # start => (next, target)
-    RELAXED = {}
+    RELAXED: Dict[str, Tuple[str, str]] = {}
 
     def ord2card(self, word: str) -> Optional[str]:
         """Convert ordinal number to cardinal.
@@ -237,7 +237,7 @@ class Catalan(Language):
             source = word[:-4]
         elif sing_masc_suff:
             source = word[:-1]
-        else: #plur_masc_suff, sing_fem_suff
+        else: # if plur_masc_suff or sing_fem_suff:
             source = word[:-3]
         if source == "cinqu": #5
             source = "cinc"
@@ -273,7 +273,7 @@ class Catalan(Language):
             return f"{digits}ns"
         elif original_word.endswith("a"): #fem. sing.
             return f"{digits}a"
-        elif original_word.endswith("es"): #fem. plur.
+        else: # if original_word.endswith("es"): #fem. plur.
             return f"{digits}es"
 
     def normalize(self, word: str) -> str:
