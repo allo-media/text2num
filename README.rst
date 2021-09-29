@@ -1,7 +1,5 @@
-text2num fork with Catalan
-==========================
-
-*This text2num fork has been used to develop a full implementation for Catalan numerals (branch "Catalan").*
+text2num
+========
 
 |docs|
 
