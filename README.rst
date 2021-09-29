@@ -247,6 +247,24 @@ German (BETA, Note: 'relaxed' parameter is not supported yet and 'True' by defau
     'Pi ist 3,14 und so weiter, aber nicht 3 Komma 14 :-p'
 
 
+Catalan:
+
+.. code-block:: python
+
+    >>> from text_to_num import alpha2digit
+    >>> text = ("Huit-centes quaranta-dos pomes, vint-i-cinc gossos, mil tres cavalls, dotze mil sis-cents noranta-huit claus.\n Vuitanta-u és igual a huitanta-u.\n Nombres en sèrie: dotze quinze zero zero quatre vint cinquanta-dos cent tres cinquanta-dos trenta-u.\n Ordinals: cinquè tercera vint-i-uena centè mil dos-cents trentena.\n Decimals: dotze coma noranta-nou, cent vint coma zero cinc; però seixanta zero dos.")
+
+    >>> print(alpha2digit(text, "ca", ordinal_threshold=0))
+    842 pomes, 25 gossos, 1003 cavalls, 12698 claus.
+    81 és igual a 81.
+    Nombres en sèrie: 12 15 004 20 52 103 52 31.
+    Ordinals: 5è 3a 21a 100è 1230a.
+    Decimals: 12,99, 120,05; però 60 02.
+
+    >>> text = "Cinqué primera segona tercer vint-i-ué centena mil dos-cents trenté."
+    >>> print(alpha2digit(text, "ca", ordinal_threshold=3))
+    5é primera segona tercer 21é 100a 1230é.
+
 Read the complete documentation on `ReadTheDocs <http://text2num.readthedocs.io/>`_.
 
 Contribute

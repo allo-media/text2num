@@ -101,7 +101,8 @@ MTENS_WSTENS = {}
 # 100, 200, ..., 900
 HUNDRED = {
     "cent": 100,
-#    "cents": 100,
+    # "cents": 100,
+    # "centes": 100,
     "dos-cents": 200,
     "dos-centes": 200, #feminine
     "dues-centes": 200, #feminine alternative
@@ -159,11 +160,41 @@ NUMBERS.update(COMPOSITES)
 
 IRR_ORD = {
     "primer": ("un", "1r"),
-#    "primera": ("un", "1a"),
+    "primera": ("un", "1a"),
+    "primers": ("un", "1rs"),
+    "primeres": ("un", "1es"),
     "segon": ("dos", "2n"),
-#    "segona": ("dos", "2a"),
+    "segona": ("dos", "2a"),
+    "segons": ("dos", "2ns"),
+    "segones": ("dos", "2es"),
     "tercer": ("tres", "3r"),
+    "tercera": ("tres", "3a"),
+    "tercers": ("tres", "3rs"),
+    "terceres": ("tres", "3es"),
     "quart": ("quatre", "4t"),
+    "quarta": ("quatre", "4a"),
+    "quarts": ("quatre", "4ts"),
+    "quartes": ("quatre", "4es"),
+    "quint": ("cinc", "5è"),
+    "quinta": ("cinc", "5a"),
+    "quints": ("cinc", "5ns"),
+    "quintes": ("cinc", "5es"),
+    "sext": ("sis", "6è"),
+    "sexta": ("sis", "6a"),
+    "sexts": ("sis", "6ns"),
+    "sextes": ("sis", "6es"),
+    "sèptim": ("set", "7è"),
+    "sèptima": ("set", "7a"),
+    "sèptims": ("set", "7ns"),
+    "sèptimes": ("set", "7es"),
+    "octau": ("vuit", "8è"),
+    "octava": ("vuit", "8a"),
+    "octaus": ("vuit", "8ns"),
+    "octaves": ("vuit", "8es"),
+    "dècim": ("deu", "10è"),
+    "dècima": ("deu", "10a"),
+    "dècims": ("deu", "10ns"),
+    "dècimes": ("deu", "10es"),
 }
 
 class Catalan(Language):
@@ -189,19 +220,61 @@ class Catalan(Language):
     # start => (next, target)
     RELAXED = {}
 
-    # TODO
     def ord2card(self, word: str) -> Optional[str]:
         """Convert ordinal number to cardinal.
 
-        Return None if word is not an ordinal or is better left in letters
-        as is the case for fist and second.
+        Return None if word is not an ordinal or is better left in letters.
         """
-        return None
+        if word in IRR_ORD:
+            return IRR_ORD[word][0]
+        plur_masc_suff = word.endswith("ens")
+        plur_fem_suff = word.endswith("enes")
+        sing_masc_suff = word.endswith("è") or word.endswith("é") # dialectal variant
+        sing_fem_suff = word.endswith("ena")
+        if not (plur_masc_suff or plur_fem_suff or sing_masc_suff or sing_fem_suff):
+            return None
+        if plur_fem_suff:
+            source = word[:-4]
+        elif sing_masc_suff:
+            source = word[:-1]
+        else: #plur_masc_suff, sing_fem_suff
+            source = word[:-3]
+        if source == "cinqu": #5
+            source = "cinc"
+        elif source == "nov": #9
+            source = "nou"
+        elif source == "des": #10
+            source = "deu"
+        elif source == "dihuit": #18
+            source = "díhuit"
+        elif source == "deneu": #19
+            source = "dèneu"
+        elif source == "milion": #1000000  # TODO: Fix "un milioné"->"1000000é"
+            source = "milió"
+        elif source not in self.NUMBERS:
+            source = source + "e" #11, 12, ..., 16
+            if source not in self.NUMBERS:
+                source = source[:-1] + "a" #30, 40, ..., 90
+                if source not in self.NUMBERS:
+                    source = source[:-1] + "s" #200, 300, ..., 900
+                    if source not in self.NUMBERS:
+                        return None
+        return source
 
-    # TODO
     def num_ord(self, digits: str, original_word: str) -> str:
         """Add suffix to number in digits to make an ordinal"""
-        return f"{digits}º" if original_word.endswith("o") else f"{digits}ª"
+        if original_word in IRR_ORD:
+            return IRR_ORD[original_word][1]
+        elif original_word.endswith("è"): #masc. sing.
+            return f"{digits}è"
+        elif original_word.endswith("é"): #masc. sing. dialectal variant
+            return f"{digits}é"
+        elif original_word.endswith("ns"): #masc. plur.
+            return f"{digits}ns"
+        elif original_word.endswith("a"): #fem. sing.
+            return f"{digits}a"
+        elif original_word.endswith("es"): #fem. plur.
+            return f"{digits}es"
 
     def normalize(self, word: str) -> str:
         return word
