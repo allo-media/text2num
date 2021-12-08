@@ -55,7 +55,7 @@ We also use mypy::
 Submit changes
 --------------
 
-If you wish to contribute code or documentation the the project, you should first open an issue
+If you wish to contribute code or documentation to the project, you should first open an issue
 on https://github.com/allo-media/text2num/issues to describe what you intend to do, and
 why:
 
