@@ -47,10 +47,10 @@ jobs:
           name: build doc
           command: |
             . venv/bin/activate
-            cd doc && make html
+            cd docs && make html
 
       - store_artifacts:
-          path: doc/_build/html/
+          path: docs/_build/html/
           destination: html-doc
 
   deploy:
