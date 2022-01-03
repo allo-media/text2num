@@ -29,6 +29,7 @@ from .french import French
 from .english import English
 from .spanish import Spanish
 from .portuguese import Portuguese
+from .brazilian_portuguese import BrazilianPortuguese
 from .german import German
 from .catalan import Catalan
 
@@ -37,6 +38,7 @@ LANG = {
     "en": English(),
     "es": Spanish(),
     "pt": Portuguese(),
+    "pt_br": BrazilianPortuguese(),
     "de": German(),
     "ca": Catalan(),
 }

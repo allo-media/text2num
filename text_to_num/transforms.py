@@ -24,7 +24,7 @@ import re
 from itertools import dropwhile
 from typing import Any, Iterator, List, Sequence, Tuple, Union, Optional
 
-from .lang import LANG, Language, German, Portuguese
+from .lang import LANG, Language, German, Portuguese, BrazilianPortuguese
 from .parsers import (
     WordStreamValueParserInterface,
     WordStreamValueParser,  # we should rename this to 'WordStreamValueParserCommon'
@@ -163,7 +163,7 @@ def alpha2digit(
         text = "".join(out_segments)
 
     # Post-processing
-    if type(language) is Portuguese and USE_PT_ORDINALS_MERGER:
+    if (type(language) is Portuguese or type(language) is BrazilianPortuguese) and USE_PT_ORDINALS_MERGER:
         text = omg.merge_compound_ordinals_pt(text)
 
     return text
