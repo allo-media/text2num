@@ -6,8 +6,9 @@ text2num
 
 ``text2num`` is a python package that provides functions and parser classes for:
 
-- parsing numbers expressed as words in French, English, Spanish and Portuguese and convert them to integer values;
-- detect ordinal, cardinal and decimal numbers in a stream of French, English, Spanish and Portuguese words and get their decimal digit representations. Spanish does not support ordinal numbers yet.
+- Parsing of numbers expressed as words in French, English, Spanish, Portuguese, German and Catalan and convert them to integer values.
+- Detection of ordinal, cardinal and decimal numbers in a stream of French, English, Spanish and Portuguese words and get their decimal digit representations. NOTE: Spanish does not support ordinal numbers yet.
+- Detection of ordinal, cardinal and decimal numbers in a German text (BETA). NOTE: No support for 'relaxed=False' yet (behaves like 'True' by default).
 
 Compatibility
 -------------
@@ -102,7 +103,40 @@ Portuguese examples:
     >>> text2num("vinte e quatro milhões duzentos mil quarenta e sete", "pt")
     24200047
 
-Note: Please note that for Portuguese, you might deal manually with terms such as "meia", "meia dúzia", "duzia", which in this case could be a representation of "6", "6", "12", respectively.
+
+German examples:
+
+.. code-block:: python
+
+    >>> from text_to_num import text2num
+
+    >>> text2num("einundfünfzigmillionenfünfhundertachtundsiebzigtausenddreihundertzwei", "de")
+    51578302
+
+    >>> text2num("ein und achtzig", "de")
+    81
+
+
+Catalan examples:
+
+.. code-block:: python
+
+    >>> from text_to_num import text2num
+    >>> text2num('noranta-cinc', "ca")
+    95
+
+    >>> text2num('huitanta-u', "ca")
+    81
+
+    >>> text2num('mil nou-cents noranta-nou', "ca")
+    1999
+
+    >>> text2num("cinquanta-un milions cinc-cents setanta-vuit mil tres-cents dos", "ca")
+    51578302
+
+    >>> text2num('mil mil dos-cents', "ca")
+    ValueError: invalid literal for text2num: 'mil mil dos-cents'
+
 
 Find and transcribe
 ~~~~~~~~~~~~~~~~~~~
@@ -115,22 +149,26 @@ French:
 
     >>> from text_to_num import alpha2digit
     >>> sentence = (
-    ...         "Huit cent quarante-deux pommes, vingt-cinq chiens, mille trois chevaux, "
-    ...         "douze mille six cent quatre-vingt-dix-huit clous.\n"
-    ...         "Quatre-vingt-quinze vaut nonante-cinq. On tolère l'absence de tirets avant les unités : "
-    ...         "soixante seize vaut septante six.\n"
-    ...         "Nombres en série : douze quinze zéro zéro quatre vingt cinquante-deux cent trois cinquante deux "
-    ...         "trente et un.\n"
-    ...         "Ordinaux: cinquième troisième vingt et unième centième mille deux cent trentième.\n"
-    ...         "Décimaux: douze virgule quatre-vingt dix-neuf, cent vingt virgule zéro cinq ; "
-    ...         "mais soixante zéro deux."
-    ...     )
-    >>> print(alpha2digit(sentence))
+    ...     "Huit cent quarante-deux pommes, vingt-cinq chiens, mille trois chevaux, "
+    ...     "douze mille six cent quatre-vingt-dix-huit clous.\n"
+    ...     "Quatre-vingt-quinze vaut nonante-cinq. On tolère l'absence de tirets avant les unités : "
+    ...     "soixante seize vaut septante six.\n"
+    ...     "Nombres en série : douze quinze zéro zéro quatre vingt cinquante-deux cent trois cinquante deux "
+    ...     "trente et un.\n"
+    ...     "Ordinaux: cinquième troisième vingt et unième centième mille deux cent trentième.\n"
+    ...     "Décimaux: douze virgule quatre-vingt dix-neuf, cent vingt virgule zéro cinq ; "
+    ...     "mais soixante zéro deux."
+    ... )
+    >>> print(alpha2digit(sentence, "fr", ordinal_threshold=0))
     842 pommes, 25 chiens, 1003 chevaux, 12698 clous.
     95 vaut 95. On tolère l'absence de tirets avant les unités : 76 vaut 76.
     Nombres en série : 12 15 004 20 52 103 52 31.
     Ordinaux: 5ème 3ème 21ème 100ème 1230ème.
     Décimaux: 12,99, 120,05 ; mais 60 02.
+
+    >>> sentence = "Cinquième premier second troisième vingt et unième centième mille deux cent trentième."
+    >>> print(alpha2digit(sentence, "fr", ordinal_threshold=3))
+    5ème premier second troisième 21ème 100ème 1230ème.
 
 
 English:
@@ -144,7 +182,7 @@ English:
     'On May 23rd, I bought 25 cows, 12 chickens and 125.40 kg of potatoes.'
 
 
-Spanish (ordinals not supported):
+Spanish (ordinals not supported yet):
 
 .. code-block:: python
 
@@ -171,13 +209,69 @@ Portuguese:
 
     >>> text = "Temos mais vinte graus dentro e menos quinze fora."
     >>> alpha2digit(text, "pt")
-   'Temos +20 graus dentro e -15 fora.'
+    'Temos +20 graus dentro e -15 fora.'
 
     >>> text = "Ordinais: quinto, terceiro, vigésimo, vigésimo primeiro, centésimo quarto"
-   >>> alpha2digit(text, "pt")
-   'Ordinais: 5º, terceiro, 20ª, 21º, 104º'
+    >>> alpha2digit(text, "pt")
+    'Ordinais: 5º, terceiro, 20ª, 21º, 104º'
 
-Note: Please note that for Portuguese, you might deal manually with terms such as "meia", "meia dúzia", "duzia", which in this case could be a representation of "6", "6", "12", respectively.
+
+German (BETA, Note: 'relaxed' parameter is not supported yet and 'True' by default):
+
+.. code-block:: python
+
+    >>> from text_to_num import alpha2digit
+
+    >>> text = "Ich habe fünfundzwanzig Kühe, zwölf Hühner und einhundertfünfundzwanzig kg Kartoffeln gekauft."
+    >>> alpha2digit(text, "de")
+    'Ich habe 25 Kühe, 12 Hühner und 125 kg Kartoffeln gekauft.'
+
+    >>> text = "Die Temperatur beträgt minus fünfzehn Grad."
+    >>> alpha2digit(text, "de")
+    'Die Temperatur beträgt -15 Grad.'
+
+    >>> text = "Die Telefonnummer lautet plus dreiunddreißig neun sechzig null sechs zwölf einundzwanzig."
+    >>> alpha2digit(text, "de")
+    'Die Telefonnummer lautet +33 9 60 0 6 12 21.'
+
+    >>> text = "Der zweiundzwanzigste Januar zweitausendzweiundzwanzig."
+    >>> alpha2digit(text, "de")
+    '22. Januar 2022'
+
+    >>> text = "Es ist ein Buch mit dreitausend Seiten aber nicht das erste."
+    >>> alpha2digit(text, "de", ordinal_threshold=0)
+    'Es ist ein Buch mit 3000 Seiten aber nicht das 1..'
+
+    >>> text = "Pi ist drei Komma eins vier und so weiter, aber nicht drei Komma vierzehn :-p"
+    >>> alpha2digit(text, "de", ordinal_threshold=0)
+    'Pi ist 3,14 und so weiter, aber nicht 3 Komma 14 :-p'
+
+
+Catalan:
+
+.. code-block:: python
+
+    >>> from text_to_num import alpha2digit
+    >>> text = ("Huit-centes quaranta-dos pomes, vint-i-cinc gossos, mil tres cavalls, dotze mil sis-cents noranta-huit claus.\n Vuitanta-u és igual a huitanta-u.\n Nombres en sèrie: dotze quinze zero zero quatre vint cinquanta-dos cent tres cinquanta-dos trenta-u.\n Ordinals: cinquè tercera vint-i-uena centè mil dos-cents trentena.\n Decimals: dotze coma noranta-nou, cent vint coma zero cinc; però seixanta zero dos.")
+    >>> print(alpha2digit(text, "ca", ordinal_threshold=0))
+    842 pomes, 25 gossos, 1003 cavalls, 12698 claus.
+    81 és igual a 81.
+    Nombres en sèrie: 12 15 004 20 52 103 52 31.
+    Ordinals: 5è 3a 21a 100è 1230a.
+    Decimals: 12,99, 120,05; però 60 02.
+
+    >>> text = "Cinqué primera segona tercer vint-i-ué centena mil dos-cents trenté."
+    >>> print(alpha2digit(text, "ca", ordinal_threshold=3))
+    5é primera segona tercer 21é 100a 1230é.
+
+    >>> text = "Compràrem vint-i-cinc vaques, dotze gallines i cent vint-i-cinc coma quaranta kg de creïlles."
+    >>> alpha2digit(text, "ca")
+    'Compràrem 25 vaques, 12 gallines i 125,40 kg de creïlles.'
+
+    >>> text = "Fa més vint graus dins i menys quinze fora."
+    >>> alpha2digit(text, "ca")
+    'Fa +20 graus dins i -15 fora.'
+
 
 Read the complete documentation on `ReadTheDocs <http://text2num.readthedocs.io/>`_.
 

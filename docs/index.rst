@@ -19,7 +19,7 @@ Welcome to text2num's documentation!
    :caption: Contents:
 
    quickstart
-   contribute
+   contributing
    api
    license
 

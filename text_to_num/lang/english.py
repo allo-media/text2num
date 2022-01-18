@@ -126,8 +126,7 @@ class English(Language):
     def ord2card(self, word: str) -> Optional[str]:
         """Convert ordinal number to cardinal.
 
-        Return None if word is not an ordinal or is better left in letters
-        as is the case for fist and second.
+        Return None if word is not an ordinal or is better left in letters.
         """
         plur_suff = word.endswith("ths")
         sing_suff = word.endswith("th")

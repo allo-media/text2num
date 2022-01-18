@@ -132,12 +132,22 @@ class TestTextToNumEN(TestCase):
         )
         expected = "5th third second 21st 100th 1230th 25th 38th 49th."
         self.assertEqual(alpha2digit(source, "en"), expected)
-
         source = (
             "first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth."
         )
         expected = "first, second, third, 4th, 5th, 6th, 7th, 8th, 9th, 10th."
         self.assertEqual(alpha2digit(source, "en"), expected)
+
+        source = "twenty second position at the twenty first event lost after the first second"
+        expected = "22nd position at the 21st event lost after the first second"
+        self.assertEqual(alpha2digit(source, "en"), expected)
+
+    def test_alpha2digit_ordinals_force(self):
+        source = (
+            "first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth."
+        )
+        expected = "1st, 2nd, 3rd, 4th, 5th, 6th, 7th, 8th, 9th, 10th."
+        self.assertEqual(alpha2digit(source, "en", ordinal_threshold=0), expected)
 
     def test_alpha2digit_decimals(self):
         source = (
@@ -159,6 +169,8 @@ class TestTextToNumEN(TestCase):
         expected = "This is the one I'm looking for. One moment please! 21 cats. 1 2 3 4!"
         self.assertEqual(alpha2digit(source, "en"), expected)
         source = "No one is innocent. Another one bites the dust."
+        self.assertEqual(alpha2digit(source, "en"), source)
+        source = "one cannot know"
         self.assertEqual(alpha2digit(source, "en"), source)
         # End of segment
         source = "No one. Another one. One one. Twenty one"
