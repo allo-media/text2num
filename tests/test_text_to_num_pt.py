@@ -217,3 +217,37 @@ class TestTextToNumPT(TestCase):
         source = "A décima quarta brigada do exército português, juntamento com o nonagésimo sexto regimento britânico, bateu o centésimo vigésimo sétimo regimento de infantaria de Napoleão"
         expected = "A 14ª brigada do exército português, juntamento com o 96º regimento britânico, bateu o 127º regimento de infantaria de Napoleão"
         self.assertEqual(alpha2digit(source, "pt"), expected)
+
+    def test_brazilian_tenths(self):
+        self.assertEqual(text2num("catorze", "pt"), 14)
+        self.assertEqual(text2num("mil quatrocentos e catorze", "pt"), 1414)
+
+        source = "em mil quinhentos e catorze, ela nasceu"
+        expected = "em 1514, ela nasceu"
+        self.assertEqual(alpha2digit(source, "pt"), expected)
+
+        self.assertEqual(text2num("dezesseis", "pt"), 16)
+        self.assertEqual(text2num("mil seiscentos e dezesseis", "pt"), 1616)
+        source = "tudo aconteceu até mil novecentos e dezesseis"
+        expected = "tudo aconteceu até 1916"
+        self.assertEqual(alpha2digit(source, "pt"), expected)
+
+        self.assertEqual(text2num("dezessete", "pt"), 17)
+        self.assertEqual(text2num("mil setecentos e dezessete", "pt"), 1717)
+        source = "em dezessete de janeiro de mil novecentos e noventa"
+        expected = "em 17 de janeiro de 1990"
+        self.assertEqual(alpha2digit(source, "pt"), expected)
+
+        self.assertEqual(text2num("dezenove", "pt"), 19)
+        self.assertEqual(text2num("mil novecentos e dezenove", "pt"), 1919)
+        source = "quanto é dezenove menos três? É dezesseis"
+        expected = "quanto é 19 menos 3? É 16"
+        self.assertEqual(alpha2digit(source, "pt", signed=False), expected)
+
+    def test_brazilian_multipliers(self):
+        self.assertEqual(text2num("um milhão quatrocentos e trinta e três", "pt"), 1000433)
+        self.assertEqual(text2num("dois milhões oitocentos e quarenta e quatro mil trezentos e trinta e três", "pt"), 2844333)
+
+        self.assertEqual(text2num("cinquenta e três bilhões duzentos e quarenta e três mil setecentos e vinte e quatro", "pt"), 53_000_243_724)
+
+
