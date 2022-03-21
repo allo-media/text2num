@@ -60,7 +60,8 @@ UNITS: Dict[str, int] = {
 STENS: Dict[str, int] = {
     word: value
     for value, word in enumerate(
-        "десять одиннадцать двенадцать тринадцать четырнадцать пятьнадцать шестьнадцать семьнадцать восемьнадцать девятнадцать".split(),
+        "десять одиннадцать двенадцать тринадцать четырнадцать пятьнадцать "
+        "шестьнадцать семьнадцать восемьнадцать девятнадцать".split(),
         10,
     )
 }
@@ -145,7 +146,17 @@ RAD_MAP = {
     "миллиардн": "миллиард",
     "триллионн": "триллиард",
 }
-SKLON_MAP = {"одна": "один", "две": "два", "семнадцать": "семьнадцать", "восемнадцать": "восемьнадцать", "шестнадцать": "шестьнадцать", "пятнадцать": "пятьнадцать", "одинадцать": "одиннадцать"}
+
+SKLON_MAP = {
+    "одна": "один",
+    "две": "два",
+    "одинадцать": "одиннадцать",
+    "пятнадцать": "пятьнадцать",
+    "шестнадцать": "шестьнадцать",
+    "семнадцать": "семьнадцать",
+    "восемнадцать": "восемьнадцать",
+}
+
 
 class Russian(Language):
     MULTIPLIERS = MULTIPLIERS
@@ -176,7 +187,7 @@ class Russian(Language):
 
         Return None if word is not an ordinal or is better left in letters.
         """
-        ordinal_suff = word.endswith("ый") or word.endswith("ая") or word.endswith("ое") or word.endswith("ой") or word.endswith("ий") or word.endswith("ье") or word.endswith("ья")
+        ordinal_suff = word.endswith(("ый", "ая", "ое", "ой", "ий", "ье", "ья"))
         if not ordinal_suff:
             return None
 
