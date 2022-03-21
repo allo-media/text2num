@@ -51,8 +51,6 @@ class Language:
     # start => (next, target)
     RELAXED: Dict[str, Tuple[str, str]]
 
-    simplify_check_coef_appliable: False
-
     def ord2card(self, word: str) -> Optional[str]:
         """Convert ordinal number to cardinal.
 
