@@ -670,7 +670,7 @@ class WordToDigitParser:
             )
             self.closed = True
         elif (
-            (word == self.lang.DECIMAL_SEP or word in self.lang.DECIMAL_SEP)
+            (word == self.lang.DECIMAL_SEP or word in self.lang.DECIMAL_SEP.split(','))
             and (look_ahead in self.lang.NUMBERS or look_ahead in self.lang.ZERO)
             and not self.in_frac
         ):

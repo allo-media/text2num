@@ -158,7 +158,7 @@ class Russian(Language):
 
     SIGN = {"плюс": "+", "минус": "-"}
     ZERO = {"ноль", "o"}
-    DECIMAL_SEP = {"точка", "целых", "целая"}
+    DECIMAL_SEP = "точка,целых,целая"
     DECIMAL_SYM = "."
 
     AND_NUMS: Set[str] = set()
