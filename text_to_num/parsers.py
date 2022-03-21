@@ -114,6 +114,9 @@ class WordStreamValueParser(WordStreamValueParserInterface):
         return expected
 
     def is_coef_appliable(self, coef: int) -> bool:
+        if hasattr(self.lang, 'simplify_check_coef_appliable') and self.lang.simplify_check_coef_appliable:
+            return coef != self.value
+
         """Is this multiplier expected?"""
         if coef > self.value and (self.value > 0 or coef == 1000):
             # a multiplier can be applied to anything lesser than itself,
@@ -648,6 +651,7 @@ class WordToDigitParser:
                 look_ahead is None
                 or look_ahead in self.lang.NUMBERS
                 or look_ahead in self.lang.ZERO
+                or look_ahead in self.lang.DECIMAL_SEP
             )
         ):
             self._value.append("0")
@@ -666,11 +670,12 @@ class WordToDigitParser:
             )
             self.closed = True
         elif (
-            word == self.lang.DECIMAL_SEP
+            (word == self.lang.DECIMAL_SEP or word in self.lang.DECIMAL_SEP)
             and (look_ahead in self.lang.NUMBERS or look_ahead in self.lang.ZERO)
             and not self.in_frac
         ):
-            self._value.append(str(self.int_builder.value))
+            if not self.value:
+                self._value.append(str(self.int_builder.value))
             self._value.append(self.lang.DECIMAL_SYM)
             self.in_frac = True
         elif not self._push(word, look_ahead):
