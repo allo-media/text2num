@@ -114,7 +114,7 @@ class WordStreamValueParser(WordStreamValueParserInterface):
         return expected
 
     def is_coef_appliable(self, coef: int) -> bool:
-        if hasattr(self.lang, 'simplify_check_coef_appliable') and self.lang.simplify_check_coef_appliable:
+        if self.lang.simplify_check_coef_appliable:
             return coef != self.value
 
         """Is this multiplier expected?"""
