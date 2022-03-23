@@ -72,6 +72,10 @@ class TestTextToNumRU(TestCase):
         expected = "25 коров, 1200 цыплят и 125.40 кг картофеля."
         self.assertEqual(expected, alpha2digit(source, 'ru'))
 
+        source = "Одна сотня огурцов, две сотни помидор, пять сотен рублей."
+        expected = "100 огурцов, 200 помидор, 500 рублей."
+        self.assertEqual(expected, alpha2digit(source, 'ru'))
+
         source = "одна тысяча двести шестьдесят шесть рублей."
         expected = "1266 рублей."
         self.assertEqual(expected, alpha2digit(source, 'ru'))

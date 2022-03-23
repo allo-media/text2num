@@ -83,6 +83,8 @@ MTENS_WSTENS: Set[str] = set()
 # "hundred" has a special status (see Rules)
 HUNDRED = {
     "сто": 100,
+    "сотня": 100,
+    "сотни": 100,
     "сотен": 100,
     "двести": 200,
     "триста": 300,
