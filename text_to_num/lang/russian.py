@@ -86,6 +86,9 @@ HUNDRED = {
     "сотня": 100,
     "сотни": 100,
     "сотен": 100,
+}
+
+MHUNDREDS = {
     "двести": 200,
     "триста": 300,
     "тристо": 300,
@@ -103,7 +106,6 @@ HUNDRED = {
     "девятсот": 900,
 }
 
-
 # Composites are tens already composed with terminals in one word.
 # Composites are terminals.
 
@@ -120,6 +122,7 @@ NUMBERS.update(UNITS)
 NUMBERS.update(STENS)
 NUMBERS.update(MTENS)
 NUMBERS.update(HUNDRED)
+NUMBERS.update(MHUNDREDS)
 NUMBERS.update(COMPOSITES)
 
 RAD_MAP = {
@@ -167,6 +170,7 @@ class Russian(Language):
     MTENS = MTENS
     MTENS_WSTENS = MTENS_WSTENS
     HUNDRED = HUNDRED
+    MHUNDREDS = MHUNDREDS
     NUMBERS = NUMBERS
 
     SIGN = {"плюс": "+", "минус": "-"}

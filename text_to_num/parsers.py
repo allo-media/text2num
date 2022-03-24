@@ -100,6 +100,8 @@ class WordStreamValueParser(WordStreamValueParserInterface):
             and self.grp_val < 20
         ):
             expected = word in self.lang.HUNDRED
+        elif self.last_word in self.lang.MHUNDREDS:
+            expected = True
         elif self.last_word in self.lang.MTENS:
             expected = (
                 word in self.lang.UNITS
@@ -197,6 +199,8 @@ class WordStreamValueParser(WordStreamValueParserInterface):
                 self.grp_val = (
                     100 * self.grp_val if self.grp_val else self.lang.HUNDRED[word]
                 )
+            elif word in self.lang.MHUNDREDS:
+                self.grp_val = self.lang.MHUNDREDS[word]
             else:
                 self.grp_val += self.lang.NUMBERS[word]
         else:

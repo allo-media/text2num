@@ -67,6 +67,19 @@ class TestTextToNumRU(TestCase):
         self.assertRaises(ValueError, text2num, "пять ноль три", 'ru')
         self.assertRaises(ValueError, text2num, "пятьдесят три ноль", 'ru')
 
+    def test_alpha2digit_phones(self):
+        source = "восемь девятьсот два сто один ноль один ноль один"
+        expected = "8 902 101 01 01"
+        self.assertEqual(expected, alpha2digit(source, 'ru'))
+
+        source = "плюс семь восемьсот пятьдесят девять сто один ноль сто один"
+        expected = "+7 859 101 0101"
+        self.assertEqual(expected, alpha2digit(source, 'ru'))
+
+        source = "Телефон восемь девятьсот шестьдесят два пятьсот девятнадцать семьдесят ноль ноль"
+        expected = "Телефон 8 962 519 70 00"
+        self.assertEqual(expected, alpha2digit(source, 'ru'))
+
     def test_alpha2digit_integers(self):
         source = "Двадцать пять коров, двенадцать сотен цыплят и сто двадцать пять точка сорок кг картофеля."
         expected = "25 коров, 1200 цыплят и 125.40 кг картофеля."
