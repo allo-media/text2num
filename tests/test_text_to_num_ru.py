@@ -215,32 +215,25 @@ class TestTextToNumRU(TestCase):
         self.assertEqual(expected, text2num(source, 'ru'))
 
 
-    def test_sets_of_ones(self):
-        units = {"один": 1, "десять": 10, "одиннадцать": 11, "сто": 100}
-        thousands = {"": 0, "тысяча": 1000, "одна тысяча": 1000, "десять тысяч": 10000, "одиннадцать тысяч": 11000, "сто тысяч": 100_000, "сто одна тысяча": 101000, "сто десять тысяч": 110_000, "сто одиннадцать тысяч": 111000}
-        millions = {"": 0, "миллион": 1000_000, "один миллион": 1000_000, "десять миллионов": 10_000_000, "одиннадцать миллионов": 11_000_000, "сто миллионов": 100_000_000, "сто один миллион": 101_000_000, "сто десять миллионов": 110_000_000, "сто одиннадцать миллионов": 111_000_000}
-        billions = {"": 0, "миллиард": 1000_000_000, "один миллиард": 1000_000_000, "десять миллиардов": 10_000_000_000, "одиннадцать миллиардов": 11_000_000_000, "сто миллиардов": 100_000_000_000, "сто один миллиард": 101_000_000_000, "сто десять миллиардов": 110_000_000_000, "сто одиннадцать миллиардов": 111_000_000_000}
-        trillions = {"": 0, "триллион": 1000_000_000_000, "один триллион": 1000_000_000_000, "десять триллионов": 10_000_000_000_000, "одиннадцать триллионов": 11_000_000_000_000, "сто триллионов": 100_000_000_000_000, "сто один триллион": 101_000_000_000_000, "сто десять триллионов": 110_000_000_000_000, "сто одиннадцать триллионов": 111_000_000_000_000}
+    def test_big_numbers(self):
+        source = "триллион миллиард миллион тысяча один"
+        expected = 1_001_001_001_001
+        self.assertEqual(expected, text2num(source, 'ru'))
 
-        for wordL in trillions:
-            expected = trillions[wordL]
-            if wordL:
-                self.assertEqual(expected, text2num(wordL, 'ru'))
-            for wordB in billions:
-                expected = trillions[wordL] + billions[wordB]
-                if wordL or wordB:
-                    self.assertEqual(expected, text2num(" ".join([wordL, wordB]), 'ru'))
-                for wordM in millions:
-                    expected = trillions[wordL] + billions[wordB] + millions[wordM]
-                    if wordL or wordB or wordM:
-                        self.assertEqual(expected, text2num(" ".join([wordL, wordB, wordM]), 'ru'))
-                    for wordT in thousands:
-                        expected = trillions[wordL] + billions[wordB] + millions[wordM] + thousands[wordT]
-                        if wordL or wordB or wordM or wordT:
-                            self.assertEqual(expected, text2num(" ".join([wordL, wordB, wordM, wordT]), 'ru'))
-                        for wordU in units:
-                            expected = trillions[wordL] + billions[wordB] + millions[wordM] + thousands[wordT] + units[wordU]
-                            self.assertEqual(expected, text2num(" ".join([wordL, wordB, wordM, wordT, wordU]), 'ru'))
+        source = "один триллион один миллиард один миллион одна тысяча один"
+        expected = 1_001_001_001_001
+        self.assertEqual(expected, text2num(source, 'ru'))
 
+        source = "одиннадцать триллионов одиннадцать миллиардов одиннадцать миллионов одиннадцать тысяч одиннадцать"
+        expected = 11_011_011_011_011
+        self.assertEqual(expected, text2num(source, 'ru'))
+
+        source = "сто одиннадцать триллионов сто одиннадцать миллиардов сто одиннадцать миллионов сто одиннадцать тысяч сто одиннадцать"
+        expected = 111_111_111_111_111
+        self.assertEqual(expected, text2num(source, 'ru'))
+
+        source = "сто десять триллионов сто десять миллиардов сто десять миллионов сто десять тысяч сто десять"
+        expected = 110_110_110_110_110
+        self.assertEqual(expected, text2num(source, 'ru'))
 
 
