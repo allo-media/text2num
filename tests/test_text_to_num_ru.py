@@ -80,6 +80,10 @@ class TestTextToNumRU(TestCase):
         expected = "Телефон 8 962 519 70 00"
         self.assertEqual(expected, alpha2digit(source, 'ru'))
 
+        source = "три сто пять сто один ноль один ноль один"
+        expected = "3 105 101 01 01"
+        self.assertEqual(expected, alpha2digit(source, 'ru'))
+
     def test_alpha2digit_integers(self):
         source = "Двадцать пять коров, двенадцать сотен цыплят и сто двадцать пять точка сорок кг картофеля."
         expected = "25 коров, 1200 цыплят и 125.40 кг картофеля."
@@ -173,11 +177,11 @@ class TestTextToNumRU(TestCase):
         self.assertEqual(expected, alpha2digit(source, 'ru'))
 
     def test_uppercase(self):
-        source = "ПЯТЬНАДЦАТЬ, ОДИН, ДЕСЯТЬ, ОДИН"
-        expected = "15, 1, 10, 1"
+        source = "ПЯТЬНАДЦАТЬ ОДИН ДЕСЯТЬ ОДИН"
+        expected = "15 1 10 1"
         self.assertEqual(expected, alpha2digit(source, 'ru'))
 
-    def test_examples(self):
+    def test_hundreds(self):
         source = "пятьдесят один миллион пятьсот семьдесят восемь тысяч триста два"
         expected = 51578302
         self.assertEqual(expected, text2num(source, 'ru'))
@@ -185,6 +189,31 @@ class TestTextToNumRU(TestCase):
         source = "восемьдесят один"
         expected = 81
         self.assertEqual(expected, text2num(source, 'ru'))
+
+        source = "восемьсот"
+        expected = 800
+        self.assertEqual(expected, text2num(source, 'ru'))
+
+        source = "сто"
+        expected = 100
+        self.assertEqual(expected, text2num(source, 'ru'))
+
+        source = "сто двадцать"
+        expected = 120
+        self.assertEqual(expected, text2num(source, 'ru'))
+
+        source = "сто два"
+        expected = 102
+        self.assertEqual(expected, text2num(source, 'ru'))
+
+        source = "семьсот один"
+        expected = 701
+
+        self.assertEqual(expected, text2num(source, 'ru'))
+        source = "восемьсот миллионов"
+        expected = 800_000_000
+        self.assertEqual(expected, text2num(source, 'ru'))
+
 
     def test_sets_of_ones(self):
         units = {"один": 1, "десять": 10, "одиннадцать": 11, "сто": 100}
