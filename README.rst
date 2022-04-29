@@ -74,6 +74,26 @@ English examples:
     >>> text2num("eighty-one", "en")
     81
 
+
+Russian examples:
+
+.. code-block:: python
+
+    >>> from text_to_num import text2num
+
+    >>> text2num("пятьдесят один миллион пятьсот семьдесят восемь тысяч триста два", "ru")
+    51578302
+
+    >>> text2num("миллиард миллион тысяча один", "ru")
+    1001001001
+
+    >>> text2num("один миллиард один миллион одна тысяча один", "ru")
+    1001001001
+
+    >>> text2num("восемьдесят один", "ru")
+    81
+
+
 Spanish examples:
 
 .. code-block:: python
@@ -180,6 +200,22 @@ English:
     >>> text = "On May twenty-third, I bought twenty-five cows, twelve chickens and one hundred twenty five point forty kg of potatoes."
     >>> alpha2digit(text, "en")
     'On May 23rd, I bought 25 cows, 12 chickens and 125.40 kg of potatoes.'
+
+
+Russian:
+
+.. code-block:: python
+
+    >>> from text_to_num import alpha2digit
+
+    >>> # дробная часть не обрабатывает уточнения вроде "пять десятых", "двенадцать сотых", "сколько-то стотысячных" и т.п., поэтому их лучше опускать
+    >>> text = "Двадцать пять коров, двенадцать сотен цыплят и сто двадцать пять точка сорок кг картофеля."
+    >>> alpha2digit(text, "ru")
+    '25 коров, 1200 цыплят и 125.40 кг картофеля.'
+
+    >>> text = "каждый пятый на первый второй расчитайсь!"
+    >>> alpha2digit(text, 'ru', ordinal_threshold=0)
+    'каждый 5ый на 1ый 2ой расчитайсь!'
 
 
 Spanish (ordinals not supported yet):
