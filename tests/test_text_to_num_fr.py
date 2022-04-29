@@ -165,6 +165,12 @@ class TestTextToNumFR(TestCase):
         expected = "12,99, 120,05, 1,236."
         self.assertEqual(alpha2digit(source, "fr"), expected)
 
+        self.assertEqual(
+            alpha2digit("la densité moyenne est de zéro virgule cinq.", "fr"),
+            "la densité moyenne est de 0,5."
+        )
+
+
     def test_alpha2digit_signed(self):
         source = (
             "Il fait plus vingt degrés à l'intérieur et moins quinze à l'extérieur."
