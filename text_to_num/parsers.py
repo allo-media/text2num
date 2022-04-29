@@ -659,6 +659,13 @@ class WordToDigitParser:
             )
         ):
             self._value.append("0")
+        elif (
+            word in self.lang.ZERO
+            and self.at_start_of_seq()
+            and look_ahead is not None
+            and look_ahead in self.lang.DECIMAL_SEP
+        ):
+            pass
         elif self._push(self.lang.ord2card(word) or "", look_ahead):
             self._value.append(
                 self.lang.num_ord(

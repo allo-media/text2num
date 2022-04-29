@@ -159,6 +159,8 @@ class TestTextToNumEN(TestCase):
 
         self.assertEqual(alpha2digit("point fifteen", "en"), "0.15")
 
+        self.assertEqual(alpha2digit("The average density is zero point five", "en"), "The average density is 0.5")
+
     def test_alpha2digit_signed(self):
         source = "We have plus twenty degrees inside and minus fifteen outside."
         expected = "We have +20 degrees inside and -15 outside."
