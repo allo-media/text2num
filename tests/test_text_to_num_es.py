@@ -38,6 +38,8 @@ class TestTextToNumES(TestCase):
         self.assertEqual(text2num("diecinueve", "es"), 19)
         self.assertEqual(text2num("veinte", "es"), 20)
         self.assertEqual(text2num("veintiuno", "es"), 21)
+        self.assertEqual(text2num("veintitres", "es"), 23)
+        self.assertEqual(text2num("veintitrés", "es"), 23)
         self.assertEqual(text2num("treinta", "es"), 30)
         self.assertEqual(text2num("treinta y uno", "es"), 31)
         self.assertEqual(text2num("treinta y dos", "es"), 32)

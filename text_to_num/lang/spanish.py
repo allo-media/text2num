@@ -61,6 +61,10 @@ STENS: Dict[str, int] = {
     )
 }
 
+STENS["veintitrés"] = 23
+STENS["veintidós"] = 22
+
+
 # Ten multiples
 # Ten multiples may be followed by a unit only;
 MTENS: Dict[str, int] = {
