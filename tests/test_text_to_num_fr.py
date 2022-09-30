@@ -149,6 +149,8 @@ class TestTextToNumFR(TestCase):
         )
         expected = "5ème premier second troisième 21ème 100ème 1230ème."
         self.assertEqual(alpha2digit(source, "fr"), expected)
+        self.assertEqual(alpha2digit("un millième", "fr"), "un 1000ème")
+        self.assertEqual(alpha2digit("un millionième", "fr"), "un 1000000ème")
 
     def test_alpha2digit_all_ordinals(self):
         source = (
