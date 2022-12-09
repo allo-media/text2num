@@ -38,6 +38,8 @@ class TestTextToNumES(TestCase):
         self.assertEqual(text2num("diecinueve", "es"), 19)
         self.assertEqual(text2num("veinte", "es"), 20)
         self.assertEqual(text2num("veintiuno", "es"), 21)
+        self.assertEqual(text2num("veintitres", "es"), 23)
+        self.assertEqual(text2num("veintitrés", "es"), 23)
         self.assertEqual(text2num("treinta", "es"), 30)
         self.assertEqual(text2num("treinta y uno", "es"), 31)
         self.assertEqual(text2num("treinta y dos", "es"), 32)
@@ -98,6 +100,10 @@ class TestTextToNumES(TestCase):
     def test_alpha2digit_integers(self):
         source = "veinticinco vacas, doce gallinas y ciento veinticinco kg de patatas."
         expected = "25 vacas, 12 gallinas y 125 kg de patatas."
+        self.assertEqual(alpha2digit(source, "es"), expected)
+
+        source = "Habían trescientos hombres y quinientas mujeres"
+        expected = "Habían 300 hombres y 500 mujeres"
         self.assertEqual(alpha2digit(source, "es"), expected)
 
         source = "mil doscientos sesenta y seis dolares."
