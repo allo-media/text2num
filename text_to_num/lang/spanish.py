@@ -49,6 +49,7 @@ UNITS: Dict[str, int] = {
 }
 # Unit variants
 UNITS["un"] = 1
+UNITS["una"] = 1
 
 # Single tens are terminals (see Rules)
 STENS: Dict[str, int] = {
@@ -131,6 +132,7 @@ class Spanish(Language):
     AND_NUMS = {
         "un",
         "uno",
+        "una",
         "dos",
         "tres",
         "cuatro",
@@ -141,7 +143,7 @@ class Spanish(Language):
         "nueve",
     }
     AND = "y"
-    NEVER_IF_ALONE = {"un", "uno"}
+    NEVER_IF_ALONE = {"un", "uno", "una"}
 
     # Relaxed composed numbers (two-words only)
     # start => (next, target)
