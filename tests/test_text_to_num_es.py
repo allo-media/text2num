@@ -102,6 +102,10 @@ class TestTextToNumES(TestCase):
         expected = "25 vacas, 12 gallinas y 125 kg de patatas."
         self.assertEqual(alpha2digit(source, "es"), expected)
 
+        source = "Habían trescientos hombres y quinientas mujeres"
+        expected = "Habían 300 hombres y 500 mujeres"
+        self.assertEqual(alpha2digit(source, "es"), expected)
+
         source = "mil doscientos sesenta y seis dolares."
         expected = "1266 dolares."
         self.assertEqual(alpha2digit(source, "es"), expected)

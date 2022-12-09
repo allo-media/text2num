@@ -81,6 +81,7 @@ MTENS_WSTENS: Set[str] = set()
 HUNDRED = {
     "cien": 100,
     "ciento": 100,
+    "cienta": 100,
     "doscientos": 200,
     "trescientos": 300,
     "cuatrocientos": 400,
@@ -89,6 +90,15 @@ HUNDRED = {
     "setecientos": 700,
     "ochocientos": 800,
     "novecientos": 900,
+    #
+    "doscientas": 200,
+    "trescientas": 300,
+    "cuatrocientas": 400,
+    "quinientas": 500,
+    "seiscientas": 600,
+    "setecientas": 700,
+    "ochocientas": 800,
+    "novecientas": 900,
 }
 
 COMPOSITES: Dict[str, int] = {}
