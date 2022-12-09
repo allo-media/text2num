@@ -120,7 +120,7 @@ class WordStreamValueParser(WordStreamValueParserInterface):
             return coef != self.value
 
         """Is this multiplier expected?"""
-        if coef > self.value and (self.value > 0 or coef == 1000):
+        if coef > self.value and (self.value > 0 or coef >= 1000):
             # a multiplier can be applied to anything lesser than itself,
             # as long as it not zero (special case for 1000 which then implies 1)
             return True
