@@ -116,10 +116,6 @@ NUMBERS.update(MTENS)
 NUMBERS.update(HUNDRED)
 NUMBERS.update(COMPOSITES)
 
-print("=====================================")
-print("NUMBERS")
-print("=====================================")
-
 
 class Spanish(Language):
 
