@@ -50,6 +50,7 @@ UNITS: Dict[str, int] = {
 # Unit variants
 UNITS["un"] = 1
 UNITS["una"] = 1
+UNITS["uno"] = 1
 
 # Single tens are terminals (see Rules)
 STENS: Dict[str, int] = {
