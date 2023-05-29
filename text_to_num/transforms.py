@@ -258,6 +258,13 @@ def _alpha2digit_agg(
                         # finish LAST group but keep token_index
                         token_to_add = str(combined_num_result)
                         token_to_add_is_num = True
+                elif tmp_token_ordinal_org is not None:
+                    # revert ordinal
+                    sentence[len(sentence) - 1] = str(tmp_token_ordinal_org)
+                    token_index += 1
+                    token_to_add = " ".join(sentence)
+                    token_to_add_is_num = False
+                    current_token_ordinal_org = None
                 else:
                     # previous text was not a valid number
                     # prep. for next group

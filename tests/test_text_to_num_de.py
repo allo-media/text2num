@@ -297,3 +297,12 @@ class TestTextToNumDE(TestCase):
         source = "FÜNFZEHN EINS ZEHN EINS"
         expected = "15 1 10 1"
         self.assertEqual(alpha2digit(source, "de"), expected)
+
+    def test_ordinals_false_positives(self):
+        source = "In zehnten Jahrzehnten. Und einmal mit den Vereinten."
+        expected = "In 10. Jahrzehnten. Und einmal mit den Vereinten."
+        self.assertEqual(alpha2digit(source, "de"), expected)
+
+        source = "Dies ist eine Liste oder die Einkaufsliste."
+        expected = source
+        self.assertEqual(alpha2digit(source, "de"), expected)
