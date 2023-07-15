@@ -61,17 +61,6 @@ class TestTextToNumPT(TestCase):
         self.assertEqual(alpha2digit(
             "um vírgula quatrocentos e um", "pt"), "1,401")
 
-        # fail
-#        self.assertEqual(alpha2digit("zero vírgula cinco", "pt"), "0,5")
-
-    #     test1 = "cincuenta y tres mil veinte millones doscientos cuarenta y tres mil setecientos veinticuatro"
-    #     self.assertEqual(text2num(test1, "pt"), 53_020_243_724)
-
-    #     test2 = (
-    #         "cincuenta y un millones quinientos setenta y ocho mil trescientos dos"
-    #     )
-    #     self.assertEqual(text2num(test2, "pt"), 51_578_302)
-
         test3 = "oitenta e cinco"
         self.assertEqual(text2num(test3, "pt"), 85)
 
