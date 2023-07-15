@@ -62,9 +62,6 @@ class TestTextToNumES(TestCase):
         self.assertEqual(alpha2digit("uno coma uno", "es"), '1.1')
         self.assertEqual(alpha2digit("uno coma cuatrocientos uno", "es"), '1.401')
 
-        # TODO:
-        # self.assertEqual(alpha2digit("cero coma cinco", "es"), '0.5')
-
         test1 = "cincuenta y tres mil veinte millones doscientos cuarenta y tres mil setecientos veinticuatro"
         self.assertEqual(text2num(test1, "es"), 53_020_243_724)
 
@@ -161,7 +158,6 @@ class TestTextToNumES(TestCase):
         self.assertEqual(alpha2digit(source, "es"), expected)
 
         self.assertEqual(alpha2digit("coma quince", "es"), "0.15")
-        # self.assertEqual(alpha2digit("cero coma quince", "es"), "0.15")  # TODO
 
     def test_alpha2digit_signed(self):
         source = "Tenemos mas veinte grados dentro y menos quince fuera."
@@ -172,7 +168,6 @@ class TestTextToNumES(TestCase):
         source = "Un momento por favor! treinta y un gatos. Uno dos tres cuatro!"
         expected = "Un momento por favor! 31 gatos. 1 2 3 4!"
         self.assertEqual(alpha2digit(source, "es"), expected)
-        # End of segment
         source = "Ni uno. Uno uno. Treinta y uno"
         expected = "Ni uno. 1 1. 31"
         self.assertEqual(alpha2digit(source, "es"), expected)
@@ -182,32 +177,3 @@ class TestTextToNumES(TestCase):
         self.assertEqual(text2num("un millón", "es"), 1000000)
         self.assertEqual(alpha2digit("Un millon", "es"), "1000000")
         self.assertEqual(alpha2digit("Un millón", "es"), "1000000")
-
-    # ord2card NOT implemented in Spanish
-    """
-    def test_second_as_time_unit_vs_ordinal(self):
-        source = "Un segundo por favor! Vigésimo segundo es diferente que veinte segundos."
-        expected = "Un segundo por favor! 22º es diferente que 20 segundos."
-        self.assertEqual(alpha2digit(source, "es"), expected)
-
-    def test_alpha2digit_ordinals(self):
-        source = (
-            "Quinto tercero segundo vigesimo primero centésimo."
-        )
-        expected = "5º 3º segundo 21º 100º."
-        self.assertEqual(alpha2digit(source, "es"), expected)
-
-    def test_alpha2digit_ordinals_gender_and_number(self):
-        source = "Él ha quedado tercero"
-        expected = "Él ha quedado 3º"
-        self.assertEqual(alpha2digit(source, "es"), expected)
-        source = "Ella ha quedado tercera"
-        expected = "Ella ha quedado 3ª"
-        self.assertEqual(alpha2digit(source, "es"), expected)
-        source = "Ellos han quedado terceros"
-        expected = "Ellos han quedado 3º"
-        self.assertEqual(alpha2digit(source, "es"), expected)
-        source = "Ellas han quedado terceras"
-        expected = "Ellas han quedado 3ª"
-        self.assertEqual(alpha2digit(source, "es"), expected)
-    """
