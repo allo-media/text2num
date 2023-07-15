@@ -32,14 +32,14 @@ from .base import Language
 # Those words multiplies lesser numbers (see Rules)
 # Special case: "hundred" is processed apart.
 MULTIPLIERS = {
-    "tysiąc": 1_000,
-    "tysięcy": 1_000,
-    "million": 1_000_000,
-    "millionów": 1_000_000,
-    "billion": 1_000_000_000,
-    "billionów": 1_000_000_000,
-    "trillion": 1_000_000_000_000,
-    "trillionów": 1_000_000_000_000,
+    "tysiąc": 1_000
+    ,"tysięcy": 1_000
+    ,"million": 1_000_000
+    ,"millionów": 1_000_000
+    ,"billion": 1_000_000_000
+    ,"billionów": 1_000_000_000
+    ,"trillion": 1_000_000_000_000
+    ,"trillionów": 1_000_000_000_000
 }
 
 
@@ -76,7 +76,31 @@ MTENS_WSTENS: Set[str] = set()
 
 
 # "hundred" has a special status (see Rules)
-HUNDRED = {"sto": 100, "setki": 100}
+HUNDRED = {
+    "sto": 100
+    ,"dwieście": 200
+    ,"trzysta": 300
+    ,"czterysta": 400
+    ,"pięćset": 500
+    ,"sześćset": 600
+    ,"siedemset": 700
+    ,"osiemset": 800
+    ,"dziewięćset": 900
+}
+
+HUNDRED_ORDINALS = {
+    "stu": 100
+    ,"setki": 100
+    ,"dwustu": 200
+    ,"trzystu": 300
+    ,"czterystu": 400
+    ,"pięciuset": 500
+    ,"sześciuset": 600
+    ,"siedmiuset": 700
+    ,"ośmiuset": 800
+    ,"dziewięciuset": 900
+}
+HUNDRED.update(HUNDRED_ORDINALS)
 
 
 # Composites are tens already composed with terminals in one word.
@@ -105,7 +129,7 @@ class Polish(Language):
     NUMBERS = NUMBERS
 
     SIGN = {"plus": "+", "minus": "-"}
-    ZERO = {"zero", "o"}
+    ZERO = {"zero"}
     DECIMAL_SEP = "przecinek"
     DECIMAL_SYM = ","
 
@@ -119,13 +143,13 @@ class Polish(Language):
 
     # Ordinal numbers
     POL_ORDINALS = {
-        "jednej":"jeden"
-        ,"jedna":"jeden"
-        ,"jednego":"jeden"
-        ,"dwie":"dwa"
-        ,"dwóch":"dwa"
-        ,"trzech":"trzy"
-        ,"czterech":"cztery"
+        "jednej": "jeden"
+        ,"jedna": "jeden"
+        ,"jednego": "jeden"
+        ,"dwie": "dwa"
+        ,"dwóch": "dwa"
+        ,"trzech": "trzy"
+        ,"czterech": "cztery"
         ,"pięciu": "pięć"
         ,"sześciu": "sześć"
         ,"siedmiu": "siedem"
@@ -134,23 +158,24 @@ class Polish(Language):
         ,"dziesięciu": "dziesięć"
         ,"dwunastu": "dwanaście"
         ,"dwudziestu": "dwadzieścia"
-        }
-    
+    }
+
     STENS_ORDINALS_SURFIXES = ('nastu')
     MTENS_ORDINALS_SURFIXES = ('stu','ciu')
 
     def normalize(self, word: str) -> str:
-        ord_ = self.POL_ORDINALS.get(word, None)
-        isvalid = False
+        if word in self.NUMBERS:
+            return word
 
-        if not ord_:
+        ord_ = self.POL_ORDINALS.get(word, None)
+
+        if not ord_ and isinstance(word, str):
             try:
                 if word.endswith(self.STENS_ORDINALS_SURFIXES):
                     prefix = word[:5]
                     for x in self.STENS:
                         if x.startswith(prefix):
                             ord_ = x
-                            isvalid = True
                             break
                 elif word.endswith(self.MTENS_ORDINALS_SURFIXES):
                     prefix = word[:4]
@@ -158,16 +183,16 @@ class Polish(Language):
                         if x.startswith(prefix):
                             ord_ = x
                             break
-            except:
+            except Exception:
                 pass
 
-        if not ord_:
+        if not ord_ and isinstance(word, str):
             try:
                 for x in self.MULTIPLIERS:
                     if word.startswith(x):
                         ord_ = x
                         break
-            except:
+            except Exception:
                 pass
-                        
+
         return ord_ if ord_ else word
