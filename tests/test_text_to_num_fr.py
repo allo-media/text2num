@@ -46,6 +46,7 @@ class TestTextToNumFR(TestCase):
 
         self.assertEqual(text2num("quinze", "fr"), 15)
         self.assertEqual(text2num("soixante quinze mille", "fr"), 75000)
+        self.assertEqual(text2num("un milliard vingt-cinq millions", "fr"), 1_025_000_000)
 
     def test_text2num_variants(self):
         self.assertEqual(text2num("quatre-vingt dix-huit", "fr"), 98)
