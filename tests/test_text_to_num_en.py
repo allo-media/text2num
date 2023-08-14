@@ -49,6 +49,7 @@ class TestTextToNumEN(TestCase):
         self.assertEqual(text2num("one hundred fifteen", "en"), 115)
         self.assertEqual(text2num("seventy-five thousands", "en"), 75000)
         self.assertEqual(text2num("thousand nine hundred twenty", "en"), 1920)
+        self.assertEqual(text2num("one billion twenty-five millions", "en"), 1_025_000_000)
 
     def test_text2num_centuries(self):
         self.assertEqual(text2num("nineteen hundred seventy-three", "en"), 1973)
