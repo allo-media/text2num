@@ -124,13 +124,14 @@ class WordStreamValueParser(WordStreamValueParserInterface):
             # a multiplier can be applied to anything lesser than itself,
             # as long as it not zero (special case for 1000 which then implies 1)
             return True
-        if coef * coef <= self.n000_val:
+        if coef * 1000 <= self.n000_val:
             # a multiplier can not be applied to a value bigger than itself,
             # so it must be applied to the current group only.
             # ex. for "mille": "deux millions cent cinquante mille"
             # ex. for "millions": "trois milliard deux cent millions"
             # But not twice: "dix mille cinq mille" is invalid for example. Therefore,
-            # we test the square of ``coef``.
+            # we test the 1000 × ``coef`` (as the multipliers above 100,
+            # are a geometric progression of ratio 1000)
             return (
                 self.grp_val > 0 or coef == 1000
             )  # "mille" without unit      is additive

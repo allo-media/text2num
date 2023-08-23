@@ -36,6 +36,7 @@ from text_to_num.lang.portuguese import OrdinalsMerger
 
 omg = OrdinalsMerger()
 USE_PT_ORDINALS_MERGER = True
+WORD_SEP = re.compile(r"\s*[\.,;\(\)…\[\]:!\?]+\s*|\n")
 
 
 def look_ahead(sequence: Sequence[Any]) -> Iterator[Tuple[Any, Any]]:
@@ -108,10 +109,8 @@ def alpha2digit(
         raise Exception("Language not supported")
 
     language = LANG[lang]
-    segments = re.split(
-        r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text
-    )
-    punct = re.findall(r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text)
+    segments = WORD_SEP.split(text)
+    punct = WORD_SEP.findall(text)
     if len(punct) < len(segments):
         punct.append("")
 
