@@ -1,6 +1,6 @@
 # MIT License
 
-# Copyright (c) 2018 Groupe Allo-Media
+# Copyright (c) 2018-2019 Groupe Allo-Media
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,4 +20,27 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .transforms import text2num, alpha2digit  # noqa: F401
+"""
+Language support.
+"""
+
+from .base import Language  # noqa: F401
+from .french import French
+from .english import English
+from .spanish import Spanish
+from .portuguese import Portuguese
+from .german import German
+from .catalan import Catalan
+from .russian import Russian
+from .polish import Polish
+
+LANG = {
+    "fr": French(),
+    "en": English(),
+    "es": Spanish(),
+    "pt": Portuguese(),
+    "de": German(),
+    "ca": Catalan(),
+    "ru": Russian(),
+    "pl": Polish(),
+}
