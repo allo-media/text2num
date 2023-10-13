@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Dict, Optional, Set, Tuple
+from typing import Dict, Set, Tuple
 
 from .base import Language
 
@@ -32,14 +32,14 @@ from .base import Language
 # Those words multiplies lesser numbers (see Rules)
 # Special case: "hundred" is processed apart.
 MULTIPLIERS = {
-    "tysiąc": 1_000
-    ,"tysięcy": 1_000
-    ,"million": 1_000_000
-    ,"millionów": 1_000_000
-    ,"billion": 1_000_000_000
-    ,"billionów": 1_000_000_000
-    ,"trillion": 1_000_000_000_000
-    ,"trillionów": 1_000_000_000_000
+    "tysiąc": 1_000,
+    "tysięcy": 1_000,
+    "million": 1_000_000,
+    "millionów": 1_000_000,
+    "billion": 1_000_000_000,
+    "billionów": 1_000_000_000,
+    "trillion": 1_000_000_000_000,
+    "trillionów": 1_000_000_000_000,
 }
 
 
@@ -56,7 +56,10 @@ UNITS: Dict[str, int] = {
 STENS: Dict[str, int] = {
     word: value
     for value, word in enumerate(
-        "dziesięć jedenaście dwanaście trzynaście czternaście piętnaście szesnaście siedemnaście osiemnaście dziewiętnaście".split(),
+        (
+            "dziesięć jedenaście dwanaście trzynaście czternaście piętnaście szesnaście siedemnaście"
+            " osiemnaście dziewiętnaście"
+        ).split(),
         10,
     )
 }
@@ -67,7 +70,11 @@ STENS: Dict[str, int] = {
 MTENS: Dict[str, int] = {
     word: value * 10
     for value, word in enumerate(
-        "dwadzieścia trzydzieści czterdzieści pięćdziesiąt sześćdziesiąt siedemdziesiąt osiemdziesiąt dziewięćdziesiąt".split(), 2
+        (
+            "dwadzieścia trzydzieści czterdzieści pięćdziesiąt sześćdziesiąt siedemdziesiąt"
+            " osiemdziesiąt dziewięćdziesiąt"
+        ).split(),
+        2,
     )
 }
 
@@ -77,28 +84,28 @@ MTENS_WSTENS: Set[str] = set()
 
 # "hundred" has a special status (see Rules)
 HUNDRED = {
-    "sto": 100
-    ,"dwieście": 200
-    ,"trzysta": 300
-    ,"czterysta": 400
-    ,"pięćset": 500
-    ,"sześćset": 600
-    ,"siedemset": 700
-    ,"osiemset": 800
-    ,"dziewięćset": 900
+    "sto": 100,
+    "dwieście": 200,
+    "trzysta": 300,
+    "czterysta": 400,
+    "pięćset": 500,
+    "sześćset": 600,
+    "siedemset": 700,
+    "osiemset": 800,
+    "dziewięćset": 900,
 }
 
 HUNDRED_ORDINALS = {
-    "stu": 100
-    ,"setki": 100
-    ,"dwustu": 200
-    ,"trzystu": 300
-    ,"czterystu": 400
-    ,"pięciuset": 500
-    ,"sześciuset": 600
-    ,"siedmiuset": 700
-    ,"ośmiuset": 800
-    ,"dziewięciuset": 900
+    "stu": 100,
+    "setki": 100,
+    "dwustu": 200,
+    "trzystu": 300,
+    "czterystu": 400,
+    "pięciuset": 500,
+    "sześciuset": 600,
+    "siedmiuset": 700,
+    "ośmiuset": 800,
+    "dziewięciuset": 900,
 }
 HUNDRED.update(HUNDRED_ORDINALS)
 
@@ -119,7 +126,6 @@ NUMBERS.update(COMPOSITES)
 
 
 class Polish(Language):
-
     MULTIPLIERS = MULTIPLIERS
     UNITS = UNITS
     STENS = STENS
@@ -143,25 +149,25 @@ class Polish(Language):
 
     # Ordinal numbers
     POL_ORDINALS = {
-        "jednej": "jeden"
-        ,"jedna": "jeden"
-        ,"jednego": "jeden"
-        ,"dwie": "dwa"
-        ,"dwóch": "dwa"
-        ,"trzech": "trzy"
-        ,"czterech": "cztery"
-        ,"pięciu": "pięć"
-        ,"sześciu": "sześć"
-        ,"siedmiu": "siedem"
-        ,"ośmiu": "osiem"
-        ,"dziewięciu": "dziewięć"
-        ,"dziesięciu": "dziesięć"
-        ,"dwunastu": "dwanaście"
-        ,"dwudziestu": "dwadzieścia"
+        "jednej": "jeden",
+        "jedna": "jeden",
+        "jednego": "jeden",
+        "dwie": "dwa",
+        "dwóch": "dwa",
+        "trzech": "trzy",
+        "czterech": "cztery",
+        "pięciu": "pięć",
+        "sześciu": "sześć",
+        "siedmiu": "siedem",
+        "ośmiu": "osiem",
+        "dziewięciu": "dziewięć",
+        "dziesięciu": "dziesięć",
+        "dwunastu": "dwanaście",
+        "dwudziestu": "dwadzieścia",
     }
 
-    STENS_ORDINALS_SURFIXES = ('nastu')
-    MTENS_ORDINALS_SURFIXES = ('stu','ciu')
+    STENS_ORDINALS_SURFIXES = "nastu"
+    MTENS_ORDINALS_SURFIXES = ("stu", "ciu")
 
     def normalize(self, word: str) -> str:
         if word in self.NUMBERS:

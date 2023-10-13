@@ -60,14 +60,14 @@ class Language:
         Return None if word is not an ordinal or is better left in letters
         as is the case for fist and second.
         """
-        return NotImplemented
+        raise NotImplementedError
 
     def num_ord(self, digits: str, original_word: str) -> str:
         """Add suffix to number in digits to make an ordinal"""
-        return NotImplemented
+        raise NotImplementedError
 
     def normalize(self, word: str) -> str:
-        return NotImplemented
+        raise NotImplementedError
 
     def not_numeric_word(self, word: Optional[str]) -> bool:
         return word is None or word != self.DECIMAL_SEP and word not in self.NUMBERS
@@ -75,4 +75,4 @@ class Language:
     def split_number_word(self, word: str) -> str:  # maybe use: List[str]
         """In some languages numbers are written as one word, e.g. German
         'zweihunderteinundfünfzig' (251) and we might need to split the parts"""
-        return NotImplemented
+        raise NotImplementedError
