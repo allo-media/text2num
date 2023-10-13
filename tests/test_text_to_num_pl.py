@@ -28,7 +28,7 @@ from unittest import TestCase
 from text_to_num import alpha2digit
 
 
-class TestTextToNumES(TestCase):
+class TestTextToNumPL(TestCase):
     def test_alpha2digit_integers(self):
         source = "Do dziesięciu"
         expected = "Do 10"

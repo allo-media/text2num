@@ -24,23 +24,4 @@
 Language support.
 """
 
-from .base import Language  # noqa: F401
-from .french import French
-from .english import English
-from .spanish import Spanish
-from .portuguese import Portuguese
-from .german import German
-from .catalan import Catalan
-from .russian import Russian
-from .polish import Polish
-
-LANG = {
-    "fr": French(),
-    "en": English(),
-    "es": Spanish(),
-    "pt": Portuguese(),
-    "de": German(),
-    "ca": Catalan(),
-    "ru": Russian(),
-    "pl": Polish(),
-}
+from .transforms import text2num, alpha2digit  # noqa: F401
