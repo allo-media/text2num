@@ -346,6 +346,8 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
                 elif (ng[hundred_index - 1] in self.lang.UNITS) or (
                     ng[hundred_index - 1] in self.lang.STENS
                 ):
+                    if hundred_index - 2 >= 0 and ng[hundred_index - 2] not in self.lang.MULTIPLIERS:
+                        raise ValueError("invalid {} without multiplier: {}".format(STATIC_HUNDRED, repr(ng)))
                     multiplier = German.NUMBER_DICT_GER[ng[hundred_index - 1]]
                     equation += "(" + str(multiplier) + " * 100)"
                     equation_results.append(multiplier * 100)

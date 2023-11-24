@@ -84,6 +84,11 @@ class TestTextToNumDE(TestCase):
         self.assertRaises(ValueError, text2num, "fünfzignullzwei", "de")
         self.assertRaises(ValueError, text2num, "fünfzigdreinull", "de")
 
+    def test_text2num_hundred_addition(self):
+        self.assertRaises(ValueError, text2num, "achtundachtzig dreihundert", "de")
+        self.assertRaises(ValueError, text2num, "zwanzig dreihundert", "de")
+        self.assertRaises(ValueError, text2num, "zwei zwölfhundert", "de")
+
     def test_alpha2digit_integers(self):
         source = "fünfundzwanzig Kühe, zwölf Hühner und einhundertfünfundzwanzig kg Kartoffeln."
         expected = "25 Kühe, 12 Hühner und 125 kg Kartoffeln."
