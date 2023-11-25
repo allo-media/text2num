@@ -556,6 +556,7 @@ class WordToDigitParser:
         relaxed: bool = False,
         signed: bool = True,
         ordinal_threshold: int = 3,
+        preceding_word: Optional[str] = None
     ) -> None:
         """Initialize the parser.
 
@@ -575,7 +576,7 @@ class WordToDigitParser:
         self.in_frac = False
         self.closed = False  # For deferred stop
         self.open = False  # For efficiency
-        self.last_word: Optional[str] = None  # For context
+        self.last_word: Optional[str] = preceding_word  # For context
         self.ordinal_threshold = ordinal_threshold
 
     @property
