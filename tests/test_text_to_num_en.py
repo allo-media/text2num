@@ -175,6 +175,10 @@ class TestTextToNumEN(TestCase):
         self.assertEqual(alpha2digit(source, "en"), source)
         source = "one cannot know"
         self.assertEqual(alpha2digit(source, "en"), source)
+        # Following an ordinal
+        source = "the sixth one"
+        expected = "the 6th one"
+        self.assertEqual(alpha2digit(source, "en"), expected)
         # End of segment
         source = "No one. Another one. One one. Twenty one"
         expected = "No one. Another one. 1 1. 21"
