@@ -311,3 +311,12 @@ class TestTextToNumDE(TestCase):
         source = "Dies ist eine Liste oder die Einkaufsliste."
         expected = source
         self.assertEqual(alpha2digit(source, "de"), expected)
+
+    def test_hundred_addition(self):
+        source = "Zahlen wie vierzig fünfhundert Tausend zweiundzwanzig hundert sind gut."
+        expected = "Zahlen wie 40 500022 100 sind gut."
+        self.assertEqual(alpha2digit(source, "de"), expected)
+
+        source = "achtundachtzig sieben hundert, acht und achtzig siebenhundert, achtundachtzig sieben hundert, acht und achtzig sieben hundert"
+        expected = "88 700, 88 700, 88 700, 88 700"
+        self.assertEqual(alpha2digit(source, "de"), expected)
