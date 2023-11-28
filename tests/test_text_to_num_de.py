@@ -84,6 +84,11 @@ class TestTextToNumDE(TestCase):
         self.assertRaises(ValueError, text2num, "fünfzignullzwei", "de")
         self.assertRaises(ValueError, text2num, "fünfzigdreinull", "de")
 
+    def test_text2num_hundred_addition(self):
+        self.assertRaises(ValueError, text2num, "achtundachtzig dreihundert", "de")
+        self.assertRaises(ValueError, text2num, "zwanzig dreihundert", "de")
+        self.assertRaises(ValueError, text2num, "zwei zwölfhundert", "de")
+
     def test_alpha2digit_integers(self):
         source = "fünfundzwanzig Kühe, zwölf Hühner und einhundertfünfundzwanzig kg Kartoffeln."
         expected = "25 Kühe, 12 Hühner und 125 kg Kartoffeln."
@@ -305,4 +310,13 @@ class TestTextToNumDE(TestCase):
 
         source = "Dies ist eine Liste oder die Einkaufsliste."
         expected = source
+        self.assertEqual(alpha2digit(source, "de"), expected)
+
+    def test_hundred_addition(self):
+        source = "Zahlen wie vierzig fünfhundert Tausend zweiundzwanzig hundert sind gut."
+        expected = "Zahlen wie 40 500022 100 sind gut."
+        self.assertEqual(alpha2digit(source, "de"), expected)
+
+        source = "achtundachtzig sieben hundert, acht und achtzig siebenhundert, achtundachtzig sieben hundert, acht und achtzig sieben hundert"
+        expected = "88 700, 88 700, 88 700, 88 700"
         self.assertEqual(alpha2digit(source, "de"), expected)
