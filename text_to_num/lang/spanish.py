@@ -47,6 +47,7 @@ UNITS: Dict[str, int] = {
         "uno dos tres cuatro cinco seis siete ocho nueve".split(), 1
     )
 }
+
 # Unit variants
 UNITS["un"] = 1
 UNITS["una"] = 1
@@ -62,8 +63,10 @@ STENS: Dict[str, int] = {
     )
 }
 
-STENS["veintitrés"] = 23
+STENS["dieciséis"] = 16
 STENS["veintidós"] = 22
+STENS["veintitrés"] = 23
+STENS["veintiséis"] = 26
 
 
 # Ten multiples
@@ -143,7 +146,7 @@ class Spanish(Language):
         "nueve",
     }
     AND = "y"
-    NEVER_IF_ALONE = {"un", "uno", "una"}
+    NEVER_IF_ALONE = {"un", "una"}
 
     # Relaxed composed numbers (two-words only)
     # start => (next, target)

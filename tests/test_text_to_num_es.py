@@ -32,14 +32,18 @@ class TestTextToNumES(TestCase):
     def test_text2num(self):
         self.assertEqual(text2num("cero", "es"), 0)
         self.assertEqual(text2num("uno", "es"), 1)
+        self.assertEqual(text2num("una", "es"), 1)
         self.assertEqual(text2num("nueve", "es"), 9)
         self.assertEqual(text2num("diez", "es"), 10)
         self.assertEqual(text2num("once", "es"), 11)
         self.assertEqual(text2num("diecinueve", "es"), 19)
+        self.assertEqual(text2num("dieciséis", "es"), 16)
         self.assertEqual(text2num("veinte", "es"), 20)
         self.assertEqual(text2num("veintiuno", "es"), 21)
+        self.assertEqual(text2num("veintidós", "es"), 22)
         self.assertEqual(text2num("veintitres", "es"), 23)
         self.assertEqual(text2num("veintitrés", "es"), 23)
+        self.assertEqual(text2num("veintiséis", "es"), 26)
         self.assertEqual(text2num("treinta", "es"), 30)
         self.assertEqual(text2num("treinta y uno", "es"), 31)
         self.assertEqual(text2num("treinta y dos", "es"), 32)
@@ -54,8 +58,7 @@ class TestTextToNumES(TestCase):
         self.assertEqual(text2num("dos mil", "es"), 2000)
         self.assertEqual(text2num("dos mil noventa y nueve", "es"), 2099)
         self.assertEqual(text2num("nueve mil novecientos noventa y nueve", "es"), 9999)
-        self.assertEqual(text2num("novecientos noventa y nueve mil novecientos noventa y nueve", "es"),
-                         999999)
+        self.assertEqual(text2num("novecientos noventa y nueve mil novecientos noventa y nueve", "es"),999999)
         long_text = "novecientos noventa y nueve mil novecientos noventa y nueve millones novecientos noventa y nueve mil novecientos noventa y nueve"
         self.assertEqual(text2num(long_text, "es"), 999999999999)
 
@@ -118,6 +121,14 @@ class TestTextToNumES(TestCase):
         expected = "21, 31."
         self.assertEqual(alpha2digit(source, "es"), expected)
 
+        source = "uno cero treinta y siete"
+        expected= "1 037"
+        self.assertEqual(alpha2digit(source, "es"), expected)
+
+        source = "veintitrés dos cuatro"
+        expected= "23 2 4"
+        self.assertEqual(alpha2digit(source, "es"), expected)
+
     def test_relaxed(self):
         source = "un dos tres cuatro treinta cinco."
         expected = "1 2 3 4 35."
@@ -174,7 +185,7 @@ class TestTextToNumES(TestCase):
         self.assertEqual(alpha2digit(source, "es"), expected)
         # End of segment
         source = "Ni uno. Uno uno. Treinta y uno"
-        expected = "Ni uno. 1 1. 31"
+        expected = "Ni 1. 1 1. 31"
         self.assertEqual(alpha2digit(source, "es"), expected)
 
     def test_accent(self):
