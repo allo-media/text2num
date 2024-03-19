@@ -126,6 +126,7 @@ class TestTextToNumEN(TestCase):
         self.assertEqual(alpha2digit(source, "en"), expected)
 
         self.assertEqual(alpha2digit("zero", "en"), "0")
+        self.assertEqual(alpha2digit("zero love", "en"), "0 love")
 
     def test_alpha2digit_ordinals(self):
         source = (
