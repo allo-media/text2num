@@ -143,6 +143,8 @@ class TestTextToNumFR(TestCase):
         # self.assertEqual(alpha2digit(source, "fr"), source)
 
         self.assertEqual(alpha2digit("zéro", "fr"), "0")
+        self.assertEqual(alpha2digit("a a un trois sept trois trois sept cinq quatre zéro c c", "fr"), "a a 1 3 7 3 3 7 5 4 0 c c")
+        self.assertEqual(alpha2digit("sept un zéro", "fr"), "7 1 0")
 
     def test_alpha2digit_ordinals(self):
         source = (
