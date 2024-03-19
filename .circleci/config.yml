@@ -55,7 +55,7 @@ jobs:
 
   deploy:
     docker:
-      - image: circleci/python:3.6.1
+      - image: circleci/python:3.7
 
     working_directory: ~/text2num
 
@@ -63,24 +63,27 @@ jobs:
       - checkout
 
       - run:
-          name: init .pypirc
-          command: |
-            echo -e "[pypi]" >> ~/.pypirc
-            echo -e "username = allomedia" >> ~/.pypirc
-            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
-
-      - run:
-          name: create packages
-          command: |
-            python setup.py sdist
-
-      - run:
-          name: upload to pypi
+          name: init .pypirc and build env
           command: |
             python3 -m venv venv
             . venv/bin/activate
             pip install -U pip
-            pip install twine
+            pip install wheel twine build
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = __token__" >> ~/.pypirc
+            echo -e "password = $PYPI_TOKEN" >> ~/.pypirc
+
+      - run:
+          name: create packages
+          command: |
+            . venv/bin/activate
+            python -m build
+
+
+      - run:
+          name: upload to pypi
+          command: |
+            . venv/bin/activate
             twine upload dist/*
 
 
