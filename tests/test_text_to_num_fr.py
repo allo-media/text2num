@@ -46,6 +46,7 @@ class TestTextToNumFR(TestCase):
 
         self.assertEqual(text2num("quinze", "fr"), 15)
         self.assertEqual(text2num("soixante quinze mille", "fr"), 75000)
+        self.assertEqual(text2num("un milliard vingt-cinq millions", "fr"), 1_025_000_000)
 
     def test_text2num_variants(self):
         self.assertEqual(text2num("quatre-vingt dix-huit", "fr"), 98)
@@ -142,6 +143,8 @@ class TestTextToNumFR(TestCase):
         # self.assertEqual(alpha2digit(source, "fr"), source)
 
         self.assertEqual(alpha2digit("zéro", "fr"), "0")
+        self.assertEqual(alpha2digit("a a un trois sept trois trois sept cinq quatre zéro c c", "fr"), "a a 1 3 7 3 3 7 5 4 0 c c")
+        self.assertEqual(alpha2digit("sept un zéro", "fr"), "7 1 0")
 
     def test_alpha2digit_ordinals(self):
         source = (
@@ -200,3 +203,6 @@ class TestTextToNumFR(TestCase):
     def test_un_pronoun(self):
         source = "Je n'en veux qu'un. J'annonce: le un"
         self.assertEqual(alpha2digit(source, "fr"), source)
+
+    def test_alpha2digit_newline(self):
+        self.assertEqual(alpha2digit("dix + deux\n= douze", "fr"), "10 + 2\n= 12")

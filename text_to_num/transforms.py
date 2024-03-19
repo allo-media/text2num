@@ -36,6 +36,7 @@ from text_to_num.lang.portuguese import OrdinalsMerger
 
 omg = OrdinalsMerger()
 USE_PT_ORDINALS_MERGER = True
+WORD_SEP = re.compile(r"\s*[\.,;\(\)…\[\]:!\?]+\s*|\n")
 
 
 def look_ahead(sequence: Sequence[Any]) -> Iterator[Tuple[Any, Any]]:
@@ -108,10 +109,8 @@ def alpha2digit(
         raise Exception("Language not supported")
 
     language = LANG[lang]
-    segments = re.split(
-        r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text
-    )
-    punct = re.findall(r"\s*[\.,;\(\)…\[\]:!\?]+\s*", text)
+    segments = WORD_SEP.split(text)
+    punct = WORD_SEP.findall(text)
     if len(punct) < len(segments):
         punct.append("")
 
@@ -138,6 +137,7 @@ def alpha2digit(
                 signed=signed,
                 ordinal_threshold=ordinal_threshold,
             )
+            last_word = None
             in_number = False
             out_tokens: List[str] = []
             for word, ahead in look_ahead(tokens):
@@ -150,10 +150,12 @@ def alpha2digit(
                         relaxed=relaxed,
                         signed=signed,
                         ordinal_threshold=ordinal_threshold,
+                        preceding_word=last_word
                     )
                     in_number = num_builder.push(word.lower(), ahead and ahead.lower())
                 if not in_number:
                     out_tokens.append(word)
+                last_word = word.lower()
             # End of segment
             num_builder.close()
             if num_builder.value:
@@ -258,6 +260,13 @@ def _alpha2digit_agg(
                         # finish LAST group but keep token_index
                         token_to_add = str(combined_num_result)
                         token_to_add_is_num = True
+                elif tmp_token_ordinal_org is not None:
+                    # revert ordinal
+                    sentence[len(sentence) - 1] = str(tmp_token_ordinal_org)
+                    token_index += 1
+                    token_to_add = " ".join(sentence)
+                    token_to_add_is_num = False
+                    current_token_ordinal_org = None
                 else:
                     # previous text was not a valid number
                     # prep. for next group

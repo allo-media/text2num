@@ -117,7 +117,7 @@ class English(Language):
 
     AND_NUMS: Set[str] = set()
     AND = "and"
-    NEVER_IF_ALONE = {"one"}
+    NEVER_IF_ALONE = {"one", "o"}
 
     # Relaxed composed numbers (two-words only)
     # start => (next, target)

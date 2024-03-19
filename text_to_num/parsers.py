@@ -124,13 +124,14 @@ class WordStreamValueParser(WordStreamValueParserInterface):
             # a multiplier can be applied to anything lesser than itself,
             # as long as it not zero (special case for 1000 which then implies 1)
             return True
-        if coef * coef <= self.n000_val:
+        if coef * 1000 <= self.n000_val:
             # a multiplier can not be applied to a value bigger than itself,
             # so it must be applied to the current group only.
             # ex. for "mille": "deux millions cent cinquante mille"
             # ex. for "millions": "trois milliard deux cent millions"
             # But not twice: "dix mille cinq mille" is invalid for example. Therefore,
-            # we test the square of ``coef``.
+            # we test the 1000 × ``coef`` (as the multipliers above 100,
+            # are a geometric progression of ratio 1000)
             return (
                 self.grp_val > 0 or coef == 1000
             )  # "mille" without unit      is additive
@@ -345,6 +346,8 @@ class WordStreamValueParserGerman(WordStreamValueParserInterface):
                 elif (ng[hundred_index - 1] in self.lang.UNITS) or (
                     ng[hundred_index - 1] in self.lang.STENS
                 ):
+                    if hundred_index - 2 >= 0 and ng[hundred_index - 2] not in self.lang.MULTIPLIERS:
+                        raise ValueError("invalid {} without multiplier: {}".format(STATIC_HUNDRED, repr(ng)))
                     multiplier = German.NUMBER_DICT_GER[ng[hundred_index - 1]]
                     equation += "(" + str(multiplier) + " * 100)"
                     equation_results.append(multiplier * 100)
@@ -555,6 +558,7 @@ class WordToDigitParser:
         relaxed: bool = False,
         signed: bool = True,
         ordinal_threshold: int = 3,
+        preceding_word: Optional[str] = None
     ) -> None:
         """Initialize the parser.
 
@@ -574,7 +578,7 @@ class WordToDigitParser:
         self.in_frac = False
         self.closed = False  # For deferred stop
         self.open = False  # For efficiency
-        self.last_word: Optional[str] = None  # For context
+        self.last_word: Optional[str] = preceding_word  # For context
         self.ordinal_threshold = ordinal_threshold
 
     @property
@@ -651,21 +655,21 @@ class WordToDigitParser:
         elif (
             word in self.lang.ZERO
             and self.at_start_of_seq()
-            and (
-                look_ahead is None
-                or look_ahead in self.lang.NUMBERS
-                or look_ahead in self.lang.ZERO
-                or look_ahead in self.lang.DECIMAL_SEP
-            )
-        ):
-            self._value.append("0")
-        elif (
-            word in self.lang.ZERO
-            and self.at_start_of_seq()
             and look_ahead is not None
             and look_ahead in self.lang.DECIMAL_SEP
         ):
             pass
+        elif (
+            word in self.lang.ZERO
+            and self.at_start_of_seq()
+            # and (
+            #     look_ahead is None
+            #     or look_ahead in self.lang.NUMBERS
+            #     or look_ahead in self.lang.ZERO
+            #     or look_ahead in self.lang.DECIMAL_SEP
+            # )
+        ):
+            self._value.append("0")
         elif self._push(self.lang.ord2card(word) or "", look_ahead):
             self._value.append(
                 self.lang.num_ord(
