@@ -62,10 +62,10 @@ class TestTextToNumFR(TestCase):
 
     def test_text2num_centuries(self):
         self.assertEqual(text2num("dix-neuf cent soixante-treize", "fr"), 1973)
+        self.assertEqual(text2num("soixante quinze cent six", "fr"), 7506)
 
     def test_text2num_exc(self):
         self.assertRaises(ValueError, text2num, "mille mille deux cent", "fr")
-        self.assertRaises(ValueError, text2num, "soixante quinze cent", "fr")
 
     def test_text2num_zeroes(self):
         self.assertEqual(text2num("zéro", "fr"), 0)

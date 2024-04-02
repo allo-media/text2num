@@ -194,3 +194,13 @@ class TestTextToNumEN(TestCase):
         source = "FIFTEEN ONE TEN ONE"
         expected = "15 1 10 1"
         self.assertEqual(alpha2digit(source, "en"), expected)
+
+    def test_alpha2digit_hundreds(self):
+        source = "forty five hundred thirty eight dollars and eighteen cents"
+        expected = "4538 dollars and 18 cents"
+        self.assertEqual(alpha2digit(source, "en"), expected)
+
+    def test_text2num_hundreds(self):
+        source = "forty five hundred thirty eight"
+        expected = 4538
+        self.assertEqual(text2num(source, "en"), expected)

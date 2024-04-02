@@ -94,12 +94,10 @@ class WordStreamValueParser(WordStreamValueParserInterface):
         if self.last_word is None:
             expected = True
         elif (
-            self.last_word in self.lang.UNITS
-            and self.grp_val < 10
-            or self.last_word in self.lang.STENS
-            and self.grp_val < 20
+            (self.last_word in self.lang.UNITS or self.last_word in self.lang.STENS)
+            and word in self.lang.HUNDRED
         ):
-            expected = word in self.lang.HUNDRED
+            expected = True
         elif self.last_word in self.lang.MHUNDREDS:
             expected = True
         elif self.last_word in self.lang.MTENS:
