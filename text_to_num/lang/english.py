@@ -78,7 +78,7 @@ MTENS_WSTENS: Set[str] = set()
 
 
 # "hundred" has a special status (see Rules)
-HUNDRED = dict() #{"hundred": 100, "hundreds": 100}
+HUNDRED = {"hundred": 100, "hundreds": 100}
 
 
 # Composites are tens already composed with terminals in one word.
