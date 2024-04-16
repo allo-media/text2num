@@ -32,6 +32,8 @@ from .base import Language
 # Those words multiplies lesser numbers (see Rules)
 # Special case: "hundred" is processed apart.
 MULTIPLIERS = {
+    "hundred": 100,
+    "hundreds": 100,
     "thousand": 1_000,
     "thousands": 1_000,
     "million": 1_000_000,
@@ -76,7 +78,7 @@ MTENS_WSTENS: Set[str] = set()
 
 
 # "hundred" has a special status (see Rules)
-HUNDRED = {"hundred": 100, "hundreds": 100}
+HUNDRED = dict() #{"hundred": 100, "hundreds": 100}
 
 
 # Composites are tens already composed with terminals in one word.
