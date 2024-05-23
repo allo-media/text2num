@@ -28,6 +28,7 @@ from .base import Language  # noqa: F401
 from .french import French
 from .english import English
 from .spanish import Spanish
+from .polish import Polish
 from .portuguese import Portuguese
 from .german import German
 from .catalan import Catalan
@@ -37,6 +38,7 @@ LANG = {
     "fr": French(),
     "en": English(),
     "es": Spanish(),
+    "pl": Polish(),
     "pt": Portuguese(),
     "de": German(),
     "ca": Catalan(),
