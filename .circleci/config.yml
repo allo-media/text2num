@@ -40,7 +40,7 @@ jobs:
           command: |
             . venv/bin/activate
             mypy text_to_num
-            python setup.py test
+            python -m unittest discover
             flake8 --max-line-length=110 text_to_num
 
       # Build the documentation
