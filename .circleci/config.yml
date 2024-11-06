@@ -22,6 +22,7 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
+            pip install -U pip setuptools
             pip install sphinx
             pip install flake8
             pip install mypy
@@ -67,7 +68,7 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            pip install -U pip
+            pip install -U pip setuptools
             pip install wheel twine build
             echo -e "[pypi]" >> ~/.pypirc
             echo -e "username = __token__" >> ~/.pypirc
