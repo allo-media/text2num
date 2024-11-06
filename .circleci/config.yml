@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.12
+      - image: cimg/python:3.12
 
     working_directory: ~/text2num
 
@@ -55,7 +55,7 @@ jobs:
 
   deploy:
     docker:
-      - image: circleci/python:3.12
+      - image: cimg/python:3.12
 
     working_directory: ~/text2num
 
