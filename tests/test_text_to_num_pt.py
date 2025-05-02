@@ -57,12 +57,6 @@ class TestTextToNumPT(TestCase):
         self.assertEqual(text2num(
             "novecentos noventa e nove mil novecentos noventa e nove", "pt"), 999999)
 
-        self.assertEqual(alpha2digit("um vírgula um", "pt"), "1,1")
-        self.assertEqual(alpha2digit(
-            "um vírgula quatrocentos e um", "pt"), "1,401")
-
-        # fail
-#        self.assertEqual(alpha2digit("zero vírgula cinco", "pt"), "0,5")
 
     #     test1 = "cincuenta y tres mil veinte millones doscientos cuarenta y tres mil setecientos veinticuatro"
     #     self.assertEqual(text2num(test1, "pt"), 53_020_243_724)
@@ -87,6 +81,8 @@ class TestTextToNumPT(TestCase):
         self.assertRaises(ValueError, text2num, "mil mil duzentos", "pt")
         self.assertRaises(ValueError, text2num, "sessenta quinze", "pt")
         self.assertRaises(ValueError, text2num, "sessenta cem", "pt")
+        # self.assertRaises(ValueError, text2num, "cem e um", "pt")
+
 
     def test_text2num_zeroes(self):
         self.assertEqual(text2num("zero", "pt"), 0)
@@ -125,6 +121,10 @@ class TestTextToNumPT(TestCase):
         source = "trinta e quatro = trinta quatro"
         expected = "34 = 34"
         self.assertEqual(alpha2digit(source, "pt", relaxed=True), expected)
+
+        # source = "cem e dois"
+        # expected = "100 e 2"
+        # self.assertEqual(alpha2digit(source, "pt", relaxed=True), expected)
 
     def test_alpha2digit_formal(self):
         source = "mais trinta e três nove sessenta zero seis doze vinte e um"
@@ -181,7 +181,13 @@ class TestTextToNumPT(TestCase):
         self.assertEqual(alpha2digit(source, "pt"), expected)
 
         self.assertEqual(alpha2digit("vírgula quinze", "pt"), "0,15")
-        # self.assertEqual(alpha2digit("zero vírgula quinze", "pt"), "0,15") # TODO
+        self.assertEqual(alpha2digit("zero vírgula quinze", "pt"), "0,15")
+        self.assertEqual(alpha2digit("um vírgula um", "pt"), "1,1")
+        self.assertEqual(alpha2digit(
+            "um vírgula quatrocentos e um", "pt"), "1,401")
+
+        self.assertEqual(alpha2digit("zero vírgula cinco", "pt"), "0,5")
+
 
     def test_alpha2digit_signed(self):
         source = "Temos mais vinte graus dentro e menos quinze fora."
