@@ -82,7 +82,6 @@ MTENS_WSTENS: Set[str] = set()
 HUNDRED = {
     "cien": 100,
     "ciento": 100,
-    "cienta": 100,
     "doscientos": 200,
     "trescientos": 300,
     "cuatrocientos": 400,

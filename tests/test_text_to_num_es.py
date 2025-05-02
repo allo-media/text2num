@@ -131,6 +131,58 @@ class TestTextToNumES(TestCase):
         expected = "34 = 34"
         self.assertEqual(alpha2digit(source, "es", relaxed=True), expected)
 
+    def test_female_hundreds(self):
+        self.assertEqual(text2num("doscientas", "es"), 200)
+        self.assertEqual(text2num("trescientas", "es"), 300)
+        self.assertEqual(text2num("cuatrocientas", "es"), 400)
+        self.assertEqual(text2num("quinientas", "es"), 500)
+        self.assertEqual(text2num("seiscientas", "es"), 600)
+        self.assertEqual(text2num("setecientas", "es"), 700)
+        self.assertEqual(text2num("ochocientas", "es"), 800)
+        self.assertEqual(text2num("novecientas", "es"), 900)
+
+    def test_female_hundreds_with_subnumbers(self):
+        self.assertEqual(text2num("doscientas uno", "es"), 201)
+        self.assertEqual(text2num("trescientas quince", "es"), 315)
+        self.assertEqual(text2num("cuatrocientas veintiocho", "es"), 428)
+        self.assertEqual(text2num("quinientas treinta y tres", "es"), 533)
+        self.assertEqual(text2num("seiscientas siete", "es"), 607)
+        self.assertEqual(text2num("setecientas noventa y una", "es"), 791)
+        self.assertEqual(text2num("novecientas noventa y nueve", "es"), 999)
+    
+    def test_alpha2digit_female_hundreds(self):
+        source = "Había doscientas treinta y cuatro vacas en el corral"
+        expected = "Había 234 vacas en el corral"
+        self.assertEqual(alpha2digit(source, "es", relaxed=True), expected)
+
+        source = "Había trescientas flores en el jardín"
+        expected = "Había 300 flores en el jardín"
+        self.assertEqual(alpha2digit(source, "es", relaxed=True), expected)
+
+        source = "Teníamos cuatrocientas páginas por leer"
+        expected = "Teníamos 400 páginas por leer"
+        self.assertEqual(alpha2digit(source, "es", relaxed=True), expected)
+
+        source = "El proyecto requiere quinientas horas de trabajo"
+        expected = "El proyecto requiere 500 horas de trabajo"
+        self.assertEqual(alpha2digit(source, "es", relaxed=True), expected)
+
+        source = "Se vendieron seiscientas entradas para el concierto"
+        expected = "Se vendieron 600 entradas para el concierto"
+        self.assertEqual(alpha2digit(source, "es", relaxed=True), expected)
+
+        source = "En la biblioteca hay setecientas revistas"
+        expected = "En la biblioteca hay 700 revistas"
+        self.assertEqual(alpha2digit(source, "es", relaxed=True), expected)
+
+        source = "Había ochocientas estrellas en el cielo"
+        expected = "Había 800 estrellas en el cielo"
+        self.assertEqual(alpha2digit(source, "es", relaxed=True), expected)
+
+        source = "El evento atrajo novecientas personas"
+        expected = "El evento atrajo 900 personas"
+        self.assertEqual(alpha2digit(source, "es", relaxed=True), expected)
+
     def test_alpha2digit_formal(self):
         source = "mas treinta y tres nueve sesenta cero seis doce veintiuno"
         expected = "+33 9 60 06 12 21"

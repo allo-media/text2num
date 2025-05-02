@@ -74,10 +74,10 @@ STENS: Dict[str, int] = {
 }
 
 # Stens variants
-UNITS["catorze"] = 14
-UNITS["dezesseis"] = 16
-UNITS["dezessete"] = 17
-UNITS["dezenove"] = 19
+STENS["catorze"] = 14
+STENS["dezesseis"] = 16
+STENS["dezessete"] = 17
+STENS["dezenove"] = 19
 
 # Ten multiples
 # Ten multiples may be followed by a unit only;

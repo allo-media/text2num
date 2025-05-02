@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.6.1
+      - image: cimg/python:3.12
 
     working_directory: ~/text2num
 
@@ -22,6 +22,7 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
+            pip install -U pip setuptools
             pip install sphinx
             pip install flake8
             pip install mypy
@@ -39,7 +40,7 @@ jobs:
           command: |
             . venv/bin/activate
             mypy text_to_num
-            python setup.py test
+            python -m unittest discover
             flake8 --max-line-length=110 text_to_num
 
       # Build the documentation
@@ -55,7 +56,7 @@ jobs:
 
   deploy:
     docker:
-      - image: circleci/python:3.7
+      - image: cimg/python:3.12
 
     working_directory: ~/text2num
 
@@ -67,7 +68,7 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            pip install -U pip
+            pip install -U pip setuptools
             pip install wheel twine build
             echo -e "[pypi]" >> ~/.pypirc
             echo -e "username = __token__" >> ~/.pypirc

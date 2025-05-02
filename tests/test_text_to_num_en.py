@@ -51,13 +51,10 @@ class TestTextToNumEN(TestCase):
         self.assertEqual(text2num("thousand nine hundred twenty", "en"), 1920)
         self.assertEqual(text2num("one billion twenty-five millions", "en"), 1_025_000_000)
 
-    def test_text2num_centuries(self):
-        self.assertEqual(text2num("nineteen hundred seventy-three", "en"), 1973)
-
     def test_text2num_exc(self):
         self.assertRaises(ValueError, text2num, "thousand thousand two hundreds", "en")
         self.assertRaises(ValueError, text2num, "sixty fifteen", "en")
-        self.assertRaises(ValueError, text2num, "sixty hundred", "en")
+        self.assertRaises(ValueError, text2num, "hundred hundreds", "en")
 
     def test_text2num_zeroes(self):
         self.assertEqual(text2num("zero", "en"), 0)
@@ -66,6 +63,13 @@ class TestTextToNumEN(TestCase):
         self.assertRaises(ValueError, text2num, "five zero", "en")
         self.assertRaises(ValueError, text2num, "fifty zero three", "en")
         self.assertRaises(ValueError, text2num, "fifty three zero", "en")
+
+    def test_text2num_hundreds(self):
+        source = "forty five hundred thirty eight"
+        expected = 4538
+        self.assertEqual(text2num(source, "en"), expected)
+        self.assertEqual(text2num("nineteen hundred seventy-three", "en"), 1973)
+        self.assertEqual(text2num("sixty hundred", "en"), 6000)
 
     def test_alpha2digit_integers(self):
         source = "twenty-five cows, twelve chickens and one hundred twenty five kg of potatoes."
@@ -96,6 +100,11 @@ class TestTextToNumEN(TestCase):
         source = "thirty-four = thirty four"
         expected = "34 = 34"
         self.assertEqual(alpha2digit(source, "en", relaxed=True), expected)
+
+    def test_alpha2digit_hundreds(self):
+        source = "forty five hundred thirty eight dollars and eighteen cents"
+        expected = "4538 dollars and 18 cents"
+        self.assertEqual(alpha2digit(source, "en"), expected)
 
     def test_alpha2digit_formal(self):
         source = "plus thirty-three nine sixty zero six twelve twenty-one"
