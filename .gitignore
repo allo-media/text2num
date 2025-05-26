@@ -1,106 +1,72 @@
+/target
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
+.pytest_cache/
 *.py[cod]
-*$py.class
 
 # C extensions
 *.so
 
 # Distribution / packaging
 .Python
+.venv/
+env/
+bin/
 build/
 develop-eggs/
 dist/
-downloads/
 eggs/
-.eggs/
 lib/
 lib64/
 parts/
 sdist/
 var/
-wheels/
+include/
+man/
+venv/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
-
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
 
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
+pip-selfcheck.json
 
 # Unit test / coverage reports
 htmlcov/
 .tox/
 .coverage
-.coverage.*
 .cache
 nosetests.xml
 coverage.xml
-*.cover
-.hypothesis/
-.pytest_cache/
 
 # Translations
 *.mo
-*.pot
+
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
+pyrightconfig.json
+# Rope
+.ropeproject
 
 # Django stuff:
 *.log
-local_settings.py
-db.sqlite3
+*.pot
 
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
+.DS_Store
 
 # Sphinx documentation
 docs/_build/
 
-# PyBuilder
-target/
+# PyCharm
+.idea/
 
-# Jupyter Notebook
-.ipynb_checkpoints
+# VSCode
+.vscode/
 
-# pyenv
+# Pyenv
 .python-version
-
-# celery beat schedule file
-celerybeat-schedule
-
-# SageMath parsed files
-*.sage.py
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-#  documentation
-_build
-
-# mypy
-.mypy_cache/
-
-.DS_Store

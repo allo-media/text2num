@@ -137,6 +137,13 @@ class TestTextToNumEN(TestCase):
         self.assertEqual(alpha2digit("zero", "en"), "0")
         self.assertEqual(alpha2digit("zero love", "en"), "0 love")
 
+        text = alpha2digit("Please call me at one two three four five six seven eight nine zero in reference to "
+                           "ticket C F zero three two zero seven eight two", 'en', ordinal_threshold=0)
+        self.assertEqual(
+            text,
+            'Please call me at 1 2 3 4 5 6 7 8 9 0 in reference to ticket C F 03 2 07 8 2'
+        )
+
     def test_alpha2digit_ordinals(self):
         source = (
             "Fifth third second twenty-first hundredth one thousand two hundred thirtieth twenty-fifth thirty-eighth forty-ninth."
@@ -175,6 +182,11 @@ class TestTextToNumEN(TestCase):
     def test_alpha2digit_signed(self):
         source = "We have plus twenty degrees inside and minus fifteen outside."
         expected = "We have +20 degrees inside and -15 outside."
+        self.assertEqual(alpha2digit(source, "en"), expected)
+
+    def test_alpha2digit_signed_decimal(self):
+        source = "The temperature is minus two point five."
+        expected = "The temperature is -2.5."
         self.assertEqual(alpha2digit(source, "en"), expected)
 
     def test_one_as_noun_or_article(self):

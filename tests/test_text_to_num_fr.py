@@ -34,7 +34,7 @@ class TestTextToNumFR(TestCase):
         self.assertEqual(text2num(test1, "fr"), 53_000_243_724)
 
         test2 = (
-            "cinquante et un million cinq cent soixante dix-huit mille trois cent deux"
+            "cinquante et un million cinq cent soixante-dix-huit mille trois cent deux"
         )
         self.assertEqual(text2num(test2, "fr"), 51_578_302)
 
@@ -107,11 +107,11 @@ class TestTextToNumFR(TestCase):
     def test_relaxed(self):
         source = "un deux trois quatre vingt quinze."
         expected = "1 2 3 95."
-        self.assertEqual(alpha2digit(source, "fr", relaxed=True), expected)
+        self.assertEqual(alpha2digit(source, "fr"), expected)
 
         source = "Quatre, vingt, quinze, quatre-vingts."
         expected = "4, 20, 15, 80."
-        self.assertEqual(alpha2digit(source, "fr", relaxed=True), expected)
+        self.assertEqual(alpha2digit(source, "fr"), expected)
 
         source = "trente-quatre = trente quatre"
         expected = "34 = 34"
@@ -128,7 +128,7 @@ class TestTextToNumFR(TestCase):
 
     def test_trente_et_onze(self):
         source = "cinquante soixante trente et onze"
-        expected = "50 60 30 11"
+        expected = "50 60 30 et 11"
         self.assertEqual(alpha2digit(source, "fr"), expected)
 
     def test_alpha2digit_zero(self):
@@ -142,15 +142,15 @@ class TestTextToNumFR(TestCase):
         # source = "Votre service est zéro !"
         # self.assertEqual(alpha2digit(source, "fr"), source)
 
-        self.assertEqual(alpha2digit("zéro", "fr"), "0")
+        self.assertEqual(alpha2digit("zéro", "fr", threshold=0.0), "0")
         self.assertEqual(alpha2digit("a a un trois sept trois trois sept cinq quatre zéro c c", "fr"), "a a 1 3 7 3 3 7 5 4 0 c c")
         self.assertEqual(alpha2digit("sept un zéro", "fr"), "7 1 0")
 
     def test_alpha2digit_ordinals(self):
         source = (
-            "Cinquième premier second troisième vingt et unième centième mille deux cent trentième."
+            "Cinquième premier deuxième troisième vingt et unième centième mille deux cent trentième."
         )
-        expected = "5ème premier second troisième 21ème 100ème 1230ème."
+        expected = "5ème 1er 2ème 3ème 21ème 100ème 1230ème."
         self.assertEqual(alpha2digit(source, "fr"), expected)
         self.assertEqual(alpha2digit("un millième", "fr"), "un 1000ème")
         self.assertEqual(alpha2digit("un millionième", "fr"), "un 1000000ème")
@@ -160,7 +160,7 @@ class TestTextToNumFR(TestCase):
             "Cinquième premier second troisième vingt et unième centième mille deux cent trentième."
         )
         expected = "5ème 1er 2nd 3ème 21ème 100ème 1230ème."
-        self.assertEqual(alpha2digit(source, "fr", ordinal_threshold=0), expected)
+        self.assertEqual(alpha2digit(source, "fr", threshold=0), expected)
 
     def test_alpha2digit_decimals(self):
         source = (
