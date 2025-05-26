@@ -22,7 +22,7 @@ fn text_to_num(text: &str, lang: &str) -> PyResult<i64> {
     let interpreter = get_interpreter_for(lang)
         .ok_or_else(|| PyValueError::new_err(format!("unsupported language {lang}")))?;
     text2digits(text, &interpreter)
-        .map_err(|_| PyValueError::new_err(format!("invalid literal for text_to_num '{text}'")))
+        .map_err(|_| PyValueError::new_err(format!("invalid literal for text2num: '{text}'")))
         .and_then(|v| v.parse::<i64>().map_err(|e| e.into()))
 }
 

@@ -311,9 +311,9 @@ checksum = "e502f78cdbb8ba4718f566c418c52bc729126ffd16baee5baa718cf25dd5a69a"
 
 [[package]]
 name = "text2num"
-version = "2.6.1"
+version = "2.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3e36c0f054f8e85c1a34233a3262107ac0eb67eec9d927842e992483b0644f86"
+checksum = "a3cbe8c2bff658974706d7ee9f4b081c810578d95f50be8333e99abaac66ab30"
 dependencies = [
  "bitflags",
  "daachorse",
