@@ -18,8 +18,8 @@ Supported natural languages (in alphabetical order):
 * French;
 * German;
 * Italian;
-* European and Brazilian Portuguese;
-* and Spanish.
+* Portuguese (Brazilian and European);
+* Spanish.
 
 ## Versions 3.X vs 2.X
 
