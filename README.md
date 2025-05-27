@@ -254,6 +254,59 @@ German:
 
 ```
 
+### Working with tokens
+
+Imagine that we have an ASR application that returns a transcript as a list of tokens (text, start timestamp, end timestamp)
+where the timestamps are intergers reprensenting milliseconds relative to the beginning of the speech.
+
+```python
+
+from text_to_num import (Token, find_numbers)
+
+
+class DecodedWord(Token):
+    def __init__(self, text, start, end):
+        self._text = text
+        self.start = start
+        self.end = end
+
+    def text(self):
+        return self._text
+
+    def nt_separated(self, previous):
+        # we consider a voice gap of more that 100 ms as significant
+        return self.start - previous.end > 100
+
+
+# Let's simulate ASR output
+
+stream = [
+    DecodedWord("We", 0, 100),
+    DecodedWord("have", 100, 200),
+    DecodedWord("respectively", 200, 400),
+    DecodedWord("twenty", 400, 500),
+    DecodedWord("nine", 610, 700),
+    DecodedWord("and", 700, 800),
+    DecodedWord("thirty", 800, 900),
+    DecodedWord("four", 950, 1000),
+    DecodedWord("dollars", 1010, 1410)
+]
+
+occurences = find_numbers(stream, "en")
+
+for num in occurences:
+    print(f"found number {num.text} ({num.value}) at range [{num.start}, {num.end}] in the stream")
+```
+
+When executed, that code snippet prints::
+
+```
+found number 20 (20.0) at range [3, 4] in the stream
+found number 9 (9.0) at range [4, 5] in the stream
+found number 34 (34.0) at range [6, 8] in the stream
+```
+
+
 Read the complete documentation on `ReadTheDocs <http://text2num.readthedocs.io/>`.
 
 ## Contribute
