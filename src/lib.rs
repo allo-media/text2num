@@ -7,6 +7,11 @@ use text2num::{
 };
 
 /// Return the text of ``text`` with all the ``lang`` spelled numbers converted to digits.
+///
+/// The function is punctuation aware.
+///
+/// Isolated numbers, that is, integers and ordinals that don't belong to a group of numbers, are converted
+/// if and only if their value is above the ``threshold``.
 #[pyfunction]
 #[pyo3(signature = (text, lang, threshold=3.0))]
 fn alpha2digit(text: &str, lang: &str, threshold: f64) -> PyResult<String> {
@@ -15,7 +20,11 @@ fn alpha2digit(text: &str, lang: &str, threshold: f64) -> PyResult<String> {
     Ok(replace_numbers_in_text(text, &interpreter, threshold))
 }
 
-/// Return the text of ``text`` with all the ``lang`` spelled numbers converted to digits.
+/// Convert the ``text`` string containing an integer number written as letters
+///    into an integer value.
+///
+///    Raises a ValueError if ``text`` does not describe a valid number.
+///    Return an int.
 #[pyfunction]
 #[pyo3(name = "text2num")]
 fn text_to_num(text: &str, lang: &str) -> PyResult<i64> {
@@ -67,9 +76,14 @@ impl<'a> Token for TokenAdaptor<'a> {
             .extract()
             .unwrap()
     }
+
+    fn not_a_number_part(&self) -> bool {
+        self.model.call_method0("not_a_number_part").unwrap().extract().unwrap()
+    }
 }
 
 /// An occurence of a number was found in the sequence of tokens.
+///
 /// An occurence can span multiple consecutive tokens.
 #[pyclass]
 #[pyo3(name = "Occurence")]
@@ -110,8 +124,8 @@ impl NumOccurence {
     }
 }
 
-/// Find the numbers and their positions in a stream of Tokens.
-/// Return a list of ``Occurence``s.
+/// Find the numbers and their positions in a stream of Tokens (the ``input``).
+/// Return a list of ``Occurence`` instances.
 #[pyfunction]
 #[pyo3(signature = (input, lang, threshold=3.0))]
 pub fn find_numbers(

@@ -33,8 +33,9 @@ is in pure python and uses a less capable algorithm and has now been retired.
 - dropped support for signed number — the feature was broken anyway;
 - parsing mode is relaxed by default (i.e. "_greedy_") — you can use punctuation (e.g. commas) to separate groups in text, or voice pause if processing Speech-to-Text token streams;
 - the `threshold` optional parameter to `alpha2digits` now applies to both ordinals and cardinals.
+  As a consequence the signature of `alpha2digits` has changed.
+- the Russian and Catalan languages have not been ported yet.
 
-As a consequence the signature of `alpha2digits` has changed.
 
 ## Installation
 
@@ -183,6 +184,9 @@ English:
     >>> text = "On May twenty-third, I bought twenty-five cows, twelve chickens and one hundred twenty five point four zero kg of potatoes."
     >>> alpha2digit(text, "en")
     'On May 23rd, I bought 25 cows, 12 chickens and 125.40 kg of potatoes.'
+
+    >>> alpha2digit("I finished the race in the twelfth position!", "en")
+    'I finished the race in the 12th position!'
 
 ```
 

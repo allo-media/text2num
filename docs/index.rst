@@ -6,12 +6,12 @@
 Welcome to text2num's documentation!
 ====================================
 
-``text2num`` is a package that provides functions and parser classes for:
+``text2num`` is a package that provides functions and utility classes for:
 
-- parsing numbers expressed as words in French or English and convert them to integer values;
-- detect ordinals, cardinals and decimal numbers in a stream of French or English words and get their decimal digit representations.
+- parsing numbers expressed as words in natural language and convert them to integer values;
+- detect ordinals, cardinals and decimal numbers in a stream of natural language words (or tokens) and get their decimal digit representations.
 
-``text2num`` is distributed under the MIT license and is known to work on python version 3.6 and above.
+``text2num`` is distributed under the MIT license and is known to work on python version 3.8 and above.
 
 
 .. toctree::

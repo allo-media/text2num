@@ -3,20 +3,17 @@ from unittest import TestCase
 import text_to_num
 
 
-class Token:
+class MyToken(text_to_num.Token):
     def __init__(self, text):
         self.content = text
 
     def text(self):
         return self.content
 
-    def nt_separated(self, _):
-        return False
-
 
 def tokenize(text):
     """Poor man's tokenizer."""
-    return [Token(piece) for piece in text.split()]
+    return [MyToken(piece) for piece in text.split()]
 
 
 class TestBindingBase(TestCase):
@@ -33,7 +30,8 @@ class TestBindingBase(TestCase):
         )
 
 
-class TestBindingExtension(TestCase):
+class TestBindingExtensions(TestCase):
+
     def test_find_numbers(self):
         text = "Vingt-cinq vaches, douze poulets et cent vingt-cinq kg de pommes de terre."
         occurences = text_to_num.find_numbers(tokenize(text), "fr")
