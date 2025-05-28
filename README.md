@@ -2,13 +2,13 @@
 
 A fast and robust text2num converter library a library for recognizing, parsing and transcribing into digits (base 10) numbers expressed in natural language. It works on strings as well as on custom token lists.
 
-No IA involved: it is low on resources (and energy!) consumption as the latency are very small.
+No IA involved: it is low on resources (and energy!) consumption and the latency is very small.
 
 [![Documentation status](https://readthedocs.org/projects/text2num/badge/?version=latest)](https://text2num.readthedocs.io/en/latest/?badge=latest)
 
 `text2num` is a python package that provides functions and parser classes for:
 
-- Parsing of numbers expressed as natural language words convert them to integer values.
+- Parsing numbers expressed as natural language words and converting them to integer values.
 - Detection of ordinal, cardinal and decimal numbers in a stream of natural language words and get their decimal digit representations.
 
 Supported natural languages (in alphabetical order):
@@ -30,8 +30,8 @@ is in pure python and uses a less capable algorithm and has now been retired.
 
 ### Backward incompatible changes:
 
-- dropped support for signed number — the feature was broken anyway;
-- parsing mode is relaxed by default (i.e. "_greedy_") — you can use punctuation (e.g. commas) to separate groups in text, or voice pause if processing Speech-to-Text token streams;
+- dropped support for signed numbers — the feature was broken anyway;
+- parsing mode is relaxed by default (i.e. "_greedy_") — you can use punctuation (e.g. commas) to separate groups in text, or voice pauses if processing Speech-to-Text token streams;
 - the `threshold` optional parameter to `alpha2digits` now applies to both ordinals and cardinals.
   As a consequence the signature of `alpha2digits` has changed.
 - the Russian and Catalan languages have not been ported yet.
@@ -49,9 +49,9 @@ pip install text2num
 uv add text2num
 ```
 
-## Quickstart
+## Quickstart by example
 
-No every supported language is covered in these examples, here, but it gives you an idea.
+Not every supported language is covered in these examples, but it gives you an idea.
 
 ### Parse and convert
 
@@ -307,7 +307,7 @@ found number 34 (34.0) at range [6, 8] in the stream
 ```
 
 
-Read the complete documentation on `ReadTheDocs <http://text2num.readthedocs.io/>`.
+Read the complete documentation on [ReadTheDocs](http://text2num.readthedocs.io/).
 
 ## Contribute
 
