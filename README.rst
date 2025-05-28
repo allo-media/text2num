@@ -1,6 +1,8 @@
 text2num
 ========
 
+**This is the legacy pure python branch which is not maintained anymore. Please use the latest 3.X version.**
+
 |docs|
 
 
