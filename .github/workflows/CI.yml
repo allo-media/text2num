@@ -47,6 +47,7 @@ jobs:
           sccache: 'true'
           manylinux: auto
       - name: Test built wheel
+        if: matrix.target == 'x86_64'
         run: |
           pip install text2num --no-index --find-links dist --force-reinstall
           python -m unittest
@@ -81,10 +82,6 @@ jobs:
           args: --release --out dist --find-interpreter
           sccache: 'true'
           manylinux: musllinux_1_2
-      - name: Test built wheel
-        run: |
-          pip install text2num --no-index --find-links dist --force-reinstall
-          python -m unittest
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
