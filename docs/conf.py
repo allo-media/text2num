@@ -19,13 +19,13 @@ sys.path.insert(0, os.path.abspath('../'))
 # -- Project information -----------------------------------------------------
 
 project = "text2num"
-copyright = "2018, Allo-Media"
+copyright = "2018 — 2025, Allo-Media"
 author = "Allo-Media"
 
 # The short X.Y version
 version = ""
 # The full version, including alpha/beta/rc tags
-release = "1.0"
+release = "3.0"
 
 
 # -- General configuration ---------------------------------------------------

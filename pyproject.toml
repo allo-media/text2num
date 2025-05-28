@@ -1,0 +1,45 @@
+[build-system]
+requires = ["maturin>=1.7,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "text2num"
+description = "Parse and convert numbers written in French, Spanish, English, Portuguese, German, Dutch or Italian into their digit representation."
+readme = "README.md"
+license = "MIT"
+license_files = ["LICENSE"]
+authors = [
+  {name = "Allo-Media", email = "contact@allo-media.fr"}
+]
+keywords = ["French", "Spanish", "English", "Portuguese", "German", "Italian", "Dutch", "NLP", "words-to-numbers"]
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Text Processing :: Linguistic",
+    "Topic :: Text Processing :: Filters",
+    "Natural Language :: French",
+    "Natural Language :: English",
+    "Natural Language :: Spanish",
+    "Natural Language :: Portuguese",
+    "Natural Language :: German",
+    "Natural Language :: Dutch",
+    "Natural Language :: Italian"
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/allo-media/text2num"
+Documentation = "https://text2num.readthedocs.io"
+Repository = "https://github.com/allo-media/text2num"
+Issues = "https://github.com/allo-media/text2num/issues"
+Changelog = "https://github.com/allo-media/text2num/releases"
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+python-source = "python"
+module-name = "text_to_num._text2num"
+
