@@ -18,8 +18,8 @@ Supported natural languages (in alphabetical order):
 * French;
 * German;
 * Italian;
-* European and Brazilian Portuguese;
-* and Spanish.
+* Portuguese (Brazilian and European);
+* Spanish.
 
 ## Versions 3.X vs 2.X
 
@@ -257,7 +257,7 @@ German:
 ### Working with tokens
 
 Imagine that we have an ASR application that returns a transcript as a list of tokens (text, start timestamp, end timestamp)
-where the timestamps are intergers reprensenting milliseconds relative to the beginning of the speech.
+where the timestamps are integers representing milliseconds relative to the beginning of the speech.
 
 ```python
 
