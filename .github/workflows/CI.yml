@@ -9,9 +9,7 @@ on:
   push:
     branches:
       - main
-      - master
-    tags:
-      - '*'
+      - release
   pull_request:
   workflow_dispatch:
 
@@ -48,6 +46,10 @@ jobs:
           args: --release --out dist --find-interpreter
           sccache: 'true'
           manylinux: auto
+      - name: Test built wheel
+        run: |
+          pip install text2num --no-index --find-links dist --force-reinstall
+          python -m unittest
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
@@ -79,6 +81,10 @@ jobs:
           args: --release --out dist --find-interpreter
           sccache: 'true'
           manylinux: musllinux_1_2
+      - name: Test built wheel
+        run: |
+          pip install text2num --no-index --find-links dist --force-reinstall
+          python -m unittest
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
@@ -106,6 +112,10 @@ jobs:
           target: ${{ matrix.platform.target }}
           args: --release --out dist --find-interpreter
           sccache: 'true'
+      - name: Test built wheel
+        run: |
+          pip install text2num --no-index --find-links dist --force-reinstall
+          python -m unittest
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
@@ -130,6 +140,10 @@ jobs:
           target: ${{ matrix.platform.target }}
           args: --release --out dist --find-interpreter
           sccache: 'true'
+      - name: Test built wheel
+        run: |
+          pip install text2num --no-index --find-links dist --force-reinstall
+          python -m unittest
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
@@ -154,7 +168,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    if: "startsWith(github.ref, 'refs/tags/')"
+    if: "github.ref =='refs/heads/release'"
     needs: [linux, musllinux, windows, macos, sdist]
     steps:
       - uses: actions/download-artifact@v4
