@@ -7,8 +7,8 @@ High-level API
 
 The high level API exposes functions that works on plain unicode strings.
 
-If you need to process other source or have implemented your own tokenizer, you'd better
-use the lower level parser classes below.
+If you need to process other sources or have implemented your own tokenizer, you'd better
+use the other API below.
 
 
 .. autofunction:: text_to_num.text2num
@@ -16,20 +16,13 @@ use the lower level parser classes below.
 .. autofunction:: text_to_num.alpha2digit
 
 
-Parsers
--------
+Custom Token Processing
+-----------------------
 
-The high-level API is build upon these parsers implemented as classes.
-
-Those classes passively consume word tokens and thus can be easly integrated into your own
-tokenizer/framework.
-
-.. automodule:: text_to_num.parsers
+.. autoclass:: text_to_num.Occurence
    :members:
-   :undoc-members:
 
+.. autoclass:: text_to_num.Token
+   :members:
 
-Misc.
------
-
-.. autofunction:: text_to_num.transforms.look_ahead
+.. autofunction:: text_to_num.find_numbers
