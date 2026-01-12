@@ -9,5 +9,5 @@ name = "_text2num"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = "0.24"
+pyo3 = "0.27"
 text2num = "2.6.2"
