@@ -39,7 +39,19 @@ is in pure python and uses a less capable algorithm and has now been retired.
 
 ## Installation
 
-We provide pre-compiled wheels for Linux, MacOS and Windows and for python 3.8 up to and including 3.13.
+We provide pre-compiled wheels for Linux, MacOS and Windows:
+
+|               | py 3.8 | py 3.9 | py 3.10 | py 3.11 | py 3.12 | py 3.13 |
+| ------------- | -------|------- | --------|---------|---------|---------|
+| Linux aarch64 |   ✅   |  ✅    |  ✅     |  ✅     |   ✅    |  ✅     |
+| Linux armv7l  |   ✅   |  ✅    |  ✅     |  ✅     |   ✅    |  ✅     |
+| Linux ppc64le |   ✅   |  ✅    |  ✅     |  ✅     |   ✅    |  ✅     |
+| Linux s390x   |   ✅   |  ✅    |  ✅     |  ✅     |   ✅    |  ✅     |
+| Linux x86_64  |   ✅   |  ✅    |  ✅     |  ✅     |   ✅    |  ✅     |
+| Linux i686    |   ✅   |  ✅    |  ✅     |  ✅     |   ✅    |  ✅     |
+| win32         |   ✅   |  ✅    |  ✅     |  ✅     |   ✅    |  ✅     |
+| win amd64     |   ✅   |  ✅    |  ✅     |  ✅     |   ✅    |  ✅     |
+| macos 11      |   ❌   |  ❌    |  ❌     |  ✅     |   ✅    |  ✅     |
 
 So all you need to do is this:
 
