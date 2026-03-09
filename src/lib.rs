@@ -2,8 +2,8 @@ use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use pyo3::types::PyList;
 use text2num::{
-    get_interpreter_for, replace_numbers_in_text, text2digits, word_to_digit::find_numbers_iter,
-    Occurence, Token,
+    Occurence, Token, get_interpreter_for, replace_numbers_in_text, text2digits,
+    word_to_digit::find_numbers_iter,
 };
 
 /// Return the text of ``text`` with all the ``lang`` spelled numbers converted to digits.
@@ -66,7 +66,7 @@ impl<'a> Token for TokenAdaptor<'a> {
     }
 
     fn text_lowercase(&self) -> &str {
-        &self.text_cache_lowercase.as_str()
+        self.text_cache_lowercase.as_str()
     }
 
     fn nt_separated(&self, previous: &Self) -> bool {
@@ -78,7 +78,11 @@ impl<'a> Token for TokenAdaptor<'a> {
     }
 
     fn not_a_number_part(&self) -> bool {
-        self.model.call_method0("not_a_number_part").unwrap().extract().unwrap()
+        self.model
+            .call_method0("not_a_number_part")
+            .unwrap()
+            .extract()
+            .unwrap()
     }
 }
 
