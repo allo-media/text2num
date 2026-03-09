@@ -29,6 +29,9 @@ class TestBindingBase(TestCase):
             "25 vaches, 12 poulets et 125 kg de pommes de terre."
         )
 
+    def test_alpha2digit_all(self):
+        self.assertEqual(text_to_num.alpha2digit("1 2 un 8", "fr", threshold=0.0), "1 2 1 8")
+
 
 class TestBindingExtensions(TestCase):
 
