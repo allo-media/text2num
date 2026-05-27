@@ -125,7 +125,7 @@ dependencies = [
 
 [[package]]
 name = "py-text2num"
-version = "3.0.1"
+version = "3.0.2"
 dependencies = [
  "pyo3",
  "text2num",
@@ -285,9 +285,9 @@ checksum = "b1dd07eb858a2067e2f3c7155d54e929265c264e6f37efe3ee7a8d1b5a1dd0ba"
 
 [[package]]
 name = "text2num"
-version = "2.6.3"
+version = "2.6.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4d3831eff67896c5d0a1d4b6c1f2c08220c8efefc3638069fa5a2fe1c27efc42"
+checksum = "d5c41d9a522f338e78b3f2fd8d1bdef6a0d7987dccb91850b2f6e4abeacc1095"
 dependencies = [
  "bitflags",
  "daachorse",
