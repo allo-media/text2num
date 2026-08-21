@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "text2num"
-description = "Parse and convert numbers written in French, Spanish, English, Portuguese, German, Dutch or Italian into their digit representation."
+description = "Parse and convert numbers written in French, Spanish, English, Portuguese, German, Dutch, Danish, or Italian into their digit representation."
 readme = "README.md"
 license = "MIT"
 license_files = ["LICENSE"]
@@ -27,6 +27,7 @@ classifiers = [
     "Natural Language :: Portuguese",
     "Natural Language :: German",
     "Natural Language :: Dutch",
+    "Natural Language :: Danish",
     "Natural Language :: Italian"
 ]
 dynamic = ["version"]

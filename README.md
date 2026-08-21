@@ -13,13 +13,15 @@ No IA involved: it is low on resources (and energy!) consumption and the latency
 
 Supported natural languages (in alphabetical order):
 
+* Danish;
 * Dutch;
 * English;
 * French;
 * German;
 * Italian;
 * Portuguese (Brazilian and European);
-* Spanish.
+* Spanish;
+* and more to come.
 
 ## Versions 3.X vs 2.X
 
