@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use pyo3::types::PyList;
@@ -38,7 +40,6 @@ fn text_to_num(text: &str, lang: &str) -> PyResult<i64> {
 struct TokenAdaptor<'a> {
     model: Bound<'a, PyAny>,
     text_cache: String,
-    text_cache_lowercase: String,
 }
 
 impl<'a> TokenAdaptor<'a> {
@@ -52,21 +53,17 @@ impl<'a> TokenAdaptor<'a> {
             );
         }
         let text_cache: String = py_result.extract().unwrap();
-        Self {
-            model,
-            text_cache_lowercase: text_cache.to_lowercase(),
-            text_cache,
-        }
+        Self { model, text_cache }
     }
 }
 
 impl<'a> Token for TokenAdaptor<'a> {
-    fn text(&self) -> &str {
-        self.text_cache.as_str()
+    fn text(&self) -> Cow<'_, str> {
+        self.text_cache.as_str().into()
     }
 
-    fn text_lowercase(&self) -> &str {
-        self.text_cache_lowercase.as_str()
+    fn text_lowercase(&self) -> Cow<'_, str> {
+        self.text_cache.to_lowercase().into()
     }
 
     fn nt_separated(&self, previous: &Self) -> bool {

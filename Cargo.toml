@@ -1,6 +1,6 @@
 [package]
 name = "py-text2num"
-version = "3.0.2"
+version = "3.1.0"
 edition = "2024"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -10,4 +10,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = "0.29"
-text2num = "2.6.5"
+text2num = "2.8.0"
